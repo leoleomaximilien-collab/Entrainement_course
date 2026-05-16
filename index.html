@@ -22,7 +22,7 @@
                             600: '#65a30d',
                         },
                         ai: {
-                            500: '#8b5cf6', // Indigo
+                            500: '#8b5cf6',
                             900: '#312e81'
                         }
                     }
@@ -44,6 +44,30 @@
         .no-scrollbar {
             -ms-overflow-style: none;
             scrollbar-width: none;
+        }
+        
+        /* Custom range slider styling for RPE */
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 16px;
+            width: 16px;
+            border-radius: 50%;
+            background: #84cc16;
+            cursor: pointer;
+            margin-top: -6px;
+            box-shadow: 0 0 10px rgba(132, 204, 22, 0.5);
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: #1e293b;
+            border-radius: 2px;
         }
     </style>
 </head>
@@ -104,7 +128,6 @@
             <div class="space-y-3" id="sessions-container"></div>
         </section>
 
-        <!-- (LE RESTE DE LA VUE HTML RESTE IDENTIQUE) -->
         <section id="tab-stats" class="space-y-4 hidden">
             <h2 class="text-lg font-bold">Statistiques & Analyse</h2>
             
@@ -198,9 +221,7 @@
                     <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-2">
                         <i data-lucide="clipboard-list" class="w-4 h-4"></i> Détail des Exercices
                     </h4>
-                    <div class="text-sm text-slate-300 space-y-3 leading-relaxed" id="details-content">
-                        <!-- Content injected via JS -->
-                    </div>
+                    <div class="text-sm text-slate-300 space-y-3 leading-relaxed" id="details-content"></div>
                 </div>
             </div>
             <div class="p-4 border-t border-slate-800 bg-slate-950">
@@ -209,32 +230,26 @@
         </div>
     </div>
 
-    <!-- MODAL DE LOG DE PERFORMANCE -->
-    <div id="log-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center hidden p-4">
-        <div class="bg-slate-900 border border-slate-800 rounded-t-2xl sm:rounded-2xl w-full max-w-md p-6 space-y-4 shadow-2xl animate-in slide-in-from-bottom duration-300">
+    <!-- MODAL DE LOG DE PERFORMANCE AVEC NOUVEAU RPE -->
+    <div id="log-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center hidden p-4 overflow-y-auto">
+        <div class="bg-slate-900 border border-slate-800 rounded-t-2xl sm:rounded-2xl w-full max-w-md p-6 space-y-4 shadow-2xl animate-in slide-in-from-bottom duration-300 my-auto">
             <div class="flex justify-between items-center">
                 <h3 class="text-lg font-bold" id="log-modal-title">Saisir ma Performance</h3>
                 <button onclick="closeLogModal()" class="p-1 hover:bg-slate-800 rounded-full text-slate-400"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             <input type="hidden" id="log-session-id">
+            
             <div class="grid grid-cols-2 gap-3">
                 <div>
                     <label class="text-xs text-slate-400 block mb-1">Date</label>
                     <input id="log-date" type="date" class="w-full bg-slate-950 border border-slate-800 px-3 py-2 rounded-lg text-sm text-white focus:outline-none">
                 </div>
                 <div>
-                    <label class="text-xs text-slate-400 block mb-1">Ressenti (RPE 1-10)</label>
-                    <select id="log-rpe" class="w-full bg-slate-950 border border-slate-800 px-3 py-2 rounded-lg text-sm text-white focus:outline-none">
-                        <option value="1">1 - Très Facile</option>
-                        <option value="3">3 - Facile</option>
-                        <option value="5">5 - Modéré</option>
-                        <option value="7">7 - Difficile</option>
-                        <option value="8">8 - Très Difficile</option>
-                        <option value="9">9 - Épuisant</option>
-                        <option value="10">10 - Maximal</option>
-                    </select>
+                    <label class="text-xs text-slate-400 block mb-1">Fréquence Cardiaque</label>
+                    <input id="log-hr" type="number" placeholder="Ex: 145 bpm" class="w-full bg-slate-950 border border-slate-800 px-3 py-2 rounded-lg text-sm text-white focus:outline-none">
                 </div>
             </div>
+            
             <div class="grid grid-cols-2 gap-3">
                 <div>
                     <label class="text-xs text-slate-400 block mb-1">Distance (km)</label>
@@ -249,17 +264,47 @@
                     </div>
                 </div>
             </div>
-            <div>
-                <label class="text-xs text-slate-400 block mb-1">Fréquence Cardiaque Moyenne</label>
-                <input id="log-hr" type="number" placeholder="Ex: 145 bpm" class="w-full bg-slate-950 border border-slate-800 px-3 py-2 rounded-lg text-sm text-white focus:outline-none">
+
+            <!-- NOUVEL EVALUATEUR RPE MULTI-FACTEURS -->
+            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-4">
+                <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+                    <label class="text-xs font-bold text-slate-400 flex items-center gap-2">
+                        <i data-lucide="activity" class="w-4 h-4"></i> RPE Multi-facteurs
+                    </label>
+                    <span class="text-sm font-black text-brand-500 bg-brand-500/10 px-2 py-0.5 rounded" id="rpe-result-display">RPE : 5/10</span>
+                </div>
+                
+                <div>
+                    <div class="flex justify-between text-[10px] text-slate-500 mb-1.5">
+                        <span>🌬️ Respiration (1=Facile, 10=Maximal)</span>
+                        <span id="val-resp" class="font-bold text-slate-300">5</span>
+                    </div>
+                    <input type="range" id="log-rpe-resp" min="1" max="10" value="5" oninput="updateRPE()">
+                </div>
+                <div>
+                    <div class="flex justify-between text-[10px] text-slate-500 mb-1.5">
+                        <span>🦵 Muscles (1=Léger, 10=Tétanie)</span>
+                        <span id="val-musc" class="font-bold text-slate-300">5</span>
+                    </div>
+                    <input type="range" id="log-rpe-musc" min="1" max="10" value="5" oninput="updateRPE()">
+                </div>
+                <div>
+                    <div class="flex justify-between text-[10px] text-slate-500 mb-1.5">
+                        <span>🧠 Mental (1=Fluide, 10=Saturé)</span>
+                        <span id="val-ment" class="font-bold text-slate-300">5</span>
+                    </div>
+                    <input type="range" id="log-rpe-ment" min="1" max="10" value="5" oninput="updateRPE()">
+                </div>
             </div>
+
             <div>
                 <label class="text-xs text-slate-400 block mb-1">Notes / Commentaires</label>
-                <textarea id="log-notes" rows="2" placeholder="Sensations physiques, conditions météo..." class="w-full bg-slate-950 border border-slate-800 px-3 py-2 rounded-lg text-sm text-white focus:outline-none"></textarea>
+                <textarea id="log-notes" rows="2" placeholder="Sensations physiques, météo, alimentation..." class="w-full bg-slate-950 border border-slate-800 px-3 py-2 rounded-lg text-sm text-white focus:outline-none"></textarea>
             </div>
+            
             <div class="flex gap-2 pt-2">
-                <button onclick="saveSessionLog()" class="flex-1 bg-brand-500 hover:bg-brand-600 text-slate-950 font-black py-3 rounded-xl transition shadow-lg text-sm">
-                    Enregistrer l'activité
+                <button onclick="saveSessionLog()" class="flex-1 bg-brand-500 hover:bg-brand-600 text-slate-950 font-black py-3 rounded-xl transition shadow-lg text-sm flex items-center justify-center gap-2">
+                    <i data-lucide="save" class="w-4 h-4"></i> Enregistrer l'activité
                 </button>
             </div>
         </div>
@@ -326,7 +371,6 @@
         const vmaObjective = "Cibler l'économie de course, la réactivité des appuis et la vitesse pure sans accumulation excessive d'acide lactique.";
         const seuilObjective = "Repousser le point d'accumulation rapide du lactate dans le sang, permettant de courir plus vite avant l'acidose.";
 
-        // UTILITAIRES DE CONVERSION DE TEMPS
         function secondsToPaceStr(secs) {
             const m = Math.floor(secs / 60);
             const s = Math.floor(secs % 60);
@@ -338,7 +382,6 @@
             return parseInt(parts[0]) * 60 + parseInt(parts[1]);
         }
 
-        // 1. FONCTION DE GÉNÉRATION DU PLAN DE BASE
         function buildBasePlan() {
             let basePlan = [];
             for (let w = 1; w <= 16; w++) {
@@ -423,17 +466,13 @@
             return basePlan;
         }
 
-        // 2. MOTEUR D'ADAPTATION IA
+        // MOTEUR D'ADAPTATION IA
         function applyAdaptations(basePlan, logs) {
             let adaptations = [];
-            
-            // Allures dynamiques modifiables (en secondes au km)
-            let currentPaces = { VMA: 216 /* 3:36 */, Seuil: 251 /* 4:11 */, EF: 330 /* 5:30 */ };
-            
+            let currentPaces = { VMA: 216, Seuil: 251, EF: 330 };
             let grayZoneViolations = 0;
             let weekExhaustionFlag = false;
 
-            // On traverse le plan semaine par semaine chronologiquement
             basePlan.forEach(w => {
                 let weekRpeSum = 0;
                 let weekLogCount = 0;
@@ -442,69 +481,55 @@
                     const log = logs[session.id];
                     
                     if (log) {
-                        // SÉANCE DÉJA RÉALISÉE -> Analyser
                         weekLogCount++;
                         const rpe = parseInt(log.rpe) || 0;
                         weekRpeSum += rpe;
 
-                        // Calcul de l'allure réelle
                         const dist = parseFloat(log.distance || 0);
                         const tParts = log.duration.split(':');
                         const totalSecs = (parseInt(tParts[0] || 0) * 60) + parseInt(tParts[1] || 0);
                         const paceSecs = dist > 0 ? totalSecs / dist : 0;
 
-                        // A. Analyse Zone Grise
-                        if (session.type === 'EF' && paceSecs > 0 && paceSecs < 310 /* 5:10/km */) {
+                        if (session.type === 'EF' && paceSecs > 0 && paceSecs < 310) {
                             grayZoneViolations++;
                         }
 
-                        // B. Analyse Progression VDOT (Réussite VMA facile)
                         const targetSecs = paceStrToSeconds(session.target);
                         if (session.type === 'VMA' && targetSecs > 0 && paceSecs > 0 && paceSecs <= targetSecs + 3 && rpe <= 6) {
-                            // On accélère le plan futur
                             currentPaces.VMA -= 2; 
                             currentPaces.Seuil -= 2;
                             adaptations.push(`🔥 Progression détectée ! Séance ${session.title} validée facilement. Vos futures cibles VMA/Seuil sont durcies (-2s/km).`);
                         }
-
                     } else {
-                        // SÉANCE FUTURE -> Adapter
-                        
-                        // Application Récupération Forcée (Zone Grise)
                         if (grayZoneViolations > 0 && (session.type === 'VMA' || session.type === 'Seuil')) {
                             session.type = 'EF';
                             session.title = "⚠️ Récupération Forcée (Alerte Zone Grise)";
-                            session.desc = "Votre algorithme a détecté vos footings récents courus beaucoup trop vite. Cette séance est transformée en récupération stricte.";
+                            session.desc = "Séance transformée en récupération stricte pour éviter la fatigue.";
                             session.target = "5:35/km";
-                            session.objective = "Dissiper la fatigue périphérique accumulée par les entraînements en zone grise.";
+                            session.objective = "Dissiper la fatigue périphérique de la zone grise.";
                             grayZoneViolations--;
                             
                             if(!adaptations.some(a => a.includes("Zone Grise"))) {
-                                adaptations.push("⚠️ Surcharge 'Zone Grise' : Footings trop rapides. Prochain intervalle converti en repos actif.");
+                                adaptations.push("⚠️ Surcharge 'Zone Grise' détectée. Prochain intervalle converti en repos actif.");
                             }
-                        } 
-                        // Application Fatigue Nerveuse Globale
-                        else if (weekExhaustionFlag && session.type === 'Long') {
-                            session.desc = "🔋 VOLUME RÉDUIT (-15%) POUR RÉCUPÉRATION. " + session.desc;
+                        } else if (weekExhaustionFlag && session.type === 'Long') {
+                            session.desc = "🔋 VOLUME RÉDUIT (-15%). " + session.desc;
                             if(!adaptations.some(a => a.includes("Fatigue nerveuse"))) {
-                                adaptations.push("📉 Fatigue nerveuse (RPE > 7.5) détectée la semaine dernière. Le volume de vos sorties longues a été réduit de 15%.");
+                                adaptations.push("📉 Fatigue nerveuse (RPE > 7.5). Volume des sorties longues réduit de 15%.");
                             }
-                        }
-                        // Application des nouvelles allures VDOT dynamiques
-                        else {
+                        } else {
                             if (session.type === 'VMA' && session.target.includes(':')) session.target = secondsToPaceStr(currentPaces.VMA);
                             if (session.type === 'Seuil' && session.target.includes(':')) session.target = secondsToPaceStr(currentPaces.Seuil);
                         }
                     }
                 });
 
-                // Évaluation de la fatigue globale à la fin de la semaine
                 if (weekLogCount > 0) {
                     const avgRpe = weekRpeSum / weekLogCount;
                     if (avgRpe > 7.5) {
                         weekExhaustionFlag = true;
                     } else {
-                        weekExhaustionFlag = false; // Réinitialise si on a bien récupéré
+                        weekExhaustionFlag = false;
                     }
                 }
             });
@@ -512,7 +537,7 @@
             return { finalPlan: basePlan, messages: [...new Set(adaptations)] };
         }
 
-        // 3. INITIALISATION
+        // INITIALISATION
         document.addEventListener('DOMContentLoaded', () => {
             initLucide();
             generateAndRenderPlan();
@@ -521,17 +546,11 @@
         });
 
         function generateAndRenderPlan() {
-            // 1. Charger log
             completedSessions = JSON.parse(localStorage.getItem('completed_sessions') || '{}');
-            
-            // 2. Générer base
             let base = buildBasePlan();
-            
-            // 3. Adapter dynamiquement
             let adaptationResult = applyAdaptations(base, completedSessions);
             PLAN_WEEKS = adaptationResult.finalPlan;
             
-            // 4. Afficher alertes UI
             const alertsBox = document.getElementById('ai-coach-alerts');
             const alertsList = document.getElementById('ai-alerts-list');
             if (adaptationResult.messages.length > 0) {
@@ -546,13 +565,11 @@
                 alertsBox.classList.add('hidden');
             }
 
-            // 5. Rendu
             renderWeekSelector();
             renderActiveWeek();
             updateGlobalProgress();
         }
 
-        // RESTE DU CODE IDENTIQUE (UI, Strava, Logs)
         function renderWeekSelector() {
             const container = document.getElementById('week-selector-container');
             container.innerHTML = '';
@@ -592,13 +609,11 @@
                 else if (session.type === 'Long') badgeClass = 'bg-orange-950 text-orange-400 border border-orange-800/50';
                 else if (session.type === 'Course') badgeClass = 'bg-brand-500/20 text-brand-500 border border-brand-500/50';
 
-                // Surbrillance IA si session adaptée
                 let isAdapted = session.title.includes('⚠️');
                 let cardClassAddition = isAdapted ? 'border-ai-500/50 bg-ai-900/10' : 'border-slate-800';
 
                 const card = document.createElement('div');
                 card.className = `bg-slate-900 border rounded-xl p-4 transition duration-200 cursor-pointer hover:bg-slate-800/50 ${isCompleted? 'border-brand-500/40 bg-slate-900/40' : cardClassAddition}`;
-                
                 card.onclick = () => openDetailsModal(session.id);
 
                 let completedStatsHtml = '';
@@ -654,9 +669,8 @@
             document.getElementById('details-day').innerText = foundSession.day;
             document.getElementById('details-title').innerText = foundSession.title;
             document.getElementById('details-target').innerText = foundSession.target;
-            
-            document.getElementById('details-objective').innerHTML = foundSession.objective || "Amélioration globale des capacités.";
-            document.getElementById('details-content').innerHTML = foundSession.details || "Détails non spécifiés pour cette séance.";
+            document.getElementById('details-objective').innerHTML = foundSession.objective || "Amélioration globale.";
+            document.getElementById('details-content').innerHTML = foundSession.details || "Détails non spécifiés.";
 
             document.getElementById('details-modal').classList.remove('hidden');
             initLucide();
@@ -708,21 +722,34 @@
                     historyContainer.appendChild(histItem);
                 });
             }
-
             document.getElementById('stat-total-dist').innerText = `${totalDist.toFixed(1)} km`;
+        }
+
+        // --- GESTION DU RPE MULTI-FACTEURS ---
+        function updateRPE() {
+            const resp = parseInt(document.getElementById('log-rpe-resp').value);
+            const musc = parseInt(document.getElementById('log-rpe-musc').value);
+            const ment = parseInt(document.getElementById('log-rpe-ment').value);
+            
+            document.getElementById('val-resp').innerText = resp;
+            document.getElementById('val-musc').innerText = musc;
+            document.getElementById('val-ment').innerText = ment;
+            
+            const rpe = Math.round((resp + musc + ment) / 3);
+            document.getElementById('rpe-result-display').innerText = `RPE : ${rpe}/10`;
+            
+            return rpe;
         }
 
         function toggleSessionState(id) {
             if (completedSessions[id]) {
                 delete completedSessions[id];
                 localStorage.setItem('completed_sessions', JSON.stringify(completedSessions));
-                // REGENERE PLAN IA
                 generateAndRenderPlan();
                 showToast("Séance marquée comme non faite.");
             } else {
                 const dateInput = document.getElementById('log-date');
                 dateInput.value = new Date().toISOString().split('T')[0];
-
                 document.getElementById('log-session-id').value = id;
                 
                 let sTitle = "Activité";
@@ -732,11 +759,18 @@
                 });
                 document.getElementById('log-modal-title').innerText = sTitle;
 
+                // Reset modal inputs
                 document.getElementById('log-distance').value = '';
                 document.getElementById('log-duration-min').value = '';
                 document.getElementById('log-duration-sec').value = '';
                 document.getElementById('log-hr').value = '';
                 document.getElementById('log-notes').value = '';
+
+                // Reset RPE sliders
+                document.getElementById('log-rpe-resp').value = 5;
+                document.getElementById('log-rpe-musc').value = 5;
+                document.getElementById('log-rpe-ment').value = 5;
+                updateRPE();
 
                 document.getElementById('log-modal').classList.remove('hidden');
             }
@@ -749,18 +783,19 @@
         function saveSessionLog() {
             const id = document.getElementById('log-session-id').value;
             const date = document.getElementById('log-date').value;
-            const rpe = document.getElementById('log-rpe').value;
             const dist = document.getElementById('log-distance').value || '0';
             const min = document.getElementById('log-duration-min').value || '00';
             const sec = document.getElementById('log-duration-sec').value || '00';
             const hr = document.getElementById('log-hr').value || 'N/A';
             const notes = document.getElementById('log-notes').value;
 
+            // Récupère le calcul direct du RPE depuis les 3 sliders
+            const computedRPE = updateRPE();
             const duration = `${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
 
             completedSessions[id] = {
                 date: date,
-                rpe: rpe,
+                rpe: computedRPE,
                 distance: parseFloat(dist).toFixed(2),
                 duration: duration,
                 hr: hr,
@@ -775,9 +810,8 @@
             }
 
             closeLogModal();
-            // REGENERE PLAN IA A CHAQUE SAUVEGARDE
             generateAndRenderPlan();
-            showToast("Séance enregistrée et Plan analysé !");
+            showToast(`Activité enregistrée ! RPE retenu : ${computedRPE}/10`);
         }
 
         function toggleSettingsModal() {
@@ -839,7 +873,7 @@
             initLucide();
         }
 
-        function checkUrlForStravaCode() { /* OAuth function from previous versions (kept intact) */ }
+        function checkUrlForStravaCode() { }
 
         async function uploadActivityToStrava(id, logData) {
             const accessToken = localStorage.getItem('strava_access_token');
