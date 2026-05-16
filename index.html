@@ -892,12 +892,19 @@
 
         function resetAllData() {
             if (confirm("Voulez-vous vraiment réinitialiser tout le programme? Vos séances validées seront perdues.")) {
+                // 1. Fermer explicitement et immédiatement la modale
+                document.getElementById('settings-modal').classList.add('hidden');
+                
+                // 2. Purger la mémoire locale
                 localStorage.removeItem('completed_sessions');
                 localStorage.removeItem('current_week');
+                
+                // 3. Réinitialiser les variables
                 completedSessions = {};
                 currentWeek = 1;
+                
+                // 4. Regénérer le plan proprement et afficher la confirmation
                 generateAndRenderPlan();
-                toggleSettingsModal();
                 showToast("Application réinitialisée.");
             }
         }
