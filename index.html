@@ -114,24 +114,30 @@
 
             <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl">
                 <h3 class="text-sm font-bold mb-3 flex items-center gap-2">
-                    <i data-lucide="gauge" class="w-4 h-4 text-brand-500"></i> Allures Cibles VDOT 56
+                    <i data-lucide="gauge" class="w-4 h-4 text-brand-500"></i> Allures Cibles de Transition
                 </h3>
                 <div class="space-y-2 text-xs">
                     <div class="flex justify-between py-1 border-b border-slate-800">
-                        <span class="text-slate-400">Endurance (EF)</span>
-                        <span class="font-mono text-white">4:45 - 5:21/km [1]</span>
+                        <span class="text-slate-400 font-bold">1. Endurance (EF lente)</span>
+                        <span class="font-mono text-brand-500 font-bold">5:10 - 5:40/km</span>
+                    </div>
+                    <p class="text-[10px] text-slate-500 -mt-1 mb-2">À respecter impérativement pour reconstruire votre base aérobie (Sortie du piège de la zone grise!).</p>
+                    
+                    <div class="flex justify-between py-1 border-b border-slate-800">
+                        <span class="text-slate-400">2. Seuil Actuel (T - VDOT 51)</span>
+                        <span class="font-mono text-white">4:11/km</span>
                     </div>
                     <div class="flex justify-between py-1 border-b border-slate-800">
-                        <span class="text-slate-400">Allure Seuil (T)</span>
-                        <span class="font-mono text-white">3:52/km [1]</span>
+                        <span class="text-slate-400">3. Vitesse Actuelle (R - VDOT 51)</span>
+                        <span class="font-mono text-white">3:36/km</span>
                     </div>
                     <div class="flex justify-between py-1 border-b border-slate-800">
-                        <span class="text-slate-400">Allure Intervalle (I - 5K)</span>
-                        <span class="font-mono text-white">3:35/km [1]</span>
+                        <span class="text-slate-400">4. Seuil Cible (T - VDOT 56)</span>
+                        <span class="font-mono text-brand-500">3:52/km</span>
                     </div>
                     <div class="flex justify-between py-1 border-b border-slate-800">
-                        <span class="text-slate-400">Répétitions (R - VMA courte)</span>
-                        <span class="font-mono text-white">3:18/km [1]</span>
+                        <span class="text-slate-400">5. Intervalle Cible (I - VDOT 56)</span>
+                        <span class="font-mono text-brand-500">3:35/km</span>
                     </div>
                 </div>
             </div>
@@ -150,8 +156,8 @@
                 </div>
                 
                 <p class="text-xs text-slate-400 leading-relaxed">
-                    <strong>Note technique :</strong> En raison des restrictions CORS des navigateurs, la connexion automatique directe peut échouer sans serveur intermédiaire. 
-                    Pour un usage personnel simple, utilisez l'option **Jeton Manuel** ci-dessous.
+                    <strong>Note technique :</strong> En raison des restrictions de sécurité (CORS) des navigateurs, l'échange de jeton automatique nécessite un proxy. 
+                    Pour un usage personnel simple et immédiat sur votre téléphone, utilisez l'option **Jeton Manuel** ci-dessous.
                 </p>
 
                 <div class="space-y-3 pt-2">
@@ -285,9 +291,8 @@
     </nav>
 
     <script>
-        // GENERATEUR DE PROGRAMME SCIENTIFIQUE DYNAMIQUE ALLÉGÉ (64 Séances / 16 Semaines)
-        // 3 sorties course à pied + 1 séance de renforcement musculaire ciblée (sans chocs)
-        // Démarrage ultra-progressif en Phase 1 pour prévenir le surentraînement [5, 6]
+        // PROGRAMME SCIENTIFIQUE DYNAMIQUEMENT GÉNÉRÉ (64 Séances / 16 Semaines)
+        // Basé sur votre VDOT 51 initial vers VDOT 56 cible.
         const PLAN_WEEKS = [];
         
         for (let w = 1; w <= 16; w++) {
@@ -296,76 +301,76 @@
             let sessions = [];
 
             if (w <= 4) {
-                phase = "Phase 1 : Base & Force";
-                focus = "Surcharge progressive très légère. Capillarisation et renforcement musculaire ciblé de poussée. Semaine 4 = Décharge.[5, 6]";
+                phase = "Phase 1 : Base & Reconstruction";
+                focus = "Reconstruction aérobie stricte (allure EF lente) et renforcement musculaire. On sort du piège de la zone grise. Semaine 4 = Décharge.[27, 28]";
                 if (w === 4) {
                     sessions = [
-                        { id: `w${w}_s1`, day: "Mardi", type: "VMA", title: "Qualité - VMA Courte Allégée", desc: "Échauffement 15 min. 6x (30s rapide à allure 3:40/km [1] / 45s de trot lent de récupération).[7] Retour au calme 5 min.", target: "3:40/km" },
-                        { id: `w${w}_s2`, day: "Mercredi", type: "Force", title: "Mobilité active & Récupération", desc: "Auto-massages au rouleau (Foam Roller), étirements légers et mobilité active des chevilles.[2, 8]", target: "20 min" },
-                        { id: `w${w}_s3`, day: "Jeudi", type: "EF", title: "Footing Récupération active", desc: "30 min de footing en Endurance Fondamentale (allure 5:30/km) en totale aisance respiratoire.", target: "5:30/km" },
-                        { id: `w${w}_s4`, day: "Dimanche", type: "Long", title: "Sortie Longue de Récupération", desc: "45 min en Endurance Fondamentale pure (allure 5:20/km) sans bloc d'allure.", target: "5:20/km" }
+                        { id: `w${w}_s1`, day: "Mardi", type: "VMA", title: "Qualité - VMA Courte Allégée", desc: "Échauffement 15 min. 6x (30s rapide à allure 3:36/km / 45s de trot lent de récupération). Retour au calme 5 min.", target: "3:36/km" },
+                        { id: `w${w}_s2`, day: "Mercredi", type: "Force", title: "Mobilité active & Récupération", desc: "Auto-massages au rouleau (Foam Roller), étirements légers et mobilité des chevilles.[19]", target: "20 min" },
+                        { id: `w${w}_s3`, day: "Jeudi", type: "EF", title: "Footing Récupération active", desc: "30 min de footing en EF lente (allure stricte 5:35/km) en totale aisance respiratoire.", target: "5:35/km" },
+                        { id: `w${w}_s4`, day: "Dimanche", type: "Long", title: "Sortie Longue de Récupération", desc: "45 min en EF pure (allure 5:30/km) sans bloc d'allure.", target: "5:30/km" }
                     ];
                 } else {
                     sessions = [
-                        { id: `w${w}_s1`, day: "Mardi", type: "VMA", title: `VMA Courte - ${6 + w*2}x 30"-30"`, desc: `Échauffement 20 min.[8] ${6 + w*2}x (30s rapide à allure target 3:40/km [1] / 30s de trot lent de récupération).[9] Retour au calme 5 min.`, target: "3:40/km" },
-                        { id: `w${w}_s2`, day: "Mercredi", type: "Force", title: "Routine de Force unilatérale", desc: "3x6 Squats bulgares [3], 3x10 élévations de mollets [3], 3x20 rebonds rigides Pogo Hops.[2, 8]", target: "20 min" },
-                        { id: `w${w}_s3`, day: "Jeudi", type: "EF", title: "Footing EF Léger", desc: `${25 + w*5} min de footing continu en Endurance Fondamentale (allure 5:15 - 5:25/km) sur plat.[10]`, target: "5:20/km" },
-                        { id: `w${w}_s4`, day: "Dimanche", type: "Long", title: `Sortie Longue progressive - ${45 + w*5} min`, desc: `${45 + w*5} min progressive sur terrain plat. Terminer les 10 dernières minutes de manière active à allure marathon (4:32/km).[11, 10]`, target: "Progressif" }
+                        { id: `w${w}_s1`, day: "Mardi", type: "VMA", title: `VMA Courte - ${6 + w*2}x 30"-30"`, desc: `Échauffement 20 min.[30] ${6 + w*2}x (30s rapide à allure target VDOT 51 soit 3:36/km / 30s de trot lent de récupération).[24] Retour au calme 5 min.`, target: "3:36/km" },
+                        { id: `w${w}_s2`, day: "Mercredi", type: "Force", title: "Routine de Force unilatérale", desc: "3x6 Squats bulgares [21], 3x10 élévations de mollets [21], 3x20 rebonds rigides Pogo Hops pour vos tendons.[19]", target: "20 min" },
+                        { id: `w${w}_s3`, day: "Jeudi", type: "EF", title: "Footing EF - Focus Reconstruction", desc: `Aisance totale : ${25 + w*5} min à l'allure stricte de 5:15 - 5:30/km. Refusez de courir plus vite pour forcer les adaptations capillaires!`, target: "5:20/km" },
+                        { id: `w${w}_s4`, day: "Dimanche", type: "Long", title: `Sortie Longue progressive - ${45 + w*5} min`, desc: `${45 + w*5} min progressive sur terrain plat. Terminer les 10 dernières minutes de manière active à votre allure marathon actuelle (4:30/km).[10]`, target: "Progressif" }
                     ];
                 }
             } else if (w <= 8) {
-                phase = "Phase 2 : VMA & Seuil";
-                focus = "Élévation du VO2 max et amélioration de la clairance du lactate.[12, 13] Semaine 8 = Décharge.";
+                phase = "Phase 2 : VMA & Seuil (VDOT 51-52)";
+                focus = "Élévation progressive du seuil lactique de base et vitesse neuromusculaire. Semaine 8 = Décharge.";
                 if (w === 8) {
                     sessions = [
-                        { id: `w${w}_s1`, day: "Mardi", type: "VMA", title: "Rappel Vitesse", desc: "Échauffement 20 min. 6x 200m à allure 3:18/km avec r=1min.", target: "3:18/km" },
-                        { id: `w${w}_s2`, day: "Mercredi", type: "Force", title: "Mobilité", desc: "Séance de mobilité articulaire et auto-massages.", target: "15 min" },
-                        { id: `w${w}_s3`, day: "Jeudi", type: "EF", title: "Footing Récupération active", desc: "35 min de footing en Endurance Fondamentale (allure 5:30/km) très facile.[10]", target: "5:30/km" },
-                        { id: `w${w}_s4`, day: "Dimanche", type: "Long", title: "Sortie Longue de Récupération", desc: "60 min en Endurance Fondamentale (allure 5:20/km) sans bloc d'allure.[10]", target: "5:20/km" }
+                        { id: `w${w}_s1`, day: "Mardi", type: "VMA", title: "Rappel Vitesse", desc: "Échauffement 20 min. 6x 200m à allure 3:28/km avec r=1min.", target: "3:28/km" },
+                        { id: `w${w}_s2`, day: "Mercredi", type: "Force", title: "Mobilité", desc: "Séance de mobilité articulaire et auto-massages.", target: "25 min" },
+                        { id: `w${w}_s3`, day: "Jeudi", type: "EF", title: "Footing Récupération active", desc: "35 min de footing en EF lente (allure 5:35/km) très facile.", target: "5:35/km" },
+                        { id: `w${w}_s4`, day: "Dimanche", type: "Long", title: "Sortie Longue de Récupération", desc: "60 min en EF pure (allure 5:30/km) sans bloc d'allure.", target: "5:30/km" }
                     ];
                 } else {
                     sessions = [
-                        { id: `w${w}_s1`, day: "Mardi", type: "VMA", title: `Vitesse Nerveuse - ${6 + (w-4)*2}x 200m`, desc: `Échauffement 20 min.[8] ${6 + (w-4)*2}x 200m à allure Repetition (3:18/km, ~39s au 200m) [1] avec r=100m de marche complète.`, target: "3:18/km" },
-                        { id: `w${w}_s2`, day: "Mercredi", type: "Force", title: "Routine de Force Spécifique", desc: "3x8 Squats bulgares [3], 3x5 Nordic Hamstring Curl [3], 3x12 élévations mollets unilatérales, 3x8 fentes sautées.[4]", target: "25 min" },
-                        { id: `w${w}_s3`, day: "Jeudi", type: "Seuil", title: `Seuil Lactique - ${w-3}x 1500m`, desc: `Échauffement 15 min. ${w-3}x 1500m à allure cible AS10 (4:00/km) [14] avec 2 min de trot lent entre les blocs.[7]`, target: "4:00/km" },
-                        { id: `w${w}_s4`, day: "Dimanche", type: "Long", title: `Sortie Longue progressive - ${65 + (w-4)*5} min`, desc: `${65 + (w-4)*5} min progressive sur asphalte plat. Intégrer en deuxième moitié de sortie 15 min continues à allure cible Semi (4:15/km).[14, 15]`, target: "Progressif" }
+                        { id: `w${w}_s1`, day: "Mardi", type: "VMA", title: `Vitesse - ${6 + (w-4)*2}x 200m`, desc: `Échauffement 20 min.[30] ${6 + (w-4)*2}x 200m à allure Repetition (3:28/km) [5] avec r=100m de marche complète.`, target: "3:28/km" },
+                        { id: `w${w}_s2`, day: "Mercredi", type: "Force", title: "Routine de Force Spécifique", desc: "3x8 Squats bulgares [21], 3x5 Nordic Hamstring Curl [21], 3x12 élévations mollets, 3x8 fentes sautées.", target: "25 min" },
+                        { id: `w${w}_s3`, day: "Jeudi", type: "Seuil", title: `Seuil Lactique - ${w-3}x 1500m`, desc: `Échauffement 15 min. ${w-3}x 1500m à votre allure seuil actuelle (4:11/km) avec 2 min de trot lent entre les blocs.[29]`, target: "4:11/km" },
+                        { id: `w${w}_s4`, day: "Dimanche", type: "Long", title: `Sortie Longue progressive - ${65 + (w-4)*5} min`, desc: `${65 + (w-4)*5} min progressive. Intégrer en deuxième moitié de sortie 15 min continues à allure cible Semi (4:15/km).[6]`, target: "Progressif" }
                     ];
                 }
             } else if (w <= 12) {
-                phase = "Phase 3 : Spécifique";
-                focus = "Développement de la capacité de soutien spécifique à allure cible VDOT 56.[1, 9] Semaine 12 = Décharge.";
+                phase = "Phase 3 : Spécifique VDOT 56";
+                focus = "Développement de la capacité de soutien spécifique à allure cible VDOT 56 (AS5 et AS10). Semaine 12 = Décharge.";
                 if (w === 12) {
                     sessions = [
                         { id: `w${w}_s1`, day: "Mardi", type: "VMA", title: "Rappel Allure 5K", desc: "Échauffement 20 min. 3x 1000m à allure 3:35/km avec 3 min recup.", target: "3:35/km" },
-                        { id: `w${w}_s2`, day: "Mercredi", type: "Force", title: "Mobilité active", desc: "Séance d'étirements et yoga.", target: "20 min" },
-                        { id: `w${w}_s3`, day: "Jeudi", type: "EF", title: "Footing Récupération active", desc: "40 min de footing en Endurance Fondamentale (allure 5:30/km) très facile.", target: "5:30/km" },
-                        { id: `w${w}_s4`, day: "Dimanche", type: "Long", title: "Sortie Longue de Décharge", desc: "70 min en Endurance Fondamentale (allure 5:20/km) sur plat.[10]", target: "5:20/km" }
+                        { id: `w${w}_s2`, day: "Mercredi", type: "Force", title: "Mobilité active", desc: "Séance d'étirements et yoga.", target: "25 min" },
+                        { id: `w${w}_s3`, day: "Jeudi", type: "EF", title: "Footing Récupération active", desc: "40 min de footing en EF lente (allure 5:35/km) très facile.", target: "5:35/km" },
+                        { id: `w${w}_s4`, day: "Dimanche", type: "Long", title: "Sortie Longue de Décharge", desc: "70 min en EF lente (allure 5:30/km) sur plat.", target: "5:30/km" }
                     ];
                 } else {
                     sessions = [
-                        { id: `w${w}_s1`, day: "Mardi", type: "VMA", title: `VO2 Max / I-Pace - ${w-6}x 1000m`, desc: `Échauffement 20 min.[8] ${w-6}x 1000m à allure cible Intervalle (3:35/km) [1] avec R=3 min de récupération active au trot lent.[12]`, target: "3:35/km" },
-                        { id: `w${w}_s2`, day: "Mercredi", type: "Force", title: "Routine de Force Spécifique", desc: "3x10 Squats bulgares [3], 3x5 Nordic Curl [3], 3x15 élévations mollets unilatérales, 3x30 rebonds Pogo Hops.[2]", target: "30 min" },
-                        { id: `w${w}_s3`, day: "Jeudi", type: "Seuil", title: `AS10 / Seuil spécifique - ${w-7}x 2000m`, desc: `Échauffement 15 min. ${w-7}x 2000m à allure AS10 (4:00/km) [14] ou Seuil (3:52/km) [1] avec 2 min de trot lent entre les blocs.`, target: "4:00/km" },
-                        { id: `w${w}_s4`, day: "Dimanche", type: "Long", title: `Sortie Longue Spécifique - ${80 + (w-8)*5} min`, desc: `${80 + (w-8)*5} min progressive. Intégrer dans la deuxième moitié de sortie 2 blocs de 15 min à allure Semi (4:15/km).[14]`, target: "Progressif" }
+                        { id: `w${w}_s1`, day: "Mardi", type: "VMA", title: `VO2 Max / I-Pace - ${w-6}x 1000m`, desc: `Échauffement 20 min.[30] ${w-6}x 1000m à votre allure cible de course au 5K (3:35/km) avec R=3 min de récupération active au trot lent.[7]`, target: "3:35/km" },
+                        { id: `w${w}_s2`, day: "Mercredi", type: "Force", title: "Routine de Force Spécifique", desc: "3x10 Squats bulgares [21], 3x5 Nordic Curl [21], 3x15 élévations mollets, 3x30 rebonds Pogo Hops.[19]", target: "30 min" },
+                        { id: `w${w}_s3`, day: "Jeudi", type: "Seuil", title: `AS10 / Seuil spécifique - ${w-7}x 2000m`, desc: `Échauffement 15 min. ${w-7}x 2000m à allure de course visée sur 10K (4:00/km) avec 2 min de trot lent de récupération.`, target: "4:00/km" },
+                        { id: `w${w}_s4`, day: "Dimanche", type: "Long", title: `Sortie Longue Spécifique - ${80 + (w-8)*5} min`, desc: `${80 + (w-8)*5} min progressive. Intégrer dans la deuxième moitié de sortie 2 blocs de 15 min à votre allure semi visée (4:15/km).[6]`, target: "Progressif" }
                     ];
                 }
             } else {
-                phase = "Phase 4 : Affûtage & Course";
-                focus = "Dissipation complète de la fatigue, restauration de la fraîcheur et surcompensation.[5, 16]";
+                phase = "Phase 4 : Affûtage & Course (VDOT 56)";
+                focus = "Dissipation complète de la fatigue, restauration de la fraîcheur nerveuse et surcompensation.[27, 31]";
                 if (w === 16) {
                     sessions = [
-                        { id: `w${w}_s1`, day: "Mardi", type: "VMA", title: "Dernier Rappel - 4x 200m", desc: "Échauffement 20 min. 4x 200m relâchés à 3:18/km.", target: "3:18/km" },
-                        { id: `w${w}_s2`, day: "Mercredi", type: "Force", title: "Stabilité Légère", desc: "10 min de gainage statique et de mobilité des chevilles. Aucun exercice lourd.[17, 2]", target: "10 min" },
-                        { id: `w${w}_s3`, day: "Jeudi", type: "EF", title: "Footing Réveil Musculaire", desc: "25 min de footing en Endurance Fondamentale pure (allure 5:30/km) + 3 accélérations douces de 100m.[10]", target: "5:30/km" },
-                        { id: `w${w}_s4`, day: "Dimanche", type: "Long", title: "JOUR DE COURSE : Test de Performance", desc: "Course ciblée : 18:00 au 5K (3:36/km) ou 40:00 au 10K (4:00/km) ou 1h30 au Semi (4:15/km). Appliquez un départ métronome régulier![12]", target: "Donnez tout!" }
+                        { id: `w${w}_s1`, day: "Mardi", type: "VMA", title: "Veille de Course - 6x 200m", desc: "Échauffement 20 min.[30] 6x 200m à allure Repetition (3:18/km) avec r=100m de marche de récupération. Reste de la semaine en repos complet.", target: "3:18/km" },
+                        { id: `w${w}_s2`, day: "Mercredi", type: "Force", title: "Stabilité Légère", desc: "10 min de gainage statique et de mobilité des chevilles. Aucun exercice lourd.[8]", target: "10 min" },
+                        { id: `w${w}_s3`, day: "Jeudi", type: "EF", title: "Footing Réveil Musculaire", desc: "25 min de footing en EF lente (allure 5:35/km) + 3 accélérations douces de 100m.[32]", target: "5:35/km" },
+                        { id: `w${w}_s4`, day: "Dimanche", type: "JOUR DE TEST : Objectif VDOT 56", desc: "Course ciblée : 18:00 au 5K (3:36/km) ou 40:00 au 10K (4:00/km) ou 1h30 au Semi (4:15/km). Appliquez un départ métronome régulier![7]", target: "Donnez tout!" }
                     ];
                 } else {
                     let scale = 16 - w;
                     sessions = [
-                        { id: `w${w}_s1`, day: "Mardi", type: "VMA", title: `VMA Courte d'affûtage - ${6 + scale*2}x 200m`, desc: `Échauffement 20 min.[8] ${6 + scale*2}x 200m à allure Repetition (3:18/km) [1] avec r=100m de marche de récupération.`, target: "3:18/km" },
-                        { id: `w${w}_s2`, day: "Mercredi", type: "Force", title: "Gainage & Mobilité", desc: "Séance de mobilité des chevilles, étirements légers et gainage statique (Planche latérale/frontale).", target: "15 min" },
-                        { id: `w${w}_s3`, day: "Jeudi", type: "Seuil", title: "Seuil Court d'Entretien", desc: `Échauffement 15 min. 2x 1000m à allure Seuil cible (3:52/km) [1] avec 1 min 30s de trot de récupération.`, target: "3:52/km" },
-                        { id: `w${w}_s4`, day: "Dimanche", type: "Long", title: "Sortie Longue Réduite", desc: `${50 + scale*5} min en Endurance Fondamentale (allure 5:20/km) sur terrain plat pour garder l'endurance.`, target: "5:20/km" }
+                        { id: `w${w}_s1`, day: "Mardi", type: "VMA", title: `VMA Courte d'affûtage - ${6 + scale*2}x 200m`, desc: `Échauffement 20 min.[30] ${6 + scale*2}x 200m à allure Repetition cible (3:18/km) [5] avec r=100m de marche de récupération.`, target: "3:18/km" },
+                        { id: `w${w}_s2`, day: "Mercredi", type: "Force", title: "Gainage & Mobilité", desc: "Séance de mobilité des chevilles, étirements légers et gainage statique.", target: "15 min" },
+                        { id: `w${w}_s3`, day: "Jeudi", type: "Seuil", title: "Seuil Court d'Entretien", desc: `Échauffement 15 min. 2x 1000m à votre allure seuil cible (3:52/km) [5] avec 1 min 30s de trot de récupération.`, target: "3:52/km" },
+                        { id: `w${w}_s4`, day: "Dimanche", type: "Long", title: "Sortie Longue Réduite", desc: `${50 + scale*5} min en EF lente (allure 5:30/km) sur terrain plat pour garder l'endurance.`, target: "5:30/km" }
                     ];
                 }
             }
@@ -763,7 +768,7 @@
             });
 
             const timeParts = logData.duration.split(':');
-            // Correction ici : timeParts[0] pour les minutes et timeParts[1] pour les secondes
+            // Correction : timeParts[0] pour les minutes et timeParts[1] pour les secondes
             const elapsedSeconds = (parseInt(timeParts[0] || 0, 10) * 60) + parseInt(timeParts[1] || 0, 10);
             const meters = parseFloat(logData.distance || 0) * 1000;
 
