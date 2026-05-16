@@ -46,7 +46,7 @@
             scrollbar-width: none;
         }
         
-        /* Custom range slider styling for RPE */
+        /* Personnalisation des curseurs RPE */
         input[type=range] {
             -webkit-appearance: none;
             width: 100%;
@@ -54,13 +54,21 @@
         }
         input[type=range]::-webkit-slider-thumb {
             -webkit-appearance: none;
-            height: 16px;
-            width: 16px;
+            height: 18px;
+            width: 18px;
             border-radius: 50%;
             background: #84cc16;
             cursor: pointer;
-            margin-top: -6px;
-            box-shadow: 0 0 10px rgba(132, 204, 22, 0.5);
+            margin-top: -7px;
+            box-shadow: 0 0 10px rgba(132, 204, 22, 0.4);
+        }
+        input[type=range]::-moz-range-thumb {
+            height: 18px;
+            width: 18px;
+            border-radius: 50%;
+            background: #84cc16;
+            cursor: pointer;
+            border: none;
         }
         input[type=range]::-webkit-slider-runnable-track {
             width: 100%;
@@ -73,6 +81,7 @@
 </head>
 <body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col justify-between pb-24">
 
+    <!-- HEADER -->
     <header class="bg-slate-900 border-b border-slate-800 px-4 pt-8 pb-4 sticky top-0 z-50 shadow-md">
         <div class="flex justify-between items-center">
             <div>
@@ -97,9 +106,10 @@
         </div>
     </header>
 
-    <div id="toast" class="fixed top-24 left-1/2 transform -translate-x-1/2 bg-brand-600 text-white px-4 py-2 rounded-lg shadow-xl text-sm font-semibold hidden z-50 transition-opacity duration-300"></div>
+    <div id="toast" class="fixed top-24 left-1/2 transform -translate-x-1/2 bg-brand-600 text-white px-4 py-2 rounded-lg shadow-xl text-sm font-semibold hidden z-[70] transition-opacity duration-300"></div>
 
-    <main class="flex-grow p-4 max-w-lg mx-auto w-full">
+    <!-- MAIN CONTENT -->
+    <main class="flex-grow p-4 max-w-lg mx-auto w-full space-y-4">
         
         <section id="tab-programme" class="space-y-4">
             
@@ -113,10 +123,12 @@
                 </ul>
             </div>
 
-            <div class="flex gap-2 overflow-x-auto no-scrollbar py-2 -mx-4 px-4 sticky top-32 bg-slate-950 z-40">
+            <!-- SELECTEUR DE SEMAINE (Plus sticky pour éviter les bugs d'affichage sur petits écrans) -->
+            <div class="flex gap-2 overflow-x-auto no-scrollbar py-2 -mx-4 px-4 bg-slate-950">
                 <div id="week-selector-container" class="flex gap-2"></div>
             </div>
 
+            <!-- EN-TÊTE DE LA SEMAINE -->
             <div class="bg-slate-900/50 border border-slate-800 rounded-xl p-4">
                 <div class="flex items-center gap-2 text-brand-500 font-bold text-sm mb-1">
                     <i data-lucide="award" class="w-4 h-4"></i>
@@ -125,9 +137,11 @@
                 <p id="phase-focus" class="text-xs text-slate-400">Description des objectifs de la phase active...</p>
             </div>
 
+            <!-- LISTE DES SÉANCES -->
             <div class="space-y-3" id="sessions-container"></div>
         </section>
 
+        <!-- STATISTIQUES -->
         <section id="tab-stats" class="space-y-4 hidden">
             <h2 class="text-lg font-bold">Statistiques & Analyse</h2>
             
@@ -173,6 +187,7 @@
             </div>
         </section>
 
+        <!-- STRAVA -->
         <section id="tab-strava" class="space-y-4 hidden">
             <h2 class="text-lg font-bold">Liaison Strava & PWA</h2>
             <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl space-y-3">
@@ -195,15 +210,19 @@
     </main>
 
     <!-- MODAL DE DÉTAILS DE LA SÉANCE -->
-    <div id="details-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center hidden p-4">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md overflow-hidden flex flex-col max-h-[85vh] shadow-2xl animate-in fade-in duration-200">
-            <div class="p-4 border-b border-slate-800 flex justify-between items-center bg-slate-950">
+    <!-- z-[60] permet de passer par-dessus la navbar du bas -->
+    <div id="details-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[60] flex items-center justify-center hidden p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md flex flex-col max-h-[85vh] shadow-2xl animate-in fade-in duration-200">
+            <!-- Header Fixe -->
+            <div class="p-4 border-b border-slate-800 flex justify-between items-center shrink-0">
                 <div class="flex items-center gap-2">
                     <span id="details-type-badge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-800 text-slate-300">Type</span>
                     <span id="details-day" class="text-xs font-bold text-slate-400">Jour</span>
                 </div>
-                <button onclick="closeDetailsModal()" class="p-1 hover:bg-slate-800 rounded-full text-slate-400 transition"><i data-lucide="x" class="w-5 h-5"></i></button>
+                <button onclick="closeDetailsModal()" class="p-2 hover:bg-slate-800 rounded-full text-slate-400 transition"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
+            
+            <!-- Contenu Scrollable -->
             <div class="p-5 overflow-y-auto space-y-5">
                 <div>
                     <h3 class="text-xl font-bold text-white mb-1" id="details-title">Titre de la séance</h3>
@@ -224,86 +243,95 @@
                     <div class="text-sm text-slate-300 space-y-3 leading-relaxed" id="details-content"></div>
                 </div>
             </div>
-            <div class="p-4 border-t border-slate-800 bg-slate-950">
+            
+            <!-- Footer Fixe -->
+            <div class="p-4 border-t border-slate-800 shrink-0">
                 <button onclick="closeDetailsModal()" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-3 rounded-xl transition text-sm">Fermer</button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL DE LOG DE PERFORMANCE AVEC NOUVEAU RPE -->
-    <div id="log-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center hidden p-4 overflow-y-auto">
-        <div class="bg-slate-900 border border-slate-800 rounded-t-2xl sm:rounded-2xl w-full max-w-md p-6 space-y-4 shadow-2xl animate-in slide-in-from-bottom duration-300 my-auto">
-            <div class="flex justify-between items-center">
+    <!-- MODAL DE LOG DE PERFORMANCE (Restructurée pour éviter les débordements d'écran) -->
+    <div id="log-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[60] flex items-end sm:items-center justify-center hidden p-4 sm:p-0">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md shadow-2xl animate-in slide-in-from-bottom duration-300 flex flex-col max-h-[90vh]">
+            
+            <!-- Header Modal -->
+            <div class="p-4 border-b border-slate-800 flex justify-between items-center shrink-0">
                 <h3 class="text-lg font-bold" id="log-modal-title">Saisir ma Performance</h3>
-                <button onclick="closeLogModal()" class="p-1 hover:bg-slate-800 rounded-full text-slate-400"><i data-lucide="x" class="w-5 h-5"></i></button>
-            </div>
-            <input type="hidden" id="log-session-id">
-            
-            <div class="grid grid-cols-2 gap-3">
-                <div>
-                    <label class="text-xs text-slate-400 block mb-1">Date</label>
-                    <input id="log-date" type="date" class="w-full bg-slate-950 border border-slate-800 px-3 py-2 rounded-lg text-sm text-white focus:outline-none">
-                </div>
-                <div>
-                    <label class="text-xs text-slate-400 block mb-1">Fréquence Cardiaque</label>
-                    <input id="log-hr" type="number" placeholder="Ex: 145 bpm" class="w-full bg-slate-950 border border-slate-800 px-3 py-2 rounded-lg text-sm text-white focus:outline-none">
-                </div>
+                <button onclick="closeLogModal()" class="p-2 hover:bg-slate-800 rounded-full text-slate-400 transition"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             
-            <div class="grid grid-cols-2 gap-3">
-                <div>
-                    <label class="text-xs text-slate-400 block mb-1">Distance (km)</label>
-                    <input id="log-distance" type="number" step="0.01" placeholder="Ex: 8.5" class="w-full bg-slate-950 border border-slate-800 px-3 py-2 rounded-lg text-sm text-white focus:outline-none focus:border-brand-500">
-                </div>
-                <div>
-                    <label class="text-xs text-slate-400 block mb-1">Durée (Min/Sec)</label>
-                    <div class="flex gap-1 items-center">
-                        <input id="log-duration-min" type="number" placeholder="Min" class="w-1/2 bg-slate-950 border border-slate-800 px-3 py-2 rounded-lg text-sm text-white text-center focus:outline-none">
-                        <span class="text-slate-500">:</span>
-                        <input id="log-duration-sec" type="number" placeholder="Sec" class="w-1/2 bg-slate-950 border border-slate-800 px-3 py-2 rounded-lg text-sm text-white text-center focus:outline-none">
+            <!-- Contenu Formulaire Scrollable -->
+            <div class="p-5 overflow-y-auto space-y-5">
+                <input type="hidden" id="log-session-id">
+                
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="text-xs text-slate-400 block mb-1">Date</label>
+                        <input id="log-date" type="date" class="w-full bg-slate-950 border border-slate-800 px-3 py-2 rounded-lg text-sm text-white focus:outline-none">
                     </div>
-                </div>
-            </div>
-
-            <!-- NOUVEL EVALUATEUR RPE MULTI-FACTEURS -->
-            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-4">
-                <div class="flex justify-between items-center border-b border-slate-800 pb-2">
-                    <label class="text-xs font-bold text-slate-400 flex items-center gap-2">
-                        <i data-lucide="activity" class="w-4 h-4"></i> RPE Multi-facteurs
-                    </label>
-                    <span class="text-sm font-black text-brand-500 bg-brand-500/10 px-2 py-0.5 rounded" id="rpe-result-display">RPE : 5/10</span>
+                    <div>
+                        <label class="text-xs text-slate-400 block mb-1">Fréquence Cardiaque</label>
+                        <input id="log-hr" type="number" placeholder="Ex: 145 bpm" class="w-full bg-slate-950 border border-slate-800 px-3 py-2 rounded-lg text-sm text-white focus:outline-none">
+                    </div>
                 </div>
                 
-                <div>
-                    <div class="flex justify-between text-[10px] text-slate-500 mb-1.5">
-                        <span>🌬️ Respiration (1=Facile, 10=Maximal)</span>
-                        <span id="val-resp" class="font-bold text-slate-300">5</span>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="text-xs text-slate-400 block mb-1">Distance (km)</label>
+                        <input id="log-distance" type="number" step="0.01" placeholder="Ex: 8.5" class="w-full bg-slate-950 border border-slate-800 px-3 py-2 rounded-lg text-sm text-white focus:outline-none focus:border-brand-500">
                     </div>
-                    <input type="range" id="log-rpe-resp" min="1" max="10" value="5" oninput="updateRPE()">
-                </div>
-                <div>
-                    <div class="flex justify-between text-[10px] text-slate-500 mb-1.5">
-                        <span>🦵 Muscles (1=Léger, 10=Tétanie)</span>
-                        <span id="val-musc" class="font-bold text-slate-300">5</span>
+                    <div>
+                        <label class="text-xs text-slate-400 block mb-1">Durée (Min:Sec)</label>
+                        <div class="flex gap-1 items-center">
+                            <input id="log-duration-min" type="number" placeholder="Min" class="w-1/2 bg-slate-950 border border-slate-800 px-3 py-2 rounded-lg text-sm text-white text-center focus:outline-none">
+                            <span class="text-slate-500">:</span>
+                            <input id="log-duration-sec" type="number" placeholder="Sec" class="w-1/2 bg-slate-950 border border-slate-800 px-3 py-2 rounded-lg text-sm text-white text-center focus:outline-none">
+                        </div>
                     </div>
-                    <input type="range" id="log-rpe-musc" min="1" max="10" value="5" oninput="updateRPE()">
                 </div>
-                <div>
-                    <div class="flex justify-between text-[10px] text-slate-500 mb-1.5">
-                        <span>🧠 Mental (1=Fluide, 10=Saturé)</span>
-                        <span id="val-ment" class="font-bold text-slate-300">5</span>
-                    </div>
-                    <input type="range" id="log-rpe-ment" min="1" max="10" value="5" oninput="updateRPE()">
-                </div>
-            </div>
 
-            <div>
-                <label class="text-xs text-slate-400 block mb-1">Notes / Commentaires</label>
-                <textarea id="log-notes" rows="2" placeholder="Sensations physiques, météo, alimentation..." class="w-full bg-slate-950 border border-slate-800 px-3 py-2 rounded-lg text-sm text-white focus:outline-none"></textarea>
+                <!-- EVALUATEUR RPE MULTI-FACTEURS PROPRE -->
+                <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-5">
+                    <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+                        <label class="text-xs font-bold text-slate-400 flex items-center gap-2">
+                            <i data-lucide="activity" class="w-4 h-4"></i> RPE Multi-facteurs
+                        </label>
+                        <span class="text-sm font-black text-brand-500 bg-brand-500/10 px-2 py-0.5 rounded" id="rpe-result-display">RPE : 5/10</span>
+                    </div>
+                    
+                    <div>
+                        <div class="flex justify-between text-[10px] text-slate-500 mb-2">
+                            <span>🌬️ Respiration (1=Facile, 10=Maximal)</span>
+                            <span id="val-resp" class="font-bold text-slate-300">5</span>
+                        </div>
+                        <input type="range" id="log-rpe-resp" min="1" max="10" value="5" oninput="updateRPE()">
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-[10px] text-slate-500 mb-2">
+                            <span>🦵 Muscles (1=Léger, 10=Tétanie)</span>
+                            <span id="val-musc" class="font-bold text-slate-300">5</span>
+                        </div>
+                        <input type="range" id="log-rpe-musc" min="1" max="10" value="5" oninput="updateRPE()">
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-[10px] text-slate-500 mb-2">
+                            <span>🧠 Mental (1=Fluide, 10=Saturé)</span>
+                            <span id="val-ment" class="font-bold text-slate-300">5</span>
+                        </div>
+                        <input type="range" id="log-rpe-ment" min="1" max="10" value="5" oninput="updateRPE()">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-xs text-slate-400 block mb-1">Notes / Commentaires</label>
+                    <textarea id="log-notes" rows="2" placeholder="Sensations physiques, météo, alimentation..." class="w-full bg-slate-950 border border-slate-800 px-3 py-2 rounded-lg text-sm text-white focus:outline-none"></textarea>
+                </div>
             </div>
             
-            <div class="flex gap-2 pt-2">
-                <button onclick="saveSessionLog()" class="flex-1 bg-brand-500 hover:bg-brand-600 text-slate-950 font-black py-3 rounded-xl transition shadow-lg text-sm flex items-center justify-center gap-2">
+            <!-- Footer Formulaire -->
+            <div class="p-4 border-t border-slate-800 shrink-0">
+                <button onclick="saveSessionLog()" class="w-full bg-brand-500 hover:bg-brand-600 text-slate-950 font-black py-3 rounded-xl transition shadow-lg text-sm flex items-center justify-center gap-2">
                     <i data-lucide="save" class="w-4 h-4"></i> Enregistrer l'activité
                 </button>
             </div>
@@ -311,20 +339,21 @@
     </div>
 
     <!-- MODAL PARAMÈTRES -->
-    <div id="settings-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+    <div id="settings-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[60] flex items-center justify-center hidden p-4">
         <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md p-6 space-y-4">
             <div class="flex justify-between items-center">
                 <h3 class="text-lg font-bold">Options & Paramètres</h3>
-                <button onclick="toggleSettingsModal()" class="p-1 hover:bg-slate-800 rounded-full text-slate-400"><i data-lucide="x" class="w-5 h-5"></i></button>
+                <button onclick="toggleSettingsModal()" class="p-2 hover:bg-slate-800 rounded-full text-slate-400 transition"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             <div class="space-y-2 pt-2">
-                <button onclick="resetAllData()" class="w-full bg-red-950/40 hover:bg-red-900/60 text-red-400 border border-red-800 font-bold py-2.5 rounded-lg text-sm transition">
+                <button onclick="resetAllData()" class="w-full bg-red-950/40 hover:bg-red-900/60 text-red-400 border border-red-800 font-bold py-3 rounded-xl text-sm transition">
                     Réinitialiser tout le programme
                 </button>
             </div>
         </div>
     </div>
 
+    <!-- BARRE DE NAVIGATION EN BAS -->
     <nav class="fixed bottom-0 left-0 right-0 bg-slate-900/90 backdrop-blur-md border-t border-slate-800 flex justify-around py-3 px-6 z-50">
         <button onclick="switchTab('programme')" id="nav-programme" class="flex flex-col items-center gap-1 text-brand-500 font-semibold text-[10px] transition">
             <i data-lucide="calendar" class="w-5 h-5"></i>
@@ -341,12 +370,10 @@
     </nav>
 
     <script>
-        // VARIABLES GLOBALES
         let PLAN_WEEKS = [];
         let currentWeek = parseInt(localStorage.getItem('current_week') || '1');
         let completedSessions = JSON.parse(localStorage.getItem('completed_sessions') || '{}');
 
-        // Textes réutilisables
         const forceRoutineDetails = `
             <div class="space-y-3">
                 <div class="bg-slate-800/50 p-3 rounded-lg border border-slate-700/50">
@@ -725,7 +752,6 @@
             document.getElementById('stat-total-dist').innerText = `${totalDist.toFixed(1)} km`;
         }
 
-        // --- GESTION DU RPE MULTI-FACTEURS ---
         function updateRPE() {
             const resp = parseInt(document.getElementById('log-rpe-resp').value);
             const musc = parseInt(document.getElementById('log-rpe-musc').value);
@@ -759,14 +785,14 @@
                 });
                 document.getElementById('log-modal-title').innerText = sTitle;
 
-                // Reset modal inputs
+                // Reset des inputs
                 document.getElementById('log-distance').value = '';
                 document.getElementById('log-duration-min').value = '';
                 document.getElementById('log-duration-sec').value = '';
                 document.getElementById('log-hr').value = '';
                 document.getElementById('log-notes').value = '';
 
-                // Reset RPE sliders
+                // Reset sliders RPE
                 document.getElementById('log-rpe-resp').value = 5;
                 document.getElementById('log-rpe-musc').value = 5;
                 document.getElementById('log-rpe-ment').value = 5;
@@ -789,7 +815,6 @@
             const hr = document.getElementById('log-hr').value || 'N/A';
             const notes = document.getElementById('log-notes').value;
 
-            // Récupère le calcul direct du RPE depuis les 3 sliders
             const computedRPE = updateRPE();
             const duration = `${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
 
