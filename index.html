@@ -31,51 +31,30 @@
         }
     </script>
     
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- CORRECTIF : Utilisation du bon CDN Lucide avec le bon nom de module -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
     
     <style>
         body {
             overscroll-behavior-y: contain;
             -webkit-tap-highlight-color: transparent;
         }
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-        .no-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        /* Personnalisation des curseurs RPE */
-        input[type=range] {
-            -webkit-appearance: none;
-            width: 100%;
-            background: transparent;
-        }
+        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
         input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            height: 18px;
-            width: 18px;
-            border-radius: 50%;
-            background: #84cc16;
-            cursor: pointer;
-            margin-top: -7px;
+            -webkit-appearance: none; height: 18px; width: 18px; border-radius: 50%;
+            background: #84cc16; cursor: pointer; margin-top: -7px;
             box-shadow: 0 0 10px rgba(132, 204, 22, 0.4);
         }
         input[type=range]::-moz-range-thumb {
-            height: 18px;
-            width: 18px;
-            border-radius: 50%;
-            background: #84cc16;
-            cursor: pointer;
-            border: none;
+            height: 18px; width: 18px; border-radius: 50%;
+            background: #84cc16; cursor: pointer; border: none;
         }
         input[type=range]::-webkit-slider-runnable-track {
-            width: 100%;
-            height: 4px;
-            cursor: pointer;
-            background: #1e293b;
-            border-radius: 2px;
+            width: 100%; height: 4px; cursor: pointer;
+            background: #1e293b; border-radius: 2px;
         }
     </style>
 </head>
@@ -109,14 +88,14 @@
 
     <main class="flex-grow p-4 max-w-lg mx-auto w-full space-y-4">
         
+        <!-- TAB PROGRAMME -->
         <section id="tab-programme" class="space-y-4">
             
-            <div id="ai-coach-alerts" class="bg-ai-900/30 border border-ai-500/50 rounded-xl p-4 hidden animate-in fade-in zoom-in duration-300 shadow-[0_0_15px_rgba(139,92,246,0.15)]">
-                <h4 class="text-xs font-bold text-ai-500 uppercase tracking-wider mb-2 flex items-center gap-2">
+            <div id="ai-coach-alerts" class="bg-indigo-950/30 border border-purple-500/50 rounded-xl p-4 hidden shadow-[0_0_15px_rgba(139,92,246,0.15)]">
+                <h4 class="text-xs font-bold text-purple-400 uppercase tracking-wider mb-2 flex items-center gap-2">
                     <i data-lucide="cpu" class="w-4 h-4"></i> Adaptation en Temps Réel
                 </h4>
-                <ul id="ai-alerts-list" class="text-xs text-indigo-200 space-y-1.5 list-disc list-inside leading-relaxed font-medium">
-                    </ul>
+                <ul id="ai-alerts-list" class="text-xs text-indigo-200 space-y-1.5 list-disc list-inside leading-relaxed font-medium"></ul>
             </div>
 
             <div class="flex gap-2 overflow-x-auto no-scrollbar py-2 -mx-4 px-4 bg-slate-950">
@@ -134,6 +113,7 @@
             <div class="space-y-3" id="sessions-container"></div>
         </section>
 
+        <!-- TAB STATS -->
         <section id="tab-stats" class="space-y-4 hidden">
             <h2 class="text-lg font-bold">Statistiques & Analyse</h2>
             
@@ -179,6 +159,7 @@
             </div>
         </section>
 
+        <!-- TAB STRAVA -->
         <section id="tab-strava" class="space-y-4 hidden">
             <h2 class="text-lg font-bold">Liaison Strava & PWA</h2>
             <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl space-y-3">
@@ -191,7 +172,7 @@
                 </div>
                 
                 <p class="text-xs text-slate-400 leading-relaxed">
-                    <strong>Note technique :</strong> En raison des restrictions de sécurité (CORS) des navigateurs, l'échange de jeton automatique nécessite un proxy. Utilisez l'option **Jeton Manuel** ci-dessous.
+                    <strong>Note technique :</strong> En raison des restrictions de sécurité (CORS) des navigateurs, l'échange de jeton automatique nécessite un proxy. Utilisez l'option Jeton Manuel ci-dessous.
                 </p>
 
                 <div class="space-y-3 pt-2">
@@ -205,8 +186,9 @@
         </section>
     </main>
 
+    <!-- MODAL DETAILS -->
     <div id="details-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[60] flex items-center justify-center hidden p-4">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md flex flex-col max-h-[85vh] shadow-2xl animate-in fade-in duration-200">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md flex flex-col max-h-[85vh] shadow-2xl">
             <div class="p-4 border-b border-slate-800 flex justify-between items-center shrink-0">
                 <div class="flex items-center gap-2">
                     <span id="details-type-badge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-800 text-slate-300">Type</span>
@@ -242,8 +224,9 @@
         </div>
     </div>
 
+    <!-- MODAL LOG -->
     <div id="log-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[60] flex items-end sm:items-center justify-center hidden p-4 sm:p-0">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md shadow-2xl animate-in slide-in-from-bottom duration-300 flex flex-col max-h-[90vh]">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md shadow-2xl flex flex-col max-h-[90vh]">
             
             <div class="p-4 border-b border-slate-800 flex justify-between items-center shrink-0">
                 <h3 class="text-lg font-bold" id="log-modal-title">Saisir ma Performance</h3>
@@ -327,6 +310,7 @@
         </div>
     </div>
 
+    <!-- MODAL SETTINGS -->
     <div id="settings-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[60] flex items-center justify-center hidden p-4">
         <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md p-6 space-y-4">
             <div class="flex justify-between items-center">
@@ -341,6 +325,7 @@
         </div>
     </div>
 
+    <!-- NAV -->
     <nav class="fixed bottom-0 left-0 right-0 bg-slate-900/90 backdrop-blur-md border-t border-slate-800 flex justify-around py-3 px-6 z-50">
         <button onclick="switchTab('programme')" id="nav-programme" class="flex flex-col items-center gap-1 text-brand-500 font-semibold text-[10px] transition">
             <i data-lucide="calendar" class="w-5 h-5"></i>
@@ -357,32 +342,46 @@
     </nav>
 
     <script>
-        // ----------------------------------------------------
-        // 1. INITIALISATION ROBUSTE DES DONNÉES LOCALES
-        // ----------------------------------------------------
+        // -------------------------------------------------------
+        // CORRECTIF PRINCIPAL : wrapper initLucide correctement
+        // -------------------------------------------------------
+        function initLucide() {
+            if (typeof lucide !== 'undefined' && typeof lucide.createIcons === 'function') {
+                lucide.createIcons();
+            }
+        }
+
+        // -------------------------------------------------------
+        // TOAST
+        // -------------------------------------------------------
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            if (!toast) return;
+            toast.innerText = message;
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.add('hidden'), 3000);
+        }
+
+        // -------------------------------------------------------
+        // 1. DONNÉES LOCALES
+        // -------------------------------------------------------
         let PLAN_WEEKS = [];
         let currentWeek = 1;
         let completedSessions = {};
 
-        // Chargement sécurisé de la semaine courante
         try {
             const storedWeek = localStorage.getItem('current_week');
             if (storedWeek) {
                 currentWeek = parseInt(storedWeek);
                 if (isNaN(currentWeek) || currentWeek < 1 || currentWeek > 16) currentWeek = 1;
             }
-        } catch(e) { 
-            currentWeek = 1; 
-        }
+        } catch(e) { currentWeek = 1; }
 
-        // Chargement ultra-sécurisé de l'historique (prévention du crash "écran noir")
         try {
             const rawData = localStorage.getItem('completed_sessions');
             if (rawData) {
                 const parsed = JSON.parse(rawData);
-                // On vérifie que c'est bien un objet sain (et pas un tableau, ou "null")
                 if (typeof parsed === 'object' && parsed !== null && !Array.isArray(parsed)) {
-                    // On filtre chaque clé pour virer les données corrompues des anciennes versions
                     for (let key in parsed) {
                         if (parsed[key] && typeof parsed[key] === 'object') {
                             completedSessions[key] = parsed[key];
@@ -392,19 +391,20 @@
             }
         } catch(e) {
             completedSessions = {};
-            console.error("Purge silencieuse d'anciennes données incompatibles.");
         }
 
-        // Textes réutilisables pour le programme
+        // -------------------------------------------------------
+        // 2. TEXTES RÉUTILISABLES
+        // -------------------------------------------------------
         const forceRoutineDetails = `
             <div class="space-y-3">
                 <div class="bg-slate-800/50 p-3 rounded-lg border border-slate-700/50">
                     <span class="font-bold text-white block text-sm">1. Squat bulgare (Force Unilatérale)</span>
-                    <span class="text-xs text-slate-400">3 séries de 8 répétitions par jambe (Repos : 90s).<br/><em>Utilité : Stabilité du bassin.</em></span>
+                    <span class="text-xs text-slate-400">3 séries de 8 répétitions par jambe (Repos : 90s).<br/>Utilité : Stabilité du bassin.</span>
                 </div>
                 <div class="bg-slate-800/50 p-3 rounded-lg border border-slate-700/50">
                     <span class="font-bold text-white block text-sm">2. Squat lourd contrôlé (Excentrique)</span>
-                    <span class="text-xs text-slate-400">3 séries de 8 rép (Tempo descente 4s).<br/><em>Utilité : Compense l'absence de descentes.</em></span>
+                    <span class="text-xs text-slate-400">3 séries de 8 rép (Tempo descente 4s).<br/>Utilité : Compense l'absence de descentes.</span>
                 </div>
                 <div class="bg-slate-800/50 p-3 rounded-lg border border-slate-700/50">
                     <span class="font-bold text-white block text-sm">3. Nordic Hamstring Curl</span>
@@ -420,9 +420,9 @@
         const vmaObjective = "Cibler l'économie de course, la réactivité des appuis et la vitesse pure sans accumulation excessive d'acide lactique.";
         const seuilObjective = "Repousser le point d'accumulation rapide du lactate dans le sang, permettant de courir plus vite avant l'acidose.";
 
-        // ----------------------------------------------------
-        // 2. FONCTIONS UTILITAIRES SÉCURISÉES
-        // ----------------------------------------------------
+        // -------------------------------------------------------
+        // 3. UTILITAIRES
+        // -------------------------------------------------------
         function secondsToPaceStr(secs) {
             if (isNaN(secs) || secs <= 0) return "0:00/km";
             const m = Math.floor(secs / 60);
@@ -431,18 +431,18 @@
         }
         
         function paceStrToSeconds(paceStr) {
-            if(!paceStr || typeof paceStr !== 'string' || !paceStr.includes(':')) return 0;
+            if (!paceStr || typeof paceStr !== 'string' || !paceStr.includes(':')) return 0;
             const parts = paceStr.replace('/km','').split(':');
             return (parseInt(parts[0]) || 0) * 60 + (parseInt(parts[1]) || 0);
         }
 
-        // ----------------------------------------------------
-        // 3. GENERATEUR DU PROGRAMME THEORIQUE
-        // ----------------------------------------------------
+        // -------------------------------------------------------
+        // 4. GÉNÉRATION DU PLAN
+        // -------------------------------------------------------
         function buildBasePlan() {
             let basePlan = [];
             for (let w = 1; w <= 16; w++) {
-                let phase = ""; let focus = ""; let sessions = [];
+                let phase = "", focus = "", sessions = [];
                 
                 if (w <= 4) {
                     phase = "Phase 1 : Base & Reconstruction";
@@ -518,14 +518,14 @@
                         ];
                     }
                 }
-                basePlan.push({ week: w, phase: phase, focus: focus, sessions: sessions });
+                basePlan.push({ week: w, phase, focus, sessions });
             }
             return basePlan;
         }
 
-        // ----------------------------------------------------
-        // 4. MOTEUR D'ADAPTATION IA SÉCURISÉ
-        // ----------------------------------------------------
+        // -------------------------------------------------------
+        // 5. MOTEUR D'ADAPTATION IA
+        // -------------------------------------------------------
         function applyAdaptations(basePlan, logs) {
             let adaptations = [];
             let currentPaces = { VMA: 216, Seuil: 251, EF: 330 };
@@ -556,7 +556,7 @@
 
                         const targetSecs = paceStrToSeconds(session.target);
                         if (session.type === 'VMA' && targetSecs > 0 && paceSecs > 0 && paceSecs <= targetSecs + 3 && rpe <= 6) {
-                            currentPaces.VMA -= 2; 
+                            currentPaces.VMA -= 2;
                             currentPaces.Seuil -= 2;
                             adaptations.push(`🔥 Progression ! Séance ${session.title} validée avec aisance. Cibles VMA/Seuil durcies (-2s/km).`);
                         }
@@ -568,13 +568,12 @@
                             session.target = "5:35/km";
                             session.objective = "Dissiper la fatigue périphérique de la zone grise.";
                             grayZoneViolations--;
-                            
-                            if(!adaptations.some(a => a.includes("Zone Grise"))) {
+                            if (!adaptations.some(a => a.includes("Zone Grise"))) {
                                 adaptations.push("⚠️ Surcharge 'Zone Grise' détectée. Prochain intervalle converti en repos actif.");
                             }
                         } else if (weekExhaustionFlag && session.type === 'Long') {
                             session.desc = "🔋 VOLUME RÉDUIT (-15%). " + session.desc;
-                            if(!adaptations.some(a => a.includes("Fatigue nerveuse"))) {
+                            if (!adaptations.some(a => a.includes("Fatigue nerveuse"))) {
                                 adaptations.push("📉 Fatigue nerveuse (RPE > 7.5). Volume des sorties longues réduit de 15%.");
                             }
                         } else {
@@ -585,32 +584,31 @@
                 });
 
                 if (weekLogCount > 0) {
-                    const avgRpe = weekRpeSum / weekLogCount;
-                    if (avgRpe > 7.5) {
-                        weekExhaustionFlag = true;
-                    } else {
-                        weekExhaustionFlag = false;
-                    }
+                    weekExhaustionFlag = (weekRpeSum / weekLogCount) > 7.5;
                 }
             });
 
             return { finalPlan: basePlan, messages: [...new Set(adaptations)] };
         }
 
-        // ----------------------------------------------------
-        // 5. FONCTIONS D'INTERFACE ET CYCLE DE VIE
-        // ----------------------------------------------------
+        // -------------------------------------------------------
+        // 6. INITIALISATION
+        // -------------------------------------------------------
         document.addEventListener('DOMContentLoaded', () => {
-            initLucide();
-            generateAndRenderPlan();
-            checkUrlForStravaCode();
-            updateStravaUi();
+            // On attend que Lucide soit disponible avant de démarrer
+            const waitForLucide = setInterval(() => {
+                if (typeof lucide !== 'undefined') {
+                    clearInterval(waitForLucide);
+                    initLucide();
+                    generateAndRenderPlan();
+                    updateStravaUi();
+                }
+            }, 50);
         });
 
-        // Cette fonction ne comporte plus de point de blocage global
         function generateAndRenderPlan() {
-            let base = buildBasePlan();
-            let adaptationResult = applyAdaptations(base, completedSessions);
+            const base = buildBasePlan();
+            const adaptationResult = applyAdaptations(base, completedSessions);
             PLAN_WEEKS = adaptationResult.finalPlan;
             
             const alertsBox = document.getElementById('ai-coach-alerts');
@@ -637,11 +635,14 @@
 
         function renderWeekSelector() {
             const container = document.getElementById('week-selector-container');
-            if(!container) return;
+            if (!container) return;
             container.innerHTML = '';
             for (let i = 1; i <= 16; i++) {
                 const btn = document.createElement('button');
-                btn.className = `px-4 py-2 rounded-full font-bold text-sm transition shrink-0 ${currentWeek === i? 'bg-brand-500 text-slate-950 shadow-lg shadow-brand-500/20' : 'bg-slate-900 text-slate-400 hover:bg-slate-800 border border-slate-800'}`;
+                const isActiveWeek = currentWeek === i;
+                btn.style.cssText = isActiveWeek
+                    ? 'padding:8px 16px;border-radius:999px;font-weight:700;font-size:14px;flex-shrink:0;cursor:pointer;white-space:nowrap;background:#84cc16;color:#0f172a;box-shadow:0 4px 15px rgba(132,204,22,0.25);border:none'
+                    : 'padding:8px 16px;border-radius:999px;font-weight:700;font-size:14px;flex-shrink:0;cursor:pointer;white-space:nowrap;background:#0f172a;color:#94a3b8;border:1px solid #1e293b';
                 btn.innerText = `Sem. ${i}`;
                 btn.onclick = () => {
                     currentWeek = i;
@@ -655,22 +656,20 @@
 
         function renderActiveWeek() {
             let safeWeekData = PLAN_WEEKS.find(w => w.week === currentWeek);
-            
-            // Fallback de sécurité si la semaine cherchée n'existe pas
             if (!safeWeekData) {
                 currentWeek = 1;
                 localStorage.setItem('current_week', '1');
                 safeWeekData = PLAN_WEEKS.find(w => w.week === 1);
-                if(!safeWeekData) return; 
+                if (!safeWeekData) return;
             }
 
             const titleEl = document.getElementById('phase-title');
             const focusEl = document.getElementById('phase-focus');
             const container = document.getElementById('sessions-container');
             
-            if(titleEl) titleEl.innerText = safeWeekData.phase;
-            if(focusEl) focusEl.innerText = safeWeekData.focus;
-            if(!container) return;
+            if (titleEl) titleEl.innerText = safeWeekData.phase;
+            if (focusEl) focusEl.innerText = safeWeekData.focus;
+            if (!container) return;
             
             container.innerHTML = '';
 
@@ -678,19 +677,27 @@
                 const isCompleted = !!completedSessions[session.id];
                 const completedData = completedSessions[session.id];
 
-                let badgeClass = 'bg-slate-800 text-slate-300';
-                if (session.type === 'VMA') badgeClass = 'bg-red-950 text-red-400 border border-red-800/50';
-                else if (session.type === 'Seuil') badgeClass = 'bg-amber-950 text-amber-400 border border-amber-800/50';
-                else if (session.type === 'Force') badgeClass = 'bg-blue-950 text-blue-400 border border-blue-800/50';
-                else if (session.type === 'EF') badgeClass = 'bg-emerald-950 text-emerald-400 border border-emerald-800/50';
-                else if (session.type === 'Long') badgeClass = 'bg-orange-950 text-orange-400 border border-orange-800/50';
-                else if (session.type === 'Course') badgeClass = 'bg-brand-500/20 text-brand-500 border border-brand-500/50';
+                // Styles inline pour éviter le problème Tailwind CDN + classes dynamiques JS
+                const badgeStyles = {
+                    'VMA':    'background:#450a0a;color:#f87171;border:1px solid rgba(239,68,68,0.3)',
+                    'Seuil':  'background:#431407;color:#fb923c;border:1px solid rgba(249,115,22,0.3)',
+                    'Force':  'background:#172554;color:#60a5fa;border:1px solid rgba(59,130,246,0.3)',
+                    'EF':     'background:#052e16;color:#4ade80;border:1px solid rgba(34,197,94,0.3)',
+                    'Long':   'background:#431407;color:#fdba74;border:1px solid rgba(251,146,60,0.3)',
+                    'Course': 'background:rgba(132,204,22,0.15);color:#84cc16;border:1px solid rgba(132,204,22,0.4)',
+                };
+                const badgeStyle = badgeStyles[session.type] || 'background:#1e293b;color:#94a3b8';
 
-                let isAdapted = session.title.includes('⚠️');
-                let cardClassAddition = isAdapted ? 'border-ai-500/50 bg-ai-900/10' : 'border-slate-800';
+                const isAdapted = session.title.includes('⚠️');
 
                 const card = document.createElement('div');
-                card.className = `bg-slate-900 border rounded-xl p-4 transition duration-200 cursor-pointer hover:bg-slate-800/50 ${isCompleted? 'border-brand-500/40 bg-slate-900/40' : cardClassAddition}`;
+                card.style.cssText = `
+                    background: ${isCompleted ? 'rgba(15,23,42,0.6)' : isAdapted ? 'rgba(49,46,129,0.08)' : '#0f172a'};
+                    border: 1px solid ${isCompleted ? 'rgba(132,204,22,0.35)' : isAdapted ? 'rgba(139,92,246,0.4)' : '#1e293b'};
+                    border-radius: 12px; padding: 16px; cursor: pointer; transition: background 0.2s;
+                `;
+                card.onmouseenter = () => card.style.background = isCompleted ? 'rgba(15,23,42,0.6)' : 'rgba(30,41,59,0.6)';
+                card.onmouseleave = () => card.style.background = isCompleted ? 'rgba(15,23,42,0.6)' : isAdapted ? 'rgba(49,46,129,0.08)' : '#0f172a';
                 card.onclick = () => openDetailsModal(session.id);
 
                 let completedStatsHtml = '';
@@ -701,33 +708,47 @@
                             <div>⏱️ <strong>Durée :</strong> ${completedData.duration || 'N/A'}</div>
                             <div>❤️ <strong>FC Moy :</strong> ${completedData.hr || 'N/A'} bpm</div>
                             <div>🧠 <strong>RPE :</strong> ${completedData.rpe || 'N/A'}/10</div>
-                            ${completedData.notes? `<div class="col-span-2 mt-1 italic text-slate-500">"${completedData.notes}"</div>` : ''}
+                            ${completedData.notes ? `<div class="col-span-2 mt-1 italic text-slate-500">"${completedData.notes}"</div>` : ''}
                         </div>
                     `;
                 }
 
+                // CORRECTIF : on utilise data-id pour éviter les problèmes de quotes dans onclick
+                const toggleBtnStyle = isCompleted
+                    ? 'background:rgba(132,204,22,0.1);border:1px solid #84cc16;color:#84cc16'
+                    : 'background:#020617;border:1px solid #1e293b;color:#475569';
+
                 card.innerHTML = `
-                    <div class="flex justify-between items-start gap-3">
-                        <div class="space-y-1">
-                            <div class="flex items-center gap-2">
-                                <span class="text-xs font-bold text-slate-400">${session.day}</span>
-                                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${badgeClass}">${session.type}</span>
-                                ${isAdapted ? '<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-ai-500/20 text-ai-400 border border-ai-500/30">Auto-Adapté</span>' : ''}
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
+                        <div style="min-width:0;flex:1">
+                            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px">
+                                <span style="font-size:11px;font-weight:700;color:#94a3b8">${session.day}</span>
+                                <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:999px;${badgeStyle}">${session.type}</span>
+                                ${isAdapted ? '<span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:999px;background:rgba(139,92,246,0.15);color:#a78bfa;border:1px solid rgba(139,92,246,0.3)">Auto-Adapté</span>' : ''}
                             </div>
-                            <h4 class="font-bold text-white text-sm ${isCompleted? 'line-through text-slate-400' : ''}">${session.title}</h4>
-                            <p class="text-xs text-slate-400 leading-relaxed">${session.desc}</p>
-                            <div class="flex items-center gap-1.5 text-[10px] text-brand-500 font-bold uppercase mt-1">
-                                <i data-lucide="target" class="w-3.5 h-3.5"></i> Target : ${session.target}
+                            <h4 style="font-weight:700;color:${isCompleted ? '#64748b' : '#fff'};font-size:14px;text-decoration:${isCompleted ? 'line-through' : 'none'};margin-bottom:4px">${session.title}</h4>
+                            <p style="font-size:12px;color:#94a3b8;line-height:1.5;margin-bottom:6px">${session.desc}</p>
+                            <div style="display:flex;align-items:center;gap:6px;font-size:10px;color:#84cc16;font-weight:700;text-transform:uppercase">
+                                <i data-lucide="target" style="width:14px;height:14px"></i> Target : ${session.target}
                             </div>
                         </div>
-                        <button onclick="event.stopPropagation(); toggleSessionState('${session.id}')" class="p-2 rounded-lg border transition shrink-0 ${isCompleted? 'bg-brand-500/10 border-brand-500 text-brand-500' : 'bg-slate-950 border-slate-800 text-slate-600 hover:text-white'}">
-                            <i data-lucide="${isCompleted? 'check-square' : 'square'}" class="w-5 h-5"></i>
+                        <button class="session-toggle-btn" data-id="${session.id}"
+                            style="padding:8px;border-radius:8px;flex-shrink:0;cursor:pointer;transition:all 0.2s;${toggleBtnStyle}">
+                            <i data-lucide="${isCompleted ? 'check-square' : 'square'}" style="width:20px;height:20px;display:block"></i>
                         </button>
                     </div>
                     ${completedStatsHtml}
                 `;
 
                 container.appendChild(card);
+            });
+
+            // Délégation d'événements pour les boutons toggle (évite les problèmes de quotes)
+            container.querySelectorAll('.session-toggle-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    toggleSessionState(btn.dataset.id);
+                });
             });
 
             initLucide();
@@ -739,7 +760,6 @@
                 const s = w.sessions.find(ses => ses.id === sessionId);
                 if (s) foundSession = s;
             });
-
             if (!foundSession) return;
 
             document.getElementById('details-type-badge').innerText = foundSession.type;
@@ -758,21 +778,21 @@
         }
 
         function updateGlobalProgress() {
-            const total = 64; 
+            const total = 64;
             const done = Object.keys(completedSessions).length;
             const percentage = Math.round((done / total) * 100) || 0;
 
             const txtEl = document.getElementById('global-progress-txt');
             const barEl = document.getElementById('global-progress-bar');
-            if(txtEl) txtEl.innerText = `${done}/${total} séances (${percentage}%)`;
-            if(barEl) barEl.style.width = `${percentage}%`;
+            if (txtEl) txtEl.innerText = `${done}/${total} séances (${percentage}%)`;
+            if (barEl) barEl.style.width = `${percentage}%`;
 
             const statCompletedEl = document.getElementById('stat-total-completed');
-            if(statCompletedEl) statCompletedEl.innerText = done;
+            if (statCompletedEl) statCompletedEl.innerText = done;
             
             let totalDist = 0;
             const historyContainer = document.getElementById('history-container');
-            if(!historyContainer) return;
+            if (!historyContainer) return;
             historyContainer.innerHTML = '';
 
             const completedKeys = Object.keys(completedSessions);
@@ -781,9 +801,7 @@
             } else {
                 completedKeys.sort().reverse().forEach(key => {
                     const data = completedSessions[key];
-                    // Protection contre les vieilles données nulles du cache
-                    if (!data || typeof data !== 'object') return; 
-
+                    if (!data || typeof data !== 'object') return;
                     totalDist += parseFloat(data.distance || 0);
 
                     let sTitle = "Entraînement libre";
@@ -809,29 +827,24 @@
             }
             
             const distEl = document.getElementById('stat-total-dist');
-            if(distEl) distEl.innerText = `${totalDist.toFixed(1)} km`;
+            if (distEl) distEl.innerText = `${totalDist.toFixed(1)} km`;
         }
 
-        // MISE À JOUR DYNAMIQUE DES TEXTES DU RPE
+        // -------------------------------------------------------
+        // 7. RPE
+        // -------------------------------------------------------
         function updateRPE() {
-            const respEl = document.getElementById('log-rpe-resp');
-            const muscEl = document.getElementById('log-rpe-musc');
-            const mentEl = document.getElementById('log-rpe-ment');
-            
-            if(!respEl || !muscEl || !mentEl) return 5;
+            const resp = parseInt(document.getElementById('log-rpe-resp')?.value) || 5;
+            const musc = parseInt(document.getElementById('log-rpe-musc')?.value) || 5;
+            const ment = parseInt(document.getElementById('log-rpe-ment')?.value) || 5;
 
-            const resp = parseInt(respEl.value) || 5;
-            const musc = parseInt(muscEl.value) || 5;
-            const ment = parseInt(mentEl.value) || 5;
-            
             const valRespEl = document.getElementById('val-resp');
             const valMuscEl = document.getElementById('val-musc');
             const valMentEl = document.getElementById('val-ment');
-            
-            if(valRespEl) valRespEl.innerText = resp;
-            if(valMuscEl) valMuscEl.innerText = musc;
-            if(valMentEl) valMentEl.innerText = ment;
-            
+            if (valRespEl) valRespEl.innerText = resp;
+            if (valMuscEl) valMuscEl.innerText = musc;
+            if (valMentEl) valMentEl.innerText = ment;
+
             const descResp = document.getElementById('desc-resp');
             if (descResp) {
                 if (resp <= 3) descResp.innerText = "Parle en continu, aucune gêne (Facile)";
@@ -839,7 +852,6 @@
                 else if (resp <= 8) descResp.innerText = "Courtes phrases, souffle court (Difficile)";
                 else descResp.innerText = "Impossible de parler, haletant (Maximal)";
             }
-
             const descMusc = document.getElementById('desc-musc');
             if (descMusc) {
                 if (musc <= 3) descMusc.innerText = "Jambes légères, aucune tension (Léger)";
@@ -847,7 +859,6 @@
                 else if (musc <= 8) descMusc.innerText = "Cuisses dures, il faut forcer (Très lourd)";
                 else descMusc.innerText = "Épuisement total, jambes de bois (Tétanie)";
             }
-
             const descMent = document.getElementById('desc-ment');
             if (descMent) {
                 if (ment <= 3) descMent.innerText = "Esprit libre, temps passe vite (Nul)";
@@ -855,14 +866,16 @@
                 else if (ment <= 8) descMent.innerText = "Combat mental contre la montre (Intense)";
                 else descMent.innerText = "Souffrance, envie d'abandonner (Saturé)";
             }
-            
+
             const rpe = Math.round((resp + musc + ment) / 3);
             const rpeDisplay = document.getElementById('rpe-result-display');
-            if(rpeDisplay) rpeDisplay.innerText = `RPE : ${rpe}/10`;
-            
+            if (rpeDisplay) rpeDisplay.innerText = `RPE : ${rpe}/10`;
             return rpe;
         }
 
+        // -------------------------------------------------------
+        // 8. SESSION TOGGLE & LOG
+        // -------------------------------------------------------
         function toggleSessionState(id) {
             if (completedSessions[id]) {
                 delete completedSessions[id];
@@ -871,31 +884,29 @@
                 showToast("Séance marquée comme non faite.");
             } else {
                 const dateInput = document.getElementById('log-date');
-                if(dateInput) dateInput.value = new Date().toISOString().split('T')[0];
-                
+                if (dateInput) dateInput.value = new Date().toISOString().split('T')[0];
                 const idInput = document.getElementById('log-session-id');
-                if(idInput) idInput.value = id;
-                
+                if (idInput) idInput.value = id;
+
                 let sTitle = "Activité";
                 PLAN_WEEKS.forEach(w => {
                     const s = w.sessions.find(ses => ses.id === id);
                     if (s) sTitle = s.title;
                 });
                 const titleEl = document.getElementById('log-modal-title');
-                if(titleEl) titleEl.innerText = sTitle;
+                if (titleEl) titleEl.innerText = sTitle;
 
-                if(document.getElementById('log-distance')) document.getElementById('log-distance').value = '';
-                if(document.getElementById('log-duration-min')) document.getElementById('log-duration-min').value = '';
-                if(document.getElementById('log-duration-sec')) document.getElementById('log-duration-sec').value = '';
-                if(document.getElementById('log-hr')) document.getElementById('log-hr').value = '';
-                if(document.getElementById('log-notes')) document.getElementById('log-notes').value = '';
-
-                if(document.getElementById('log-rpe-resp')) document.getElementById('log-rpe-resp').value = 5;
-                if(document.getElementById('log-rpe-musc')) document.getElementById('log-rpe-musc').value = 5;
-                if(document.getElementById('log-rpe-ment')) document.getElementById('log-rpe-ment').value = 5;
+                ['log-distance', 'log-duration-min', 'log-duration-sec', 'log-hr', 'log-notes'].forEach(elId => {
+                    const el = document.getElementById(elId);
+                    if (el) el.value = '';
+                });
+                ['log-rpe-resp', 'log-rpe-musc', 'log-rpe-ment'].forEach(elId => {
+                    const el = document.getElementById(elId);
+                    if (el) el.value = 5;
+                });
                 updateRPE();
-
                 document.getElementById('log-modal').classList.remove('hidden');
+                initLucide();
             }
         }
 
@@ -905,81 +916,75 @@
 
         function saveSessionLog() {
             const idInput = document.getElementById('log-session-id');
-            if(!idInput) return;
+            if (!idInput) return;
             const id = idInput.value;
-            
+
             const date = document.getElementById('log-date').value;
             const dist = document.getElementById('log-distance').value || '0';
             const min = document.getElementById('log-duration-min').value || '00';
             const sec = document.getElementById('log-duration-sec').value || '00';
             const hr = document.getElementById('log-hr').value || 'N/A';
             const notes = document.getElementById('log-notes').value;
-
             const computedRPE = updateRPE();
             const duration = `${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
 
             completedSessions[id] = {
-                date: date,
-                rpe: computedRPE,
+                date, rpe: computedRPE,
                 distance: parseFloat(dist).toFixed(2),
-                duration: duration,
-                hr: hr,
-                notes: notes
+                duration, hr, notes
             };
 
             localStorage.setItem('completed_sessions', JSON.stringify(completedSessions));
-            
+
             const accessToken = localStorage.getItem('strava_access_token');
-            if (accessToken) {
-                uploadActivityToStrava(id, completedSessions[id]);
-            }
+            if (accessToken) uploadActivityToStrava(id, completedSessions[id]);
 
             closeLogModal();
             generateAndRenderPlan();
             showToast(`Activité enregistrée ! RPE retenu : ${computedRPE}/10`);
         }
 
+        // -------------------------------------------------------
+        // 9. NAVIGATION & MODALS
+        // -------------------------------------------------------
         function toggleSettingsModal() {
             const modal = document.getElementById('settings-modal');
-            if (modal.classList.contains('hidden')) modal.classList.remove('hidden');
-            else modal.classList.add('hidden');
+            modal.classList.toggle('hidden');
+            initLucide();
         }
 
         function resetAllData() {
-            if (confirm("Voulez-vous vraiment réinitialiser tout le programme? Vos séances validées seront perdues.")) {
+            if (confirm("Voulez-vous vraiment réinitialiser tout le programme ? Vos séances validées seront perdues.")) {
                 document.getElementById('settings-modal').classList.add('hidden');
-                
                 localStorage.removeItem('completed_sessions');
                 localStorage.removeItem('current_week');
-                
                 completedSessions = {};
                 currentWeek = 1;
-                
                 generateAndRenderPlan();
                 showToast("Application réinitialisée.");
             }
         }
 
         function switchTab(tabId) {
-            document.getElementById('tab-programme').classList.add('hidden');
-            document.getElementById('tab-stats').classList.add('hidden');
-            document.getElementById('tab-strava').classList.add('hidden');
-
-            document.getElementById('nav-programme').className = "flex flex-col items-center gap-1 text-slate-400 text-[10px] transition";
-            document.getElementById('nav-stats').className = "flex flex-col items-center gap-1 text-slate-400 text-[10px] transition";
-            document.getElementById('nav-strava').className = "flex flex-col items-center gap-1 text-slate-400 text-[10px] transition";
-
+            ['programme', 'stats', 'strava'].forEach(t => {
+                document.getElementById(`tab-${t}`).classList.add('hidden');
+                document.getElementById(`nav-${t}`).className = 'flex flex-col items-center gap-1 text-slate-400 text-[10px] transition';
+            });
             document.getElementById(`tab-${tabId}`).classList.remove('hidden');
-            document.getElementById(`nav-${tabId}`).className = "flex flex-col items-center gap-1 text-brand-500 font-semibold text-[10px] transition";
+            document.getElementById(`nav-${tabId}`).className = 'flex flex-col items-center gap-1 text-brand-500 font-semibold text-[10px] transition';
+            initLucide();
         }
 
+        // -------------------------------------------------------
+        // 10. STRAVA
+        // -------------------------------------------------------
         function saveManualToken() {
             const tokenEl = document.getElementById('strava-manual-token');
-            if(!tokenEl) return;
+            if (!tokenEl) return;
             const token = tokenEl.value.trim();
             if (token) {
                 localStorage.setItem('strava_access_token', token);
-                showToast("Jeton d'accès manuel Strava enregistré!");
+                showToast("Jeton Strava enregistré !");
                 updateStravaUi();
             } else {
                 alert("Veuillez entrer un jeton valide.");
@@ -988,14 +993,8 @@
 
         function updateStravaUi() {
             const accessToken = localStorage.getItem('strava_access_token') || '';
-            const tokenEl = document.getElementById('strava-manual-token');
-            if (accessToken && accessToken.length < 50 && tokenEl) {
-                tokenEl.value = accessToken;
-            }
-
             const badge = document.getElementById('strava-status-badge');
-            if(!badge) return;
-            
+            if (!badge) return;
             if (accessToken) {
                 badge.innerText = "Connecté";
                 badge.className = "px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-950 text-emerald-400 border border-emerald-800";
@@ -1003,10 +1002,7 @@
                 badge.innerText = "Déconnecté";
                 badge.className = "px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-950 text-red-400 border border-red-800";
             }
-            initLucide();
         }
-
-        function checkUrlForStravaCode() { }
 
         async function uploadActivityToStrava(id, logData) {
             const accessToken = localStorage.getItem('strava_access_token');
@@ -1023,10 +1019,9 @@
             const meters = parseFloat(logData.distance || 0) * 1000;
 
             try {
-                let stravaDate = new Date().toISOString(); 
-                if(logData.date) {
-                    stravaDate = new Date(logData.date + "T12:00:00").toISOString();
-                }
+                const stravaDate = logData.date
+                    ? new Date(logData.date + "T12:00:00").toISOString()
+                    : new Date().toISOString();
 
                 const response = await fetch('https://www.strava.com/api/v3/activities', {
                     method: 'POST',
@@ -1040,18 +1035,16 @@
                         start_date_local: stravaDate,
                         elapsed_time: elapsedSeconds,
                         distance: meters,
-                        description: `Séance d'entraînement validée sur Coach VDOT 56. RPE Multi-facteurs: ${logData.rpe}/10. Notes: ${logData.notes || 'aucune'}.`
+                        description: `Séance validée sur Coach VDOT 56. RPE: ${logData.rpe}/10. Notes: ${logData.notes || 'aucune'}.`
                     })
                 });
 
                 if (response.ok) {
-                    showToast("Activité partagée sur Strava! 🏃‍♂️");
+                    showToast("Activité partagée sur Strava ! 🏃‍♂️");
                 } else {
-                    console.error("Échec du téléversement Strava", await response.json());
                     showToast("Enregistré localement (erreur API Strava).");
                 }
             } catch (err) {
-                console.error("Erreur d'envoi de l'activité", err);
                 showToast("Activité locale enregistrée (Erreur réseau Strava).");
             }
         }
