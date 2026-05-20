@@ -4,1050 +4,1408 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>VDOT 56 : Coach Adaptatif IA</title>
-    
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#0f172a">
-    
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            50: '#f7fee7',
-                            500: '#84cc16', 
-                            600: '#65a30d',
-                        },
-                        ai: {
-                            500: '#8b5cf6',
-                            900: '#312e81'
-                        }
-                    }
-                }
-            }
+            theme: { extend: { colors: { brand: { 50:'#f7fee7',500:'#84cc16',600:'#65a30d' }, ai: { 500:'#8b5cf6',900:'#312e81' } } } }
         }
     </script>
-    
-    <!-- CORRECTIF : Utilisation du bon CDN Lucide avec le bon nom de module -->
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
-    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
-        body {
-            overscroll-behavior-y: contain;
-            -webkit-tap-highlight-color: transparent;
-        }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        
-        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
-        input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none; height: 18px; width: 18px; border-radius: 50%;
-            background: #84cc16; cursor: pointer; margin-top: -7px;
-            box-shadow: 0 0 10px rgba(132, 204, 22, 0.4);
-        }
-        input[type=range]::-moz-range-thumb {
-            height: 18px; width: 18px; border-radius: 50%;
-            background: #84cc16; cursor: pointer; border: none;
-        }
-        input[type=range]::-webkit-slider-runnable-track {
-            width: 100%; height: 4px; cursor: pointer;
-            background: #1e293b; border-radius: 2px;
-        }
+        body { overscroll-behavior-y:contain; -webkit-tap-highlight-color:transparent; }
+        .no-scrollbar::-webkit-scrollbar { display:none; }
+        .no-scrollbar { -ms-overflow-style:none; scrollbar-width:none; }
+        input[type=range] { -webkit-appearance:none; width:100%; background:transparent; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; height:18px; width:18px; border-radius:50%; background:#84cc16; cursor:pointer; margin-top:-7px; box-shadow:0 0 10px rgba(132,204,22,0.4); }
+        input[type=range]::-moz-range-thumb { height:18px; width:18px; border-radius:50%; background:#84cc16; cursor:pointer; border:none; }
+        input[type=range]::-webkit-slider-runnable-track { width:100%; height:4px; cursor:pointer; background:#1e293b; border-radius:2px; }
+
+        /* TIMER */
+        @keyframes timerPulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.7;transform:scale(1.04)} }
+        .timer-pulse { animation: timerPulse 1s ease-in-out infinite; }
+        @keyframes ringFill { from{stroke-dashoffset:283} }
+        .ring-animate { animation: ringFill 1s ease; }
+
+        /* MODE SÉANCE */
+        #active-session-modal { transition: opacity .3s; }
+        .step-active { border-color:#84cc16 !important; background:rgba(132,204,22,0.07) !important; }
+
+        /* GRAPHIQUES */
+        .chart-container { position:relative; height:180px; }
     </style>
 </head>
 <body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col justify-between pb-24">
 
-    <header class="bg-slate-900 border-b border-slate-800 px-4 pt-8 pb-4 sticky top-0 z-50 shadow-md">
-        <div class="flex justify-between items-center">
-            <div>
-                <span class="text-xs text-brand-500 font-bold uppercase tracking-wider">Objectif VDOT 56</span>
-                <h1 class="text-xl font-extrabold text-white flex items-center gap-2">
-                    <span>⚡ Coach Personnel IA</span>
-                </h1>
-            </div>
+<!-- ═══════════════════════════════════════════════════════
+     HEADER
+══════════════════════════════════════════════════════════ -->
+<header class="bg-slate-900 border-b border-slate-800 px-4 pt-8 pb-4 sticky top-0 z-50 shadow-md">
+    <div class="flex justify-between items-center">
+        <div>
+            <span class="text-xs text-brand-500 font-bold uppercase tracking-wider">Objectif VDOT 56</span>
+            <h1 class="text-xl font-extrabold text-white">⚡ Coach Personnel IA</h1>
+        </div>
+        <div class="flex items-center gap-2">
+            <div id="vdot-badge" class="px-3 py-1 rounded-full text-xs font-black border" style="background:rgba(132,204,22,0.1);border-color:rgba(132,204,22,0.4);color:#84cc16">VDOT ~51</div>
             <button onclick="toggleSettingsModal()" class="p-2 bg-slate-800 hover:bg-slate-700 rounded-full transition text-slate-300">
                 <i data-lucide="settings" class="w-5 h-5"></i>
             </button>
         </div>
-        
-        <div class="mt-4">
-            <div class="flex justify-between text-xs text-slate-400 mb-1">
-                <span>Progression du programme</span>
-                <span id="global-progress-txt">0/64 séances (0%)</span>
-            </div>
-            <div class="w-full bg-slate-800 rounded-full h-2">
-                <div id="global-progress-bar" class="bg-brand-500 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
-            </div>
+    </div>
+    <div class="mt-4">
+        <div class="flex justify-between text-xs text-slate-400 mb-1">
+            <span>Progression du programme</span>
+            <span id="global-progress-txt">0/64 séances (0%)</span>
         </div>
-    </header>
-
-    <div id="toast" class="fixed top-24 left-1/2 transform -translate-x-1/2 bg-brand-600 text-white px-4 py-2 rounded-lg shadow-xl text-sm font-semibold hidden z-[70] transition-opacity duration-300"></div>
-
-    <main class="flex-grow p-4 max-w-lg mx-auto w-full space-y-4">
-        
-        <!-- TAB PROGRAMME -->
-        <section id="tab-programme" class="space-y-4">
-            
-            <div id="ai-coach-alerts" class="bg-indigo-950/30 border border-purple-500/50 rounded-xl p-4 hidden shadow-[0_0_15px_rgba(139,92,246,0.15)]">
-                <h4 class="text-xs font-bold text-purple-400 uppercase tracking-wider mb-2 flex items-center gap-2">
-                    <i data-lucide="cpu" class="w-4 h-4"></i> Adaptation en Temps Réel
-                </h4>
-                <ul id="ai-alerts-list" class="text-xs text-indigo-200 space-y-1.5 list-disc list-inside leading-relaxed font-medium"></ul>
-            </div>
-
-            <div class="flex gap-2 overflow-x-auto no-scrollbar py-2 -mx-4 px-4 bg-slate-950">
-                <div id="week-selector-container" class="flex gap-2"></div>
-            </div>
-
-            <div class="bg-slate-900/50 border border-slate-800 rounded-xl p-4">
-                <div class="flex items-center gap-2 text-brand-500 font-bold text-sm mb-1">
-                    <i data-lucide="award" class="w-4 h-4"></i>
-                    <span id="phase-title">Phase</span>
-                </div>
-                <p id="phase-focus" class="text-xs text-slate-400">Description des objectifs de la phase active...</p>
-            </div>
-
-            <div class="space-y-3" id="sessions-container"></div>
-        </section>
-
-        <!-- TAB STATS -->
-        <section id="tab-stats" class="space-y-4 hidden">
-            <h2 class="text-lg font-bold">Statistiques & Analyse</h2>
-            
-            <div class="grid grid-cols-2 gap-3">
-                <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl">
-                    <span class="text-xs text-slate-400 block mb-1">Distance Totale</span>
-                    <span id="stat-total-dist" class="text-2xl font-black text-brand-500">0.0 km</span>
-                </div>
-                <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl">
-                    <span class="text-xs text-slate-400 block mb-1">Séances Faites</span>
-                    <span id="stat-total-completed" class="text-2xl font-black text-brand-500">0</span>
-                </div>
-            </div>
-
-            <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl">
-                <h3 class="text-sm font-bold mb-3 flex items-center gap-2">
-                    <i data-lucide="history" class="w-4 h-4 text-brand-500"></i> Historique Récent
-                </h3>
-                <div class="space-y-2 max-h-60 overflow-y-auto" id="history-container">
-                    <p class="text-xs text-slate-500 text-center py-4">Aucune activité enregistrée.</p>
-                </div>
-            </div>
-
-            <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl">
-                <h3 class="text-sm font-bold mb-3 flex items-center gap-2">
-                    <i data-lucide="gauge" class="w-4 h-4 text-brand-500"></i> Allures de Base
-                </h3>
-                <div class="space-y-2 text-xs">
-                    <div class="flex justify-between py-1 border-b border-slate-800">
-                        <span class="text-slate-400 font-bold">1. Endurance (EF lente)</span>
-                        <span class="font-mono text-brand-500 font-bold">5:10 - 5:40/km</span>
-                    </div>
-                    <p class="text-[10px] text-slate-500 -mt-1 mb-2">Objectif : Sortir de la zone grise et recruter les fibres I.</p>
-                    <div class="flex justify-between py-1 border-b border-slate-800">
-                        <span class="text-slate-400">2. Seuil Actuel (VDOT 51)</span>
-                        <span class="font-mono text-white">4:11/km</span>
-                    </div>
-                    <div class="flex justify-between py-1 border-b border-slate-800">
-                        <span class="text-slate-400">3. Vitesse Actuelle (VDOT 51)</span>
-                        <span class="font-mono text-white">3:36/km</span>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- TAB STRAVA -->
-        <section id="tab-strava" class="space-y-4 hidden">
-            <h2 class="text-lg font-bold">Liaison Strava & PWA</h2>
-            <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl space-y-3">
-                <div class="flex justify-between items-center">
-                    <span class="font-bold flex items-center gap-2 text-orange-500">
-                        <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M15.387 17.944l-2.089-4.116h-3.065l5.154 10.172 5.154-10.172h-3.065l-2.089 4.116zm-5.711-11.264l-3.31 6.516h4.811l1.737-3.418 1.737 3.418h4.811l-3.31-6.516-4.811 0z"/></svg>
-                        Strava Sync
-                    </span>
-                    <span id="strava-status-badge" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-950 text-red-400 border border-red-800">Déconnecté</span>
-                </div>
-                
-                <p class="text-xs text-slate-400 leading-relaxed">
-                    <strong>Note technique :</strong> En raison des restrictions de sécurité (CORS) des navigateurs, l'échange de jeton automatique nécessite un proxy. Utilisez l'option Jeton Manuel ci-dessous.
-                </p>
-
-                <div class="space-y-3 pt-2">
-                    <div class="p-3 bg-slate-950 border border-slate-800 rounded-lg space-y-2">
-                        <span class="text-xs font-bold text-brand-500 block">Option 1 : Jeton d'accès manuel (Recommandé)</span>
-                        <input id="strava-manual-token" type="password" placeholder="Ex: 83ebeabdec09f667..." class="w-full bg-slate-900 border border-slate-800 px-3 py-1.5 rounded text-xs text-white focus:outline-none focus:border-brand-500">
-                        <button onclick="saveManualToken()" class="w-full bg-brand-500 text-slate-950 font-bold py-1.5 rounded text-xs hover:bg-brand-600 transition">Enregistrer le jeton</button>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <!-- MODAL DETAILS -->
-    <div id="details-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[60] flex items-center justify-center hidden p-4">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md flex flex-col max-h-[85vh] shadow-2xl">
-            <div class="p-4 border-b border-slate-800 flex justify-between items-center shrink-0">
-                <div class="flex items-center gap-2">
-                    <span id="details-type-badge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-800 text-slate-300">Type</span>
-                    <span id="details-day" class="text-xs font-bold text-slate-400">Jour</span>
-                </div>
-                <button onclick="closeDetailsModal()" class="p-2 hover:bg-slate-800 rounded-full text-slate-400 transition"><i data-lucide="x" class="w-5 h-5"></i></button>
-            </div>
-            
-            <div class="p-5 overflow-y-auto space-y-5">
-                <div>
-                    <h3 class="text-xl font-bold text-white mb-1" id="details-title">Titre de la séance</h3>
-                    <div class="flex items-center gap-1.5 text-xs text-brand-500 font-bold uppercase">
-                        <i data-lucide="target" class="w-4 h-4"></i> Cible : <span id="details-target">0:00/km</span>
-                    </div>
-                </div>
-                <div class="bg-slate-950 border border-slate-800 p-4 rounded-xl">
-                    <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-2">
-                        <i data-lucide="brain-circuit" class="w-4 h-4"></i> Objectif Physiologique
-                    </h4>
-                    <p class="text-sm text-slate-300 leading-relaxed" id="details-objective">Objectif...</p>
-                </div>
-                <div>
-                    <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-2">
-                        <i data-lucide="clipboard-list" class="w-4 h-4"></i> Détail des Exercices
-                    </h4>
-                    <div class="text-sm text-slate-300 space-y-3 leading-relaxed" id="details-content"></div>
-                </div>
-            </div>
-            
-            <div class="p-4 border-t border-slate-800 shrink-0">
-                <button onclick="closeDetailsModal()" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-3 rounded-xl transition text-sm">Fermer</button>
-            </div>
+        <div class="w-full bg-slate-800 rounded-full h-2">
+            <div id="global-progress-bar" class="bg-brand-500 h-2 rounded-full transition-all duration-500" style="width:0%"></div>
         </div>
     </div>
+</header>
 
-    <!-- MODAL LOG -->
-    <div id="log-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[60] flex items-end sm:items-center justify-center hidden p-4 sm:p-0">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md shadow-2xl flex flex-col max-h-[90vh]">
-            
-            <div class="p-4 border-b border-slate-800 flex justify-between items-center shrink-0">
-                <h3 class="text-lg font-bold" id="log-modal-title">Saisir ma Performance</h3>
-                <button onclick="closeLogModal()" class="p-2 hover:bg-slate-800 rounded-full text-slate-400 transition"><i data-lucide="x" class="w-5 h-5"></i></button>
+<div id="toast" class="fixed top-24 left-1/2 transform -translate-x-1/2 bg-green-700 text-white px-4 py-2 rounded-lg shadow-xl text-sm font-semibold hidden z-[200]"></div>
+
+<!-- ═══════════════════════════════════════════════════════
+     MAIN CONTENT
+══════════════════════════════════════════════════════════ -->
+<main class="flex-grow p-4 max-w-lg mx-auto w-full space-y-4">
+
+    <!-- ── TAB PROGRAMME ── -->
+    <section id="tab-programme" class="space-y-4">
+
+        <!-- Alertes IA + recommandations récup -->
+        <div id="ai-coach-alerts" class="hidden rounded-xl p-4 shadow-lg" style="background:rgba(49,46,129,0.2);border:1px solid rgba(139,92,246,0.4)">
+            <h4 class="text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-2" style="color:#a78bfa">
+                <i data-lucide="cpu" class="w-4 h-4"></i> Adaptation en Temps Réel
+            </h4>
+            <ul id="ai-alerts-list" class="text-xs space-y-1.5 list-disc list-inside leading-relaxed font-medium" style="color:#c7d2fe"></ul>
+        </div>
+
+        <!-- Récup / charge hebdo -->
+        <div id="recovery-banner" class="hidden rounded-xl p-3" style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.35)">
+            <p id="recovery-msg" class="text-xs font-bold" style="color:#f87171"></p>
+        </div>
+
+        <!-- Sélecteur semaines -->
+        <div class="flex gap-2 overflow-x-auto no-scrollbar py-2 -mx-4 px-4" style="background:#020617">
+            <div id="week-selector-container" class="flex gap-2"></div>
+        </div>
+
+        <!-- Info phase -->
+        <div class="rounded-xl p-4" style="background:rgba(15,23,42,0.7);border:1px solid #1e293b">
+            <div class="flex items-center gap-2 font-bold text-sm mb-1" style="color:#84cc16">
+                <i data-lucide="award" class="w-4 h-4"></i>
+                <span id="phase-title">Phase</span>
             </div>
-            
-            <div class="p-5 overflow-y-auto space-y-5">
-                <input type="hidden" id="log-session-id">
-                
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="text-xs text-slate-400 block mb-1">Date</label>
-                        <input id="log-date" type="date" class="w-full bg-slate-950 border border-slate-800 px-3 py-2 rounded-lg text-sm text-white focus:outline-none">
-                    </div>
-                    <div>
-                        <label class="text-xs text-slate-400 block mb-1">Fréquence Cardiaque</label>
-                        <input id="log-hr" type="number" placeholder="Ex: 145 bpm" class="w-full bg-slate-950 border border-slate-800 px-3 py-2 rounded-lg text-sm text-white focus:outline-none">
-                    </div>
-                </div>
-                
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="text-xs text-slate-400 block mb-1">Distance (km)</label>
-                        <input id="log-distance" type="number" step="0.01" placeholder="Ex: 8.5" class="w-full bg-slate-950 border border-slate-800 px-3 py-2 rounded-lg text-sm text-white focus:outline-none focus:border-brand-500">
-                    </div>
-                    <div>
-                        <label class="text-xs text-slate-400 block mb-1">Durée (Min:Sec)</label>
-                        <div class="flex gap-1 items-center">
-                            <input id="log-duration-min" type="number" placeholder="Min" class="w-1/2 bg-slate-950 border border-slate-800 px-3 py-2 rounded-lg text-sm text-white text-center focus:outline-none">
-                            <span class="text-slate-500">:</span>
-                            <input id="log-duration-sec" type="number" placeholder="Sec" class="w-1/2 bg-slate-950 border border-slate-800 px-3 py-2 rounded-lg text-sm text-white text-center focus:outline-none">
-                        </div>
-                    </div>
-                </div>
+            <p id="phase-focus" class="text-xs" style="color:#94a3b8"></p>
+        </div>
 
-                <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-6">
-                    <div class="flex justify-between items-center border-b border-slate-800 pb-2">
-                        <label class="text-xs font-bold text-slate-400 flex items-center gap-2">
-                            <i data-lucide="activity" class="w-4 h-4"></i> RPE Multi-facteurs
-                        </label>
-                        <span class="text-sm font-black text-brand-500 bg-brand-500/10 px-2 py-0.5 rounded" id="rpe-result-display">RPE : 5/10</span>
-                    </div>
-                    
-                    <div>
-                        <div class="flex justify-between text-[11px] text-slate-400 mb-2">
-                            <span class="font-bold text-white">🌬️ Respiration</span>
-                            <span id="val-resp" class="font-bold text-brand-500">5</span>
-                        </div>
-                        <input type="range" id="log-rpe-resp" min="1" max="10" value="5" oninput="updateRPE()">
-                        <p id="desc-resp" class="text-[10px] text-slate-500 italic mt-1.5 h-3">Phrases entières rythmées (Modéré)</p>
-                    </div>
-                    <div>
-                        <div class="flex justify-between text-[11px] text-slate-400 mb-2">
-                            <span class="font-bold text-white">🦵 Muscles</span>
-                            <span id="val-musc" class="font-bold text-brand-500">5</span>
-                        </div>
-                        <input type="range" id="log-rpe-musc" min="1" max="10" value="5" oninput="updateRPE()">
-                        <p id="desc-musc" class="text-[10px] text-slate-500 italic mt-1.5 h-3">Légère chaleur, foulée fluide (Soutenu)</p>
-                    </div>
-                    <div>
-                        <div class="flex justify-between text-[11px] text-slate-400 mb-2">
-                            <span class="font-bold text-white">🧠 Mental</span>
-                            <span id="val-ment" class="font-bold text-brand-500">5</span>
-                        </div>
-                        <input type="range" id="log-rpe-ment" min="1" max="10" value="5" oninput="updateRPE()">
-                        <p id="desc-ment" class="text-[10px] text-slate-500 italic mt-1.5 h-3">Concentré sur l'allure (Concentré)</p>
-                    </div>
-                </div>
+        <div class="space-y-3" id="sessions-container"></div>
+    </section>
 
-                <div>
-                    <label class="text-xs text-slate-400 block mb-1">Notes / Commentaires</label>
-                    <textarea id="log-notes" rows="2" placeholder="Sensations physiques, météo..." class="w-full bg-slate-950 border border-slate-800 px-3 py-2 rounded-lg text-sm text-white focus:outline-none"></textarea>
-                </div>
+    <!-- ── TAB STATS ── -->
+    <section id="tab-stats" class="space-y-4 hidden">
+        <h2 class="text-lg font-bold">Statistiques & Analyse</h2>
+
+        <!-- KPIs -->
+        <div class="grid grid-cols-3 gap-2">
+            <div class="rounded-xl p-3 text-center" style="background:#0f172a;border:1px solid #1e293b">
+                <span class="text-[10px] block mb-1" style="color:#94a3b8">Distance</span>
+                <span id="stat-total-dist" class="text-lg font-black" style="color:#84cc16">0 km</span>
             </div>
-            
-            <div class="p-4 border-t border-slate-800 shrink-0">
-                <button onclick="saveSessionLog()" class="w-full bg-brand-500 hover:bg-brand-600 text-slate-950 font-black py-3 rounded-xl transition shadow-lg text-sm flex items-center justify-center gap-2">
-                    <i data-lucide="save" class="w-4 h-4"></i> Enregistrer l'activité
-                </button>
+            <div class="rounded-xl p-3 text-center" style="background:#0f172a;border:1px solid #1e293b">
+                <span class="text-[10px] block mb-1" style="color:#94a3b8">Séances</span>
+                <span id="stat-total-completed" class="text-lg font-black" style="color:#84cc16">0</span>
+            </div>
+            <div class="rounded-xl p-3 text-center" style="background:#0f172a;border:1px solid #1e293b">
+                <span class="text-[10px] block mb-1" style="color:#94a3b8">VDOT estimé</span>
+                <span id="stat-vdot" class="text-lg font-black" style="color:#84cc16">~51</span>
             </div>
         </div>
-    </div>
 
-    <!-- MODAL SETTINGS -->
-    <div id="settings-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[60] flex items-center justify-center hidden p-4">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md p-6 space-y-4">
+        <!-- Charge hebdo -->
+        <div class="rounded-xl p-4" style="background:#0f172a;border:1px solid #1e293b">
+            <h3 class="text-sm font-bold mb-1 flex items-center gap-2">
+                <i data-lucide="zap" class="w-4 h-4" style="color:#84cc16"></i> Charge Cette Semaine
+            </h3>
+            <div id="weekly-load-display" class="flex items-center gap-3 mt-2">
+                <div class="flex-1 rounded-full h-3" style="background:#1e293b">
+                    <div id="weekly-load-bar" class="h-3 rounded-full transition-all" style="width:0%;background:#84cc16"></div>
+                </div>
+                <span id="weekly-load-val" class="text-sm font-black" style="color:#84cc16">0 UA</span>
+            </div>
+            <p id="weekly-load-msg" class="text-xs mt-1" style="color:#64748b">Charge en unités arbitraires (km × RPE)</p>
+        </div>
+
+        <!-- Graphique RPE -->
+        <div class="rounded-xl p-4" style="background:#0f172a;border:1px solid #1e293b">
+            <h3 class="text-sm font-bold mb-3 flex items-center gap-2">
+                <i data-lucide="trending-up" class="w-4 h-4" style="color:#84cc16"></i> Progression RPE / Semaine
+            </h3>
+            <div class="chart-container">
+                <canvas id="chart-rpe"></canvas>
+            </div>
+        </div>
+
+        <!-- Graphique allure réelle vs cible -->
+        <div class="rounded-xl p-4" style="background:#0f172a;border:1px solid #1e293b">
+            <h3 class="text-sm font-bold mb-3 flex items-center gap-2">
+                <i data-lucide="gauge" class="w-4 h-4" style="color:#84cc16"></i> Allure Réelle vs Cible
+            </h3>
+            <div class="chart-container">
+                <canvas id="chart-pace"></canvas>
+            </div>
+        </div>
+
+        <!-- Détection de plateau -->
+        <div id="plateau-box" class="hidden rounded-xl p-4" style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.4)">
+            <h3 class="text-sm font-bold mb-1 flex items-center gap-2" style="color:#fbbf24">
+                <i data-lucide="alert-triangle" class="w-4 h-4"></i> Plateau Détecté
+            </h3>
+            <p id="plateau-msg" class="text-xs" style="color:#fcd34d"></p>
+        </div>
+
+        <!-- Historique -->
+        <div class="rounded-xl p-4" style="background:#0f172a;border:1px solid #1e293b">
+            <h3 class="text-sm font-bold mb-3 flex items-center gap-2">
+                <i data-lucide="history" class="w-4 h-4" style="color:#84cc16"></i> Historique Récent
+            </h3>
+            <div class="space-y-2 max-h-60 overflow-y-auto" id="history-container">
+                <p class="text-xs text-center py-4" style="color:#475569">Aucune activité enregistrée.</p>
+            </div>
+        </div>
+
+        <!-- Allures de référence -->
+        <div class="rounded-xl p-4" style="background:#0f172a;border:1px solid #1e293b">
+            <h3 class="text-sm font-bold mb-3 flex items-center gap-2">
+                <i data-lucide="bookmark" class="w-4 h-4" style="color:#84cc16"></i> Allures de Référence
+            </h3>
+            <div class="space-y-2 text-xs">
+                <div class="flex justify-between py-1" style="border-bottom:1px solid #1e293b">
+                    <span style="color:#94a3b8;font-weight:700">EF lente</span>
+                    <span class="font-mono font-bold" style="color:#84cc16">5:10 – 5:40/km</span>
+                </div>
+                <div class="flex justify-between py-1" style="border-bottom:1px solid #1e293b">
+                    <span style="color:#94a3b8">Seuil (VDOT 51)</span>
+                    <span class="font-mono" style="color:#fff">4:11/km</span>
+                </div>
+                <div class="flex justify-between py-1">
+                    <span style="color:#94a3b8">Vitesse VMA (VDOT 51)</span>
+                    <span class="font-mono" style="color:#fff">3:36/km</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── TAB STRAVA ── -->
+    <section id="tab-strava" class="space-y-4 hidden">
+        <h2 class="text-lg font-bold">Connexion Strava</h2>
+        <div class="rounded-xl p-4 space-y-3" style="background:#0f172a;border:1px solid #1e293b">
             <div class="flex justify-between items-center">
-                <h3 class="text-lg font-bold">Options & Paramètres</h3>
-                <button onclick="toggleSettingsModal()" class="p-2 hover:bg-slate-800 rounded-full text-slate-400 transition"><i data-lucide="x" class="w-5 h-5"></i></button>
+                <span class="font-bold flex items-center gap-2" style="color:#f97316">
+                    <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M15.387 17.944l-2.089-4.116h-3.065l5.154 10.172 5.154-10.172h-3.065l-2.089 4.116zm-5.711-11.264l-3.31 6.516h4.811l1.737-3.418 1.737 3.418h4.811l-3.31-6.516-4.811 0z"/></svg>
+                    Strava Sync
+                </span>
+                <span id="strava-status-badge" class="px-2 py-0.5 rounded-full text-[10px] font-bold" style="background:#450a0a;color:#f87171;border:1px solid #7f1d1d">Déconnecté</span>
             </div>
-            <div class="space-y-2 pt-2">
-                <button onclick="resetAllData()" class="w-full bg-red-950/40 hover:bg-red-900/60 text-red-400 border border-red-800 font-bold py-3 rounded-xl text-sm transition">
-                    Réinitialiser tout le programme
-                </button>
+            <p class="text-xs leading-relaxed" style="color:#64748b"><strong>Note :</strong> En raison des restrictions CORS, utilisez le jeton manuel ci-dessous.</p>
+            <div class="p-3 rounded-lg space-y-2" style="background:#020617;border:1px solid #1e293b">
+                <span class="text-xs font-bold block" style="color:#84cc16">Jeton d'accès manuel</span>
+                <input id="strava-manual-token" type="password" placeholder="Ex: 83ebeabdec09f667..." class="w-full px-3 py-1.5 rounded text-xs text-white focus:outline-none" style="background:#0f172a;border:1px solid #1e293b">
+                <button onclick="saveManualToken()" class="w-full font-bold py-1.5 rounded text-xs transition" style="background:#84cc16;color:#0f172a">Enregistrer le jeton</button>
             </div>
+        </div>
+        <!-- Notifications push -->
+        <div class="rounded-xl p-4 space-y-3" style="background:#0f172a;border:1px solid #1e293b">
+            <h3 class="text-sm font-bold flex items-center gap-2">
+                <i data-lucide="bell" class="w-4 h-4" style="color:#84cc16"></i> Notifications Push
+            </h3>
+            <p class="text-xs" style="color:#64748b">Recevez une notification la veille de chaque séance planifiée.</p>
+            <button id="notif-btn" onclick="requestNotifications()" class="w-full font-bold py-2 rounded-xl text-sm transition" style="background:#1e293b;color:#94a3b8;border:1px solid #334155">
+                Activer les notifications
+            </button>
+            <p id="notif-status" class="text-xs text-center" style="color:#64748b"></p>
+        </div>
+    </section>
+
+</main>
+
+<!-- ═══════════════════════════════════════════════════════
+     MODAL — DÉTAILS SÉANCE
+══════════════════════════════════════════════════════════ -->
+<div id="details-modal" class="fixed inset-0 z-[60] flex items-center justify-center hidden p-4" style="background:rgba(0,0,0,0.88);backdrop-filter:blur(8px)">
+    <div class="rounded-2xl w-full max-w-md flex flex-col shadow-2xl" style="background:#0f172a;border:1px solid #1e293b;max-height:85vh">
+        <div class="p-4 flex justify-between items-center shrink-0" style="border-bottom:1px solid #1e293b">
+            <div class="flex items-center gap-2">
+                <span id="details-type-badge" class="text-[10px] font-bold px-2 py-0.5 rounded-full" style="background:#1e293b;color:#94a3b8">Type</span>
+                <span id="details-day" class="text-xs font-bold" style="color:#64748b">Jour</span>
+            </div>
+            <button onclick="closeDetailsModal()" class="p-2 rounded-full transition" style="color:#64748b"><i data-lucide="x" class="w-5 h-5"></i></button>
+        </div>
+        <div class="p-5 overflow-y-auto space-y-4">
+            <div>
+                <h3 class="text-xl font-bold text-white mb-1" id="details-title"></h3>
+                <div class="flex items-center gap-1.5 text-xs font-bold uppercase" style="color:#84cc16">
+                    <i data-lucide="target" class="w-4 h-4"></i> Cible : <span id="details-target"></span>
+                </div>
+            </div>
+            <div class="p-4 rounded-xl" style="background:#020617;border:1px solid #1e293b">
+                <h4 class="text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-2" style="color:#475569">
+                    <i data-lucide="brain-circuit" class="w-4 h-4"></i> Objectif Physiologique
+                </h4>
+                <p class="text-sm leading-relaxed" style="color:#cbd5e1" id="details-objective"></p>
+            </div>
+            <div>
+                <h4 class="text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-2" style="color:#475569">
+                    <i data-lucide="clipboard-list" class="w-4 h-4"></i> Détail des Exercices
+                </h4>
+                <div class="text-sm leading-relaxed space-y-3" style="color:#cbd5e1" id="details-content"></div>
+            </div>
+        </div>
+        <div class="p-4 shrink-0 flex gap-2" style="border-top:1px solid #1e293b">
+            <button id="details-start-btn" onclick="startActiveSession()" class="flex-1 font-black py-3 rounded-xl transition text-sm flex items-center justify-center gap-2" style="background:#84cc16;color:#0f172a">
+                <i data-lucide="play" class="w-4 h-4"></i> Lancer la séance
+            </button>
+            <button onclick="closeDetailsModal()" class="px-4 font-bold py-3 rounded-xl transition text-sm" style="background:#1e293b;color:#fff">Fermer</button>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     MODAL — MODE SÉANCE ACTIVE (plein écran)
+══════════════════════════════════════════════════════════ -->
+<div id="active-session-modal" class="fixed inset-0 z-[80] hidden flex-col" style="background:#020617">
+    <!-- Header séance -->
+    <div class="px-4 pt-8 pb-3 flex justify-between items-center shrink-0" style="background:#0f172a;border-bottom:1px solid #1e293b">
+        <div>
+            <span id="active-type-badge" class="text-[10px] font-bold px-2 py-0.5 rounded-full mr-2" style="background:#1e293b;color:#94a3b8"></span>
+            <span class="text-xs font-bold" style="color:#64748b" id="active-day-label"></span>
+        </div>
+        <button onclick="closeActiveSession()" class="p-2 rounded-full" style="background:#1e293b;color:#94a3b8">
+            <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+    </div>
+    <h2 class="px-4 pt-3 text-lg font-black text-white shrink-0" id="active-session-title"></h2>
+
+    <!-- Minuteur central -->
+    <div class="flex flex-col items-center justify-center py-4 shrink-0">
+        <div class="relative w-36 h-36">
+            <svg class="w-full h-full -rotate-90" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="45" fill="none" stroke="#1e293b" stroke-width="6"/>
+                <circle id="timer-ring" cx="50" cy="50" r="45" fill="none" stroke="#84cc16" stroke-width="6"
+                    stroke-dasharray="283" stroke-dashoffset="283" stroke-linecap="round"
+                    style="transition:stroke-dashoffset 1s linear"/>
+            </svg>
+            <div class="absolute inset-0 flex flex-col items-center justify-center">
+                <span id="timer-display" class="text-3xl font-black text-white font-mono">00:00</span>
+                <span id="timer-label" class="text-[10px] font-bold uppercase mt-1" style="color:#84cc16">Prêt</span>
+            </div>
+        </div>
+        <!-- Contrôles minuteur -->
+        <div class="flex gap-3 mt-4">
+            <button onclick="timerStart()" id="btn-start" class="px-5 py-2 rounded-full font-bold text-sm" style="background:#84cc16;color:#0f172a">
+                <i data-lucide="play" class="w-4 h-4 inline-block"></i> Démarrer
+            </button>
+            <button onclick="timerPause()" id="btn-pause" class="px-5 py-2 rounded-full font-bold text-sm hidden" style="background:#1e293b;color:#fff">
+                <i data-lucide="pause" class="w-4 h-4 inline-block"></i> Pause
+            </button>
+            <button onclick="timerReset()" class="px-5 py-2 rounded-full font-bold text-sm" style="background:#1e293b;color:#94a3b8">
+                <i data-lucide="rotate-ccw" class="w-4 h-4 inline-block"></i>
+            </button>
+        </div>
+        <!-- Intervalles rapides -->
+        <div id="interval-controls" class="flex gap-2 mt-3 hidden">
+            <button onclick="setIntervalTimer(30)" class="px-3 py-1 rounded-full text-xs font-bold" style="background:#1e293b;color:#84cc16;border:1px solid #84cc16">30s</button>
+            <button onclick="setIntervalTimer(60)" class="px-3 py-1 rounded-full text-xs font-bold" style="background:#1e293b;color:#84cc16;border:1px solid rgba(132,204,22,0.4)">60s</button>
+            <button onclick="setIntervalTimer(90)" class="px-3 py-1 rounded-full text-xs font-bold" style="background:#1e293b;color:#84cc16;border:1px solid rgba(132,204,22,0.4)">90s</button>
+            <button onclick="setIntervalTimer(120)" class="px-3 py-1 rounded-full text-xs font-bold" style="background:#1e293b;color:#84cc16;border:1px solid rgba(132,204,22,0.4)">2min</button>
         </div>
     </div>
 
-    <!-- NAV -->
-    <nav class="fixed bottom-0 left-0 right-0 bg-slate-900/90 backdrop-blur-md border-t border-slate-800 flex justify-around py-3 px-6 z-50">
-        <button onclick="switchTab('programme')" id="nav-programme" class="flex flex-col items-center gap-1 text-brand-500 font-semibold text-[10px] transition">
-            <i data-lucide="calendar" class="w-5 h-5"></i>
-            <span>Programme</span>
+    <!-- Étapes de la séance -->
+    <div class="flex-1 overflow-y-auto px-4 pb-4 space-y-2" id="active-steps-container"></div>
+
+    <!-- Bouton log -->
+    <div class="p-4 shrink-0" style="border-top:1px solid #1e293b">
+        <button onclick="openLogFromActive()" class="w-full font-black py-3 rounded-xl text-sm flex items-center justify-center gap-2" style="background:#84cc16;color:#0f172a">
+            <i data-lucide="check-circle" class="w-4 h-4"></i> Terminer & Saisir ma perf
         </button>
-        <button onclick="switchTab('stats')" id="nav-stats" class="flex flex-col items-center gap-1 text-slate-400 text-[10px] transition">
-            <i data-lucide="trending-up" class="w-5 h-5"></i>
-            <span>Statistiques</span>
-        </button>
-        <button onclick="switchTab('strava')" id="nav-strava" class="flex flex-col items-center gap-1 text-slate-400 text-[10px] transition">
-            <i data-lucide="shuffle" class="w-5 h-5"></i>
-            <span>Connexion / PWA</span>
-        </button>
-    </nav>
+    </div>
+</div>
 
-    <script>
-        // -------------------------------------------------------
-        // CORRECTIF PRINCIPAL : wrapper initLucide correctement
-        // -------------------------------------------------------
-        function initLucide() {
-            if (typeof lucide !== 'undefined' && typeof lucide.createIcons === 'function') {
-                lucide.createIcons();
-            }
-        }
+<!-- ═══════════════════════════════════════════════════════
+     MODAL — LOG PERFORMANCE
+══════════════════════════════════════════════════════════ -->
+<div id="log-modal" class="fixed inset-0 z-[60] flex items-end sm:items-center justify-center hidden p-4 sm:p-0" style="background:rgba(0,0,0,0.8);backdrop-filter:blur(4px)">
+    <div class="rounded-2xl w-full max-w-md shadow-2xl flex flex-col" style="background:#0f172a;border:1px solid #1e293b;max-height:90vh">
+        <div class="p-4 flex justify-between items-center shrink-0" style="border-bottom:1px solid #1e293b">
+            <h3 class="text-lg font-bold" id="log-modal-title">Saisir ma Performance</h3>
+            <button onclick="closeLogModal()" class="p-2 rounded-full" style="color:#64748b"><i data-lucide="x" class="w-5 h-5"></i></button>
+        </div>
+        <div class="p-5 overflow-y-auto space-y-4">
+            <input type="hidden" id="log-session-id">
 
-        // -------------------------------------------------------
-        // TOAST
-        // -------------------------------------------------------
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            if (!toast) return;
-            toast.innerText = message;
-            toast.classList.remove('hidden');
-            setTimeout(() => toast.classList.add('hidden'), 3000);
-        }
-
-        // -------------------------------------------------------
-        // 1. DONNÉES LOCALES
-        // -------------------------------------------------------
-        let PLAN_WEEKS = [];
-        let currentWeek = 1;
-        let completedSessions = {};
-
-        try {
-            const storedWeek = localStorage.getItem('current_week');
-            if (storedWeek) {
-                currentWeek = parseInt(storedWeek);
-                if (isNaN(currentWeek) || currentWeek < 1 || currentWeek > 16) currentWeek = 1;
-            }
-        } catch(e) { currentWeek = 1; }
-
-        try {
-            const rawData = localStorage.getItem('completed_sessions');
-            if (rawData) {
-                const parsed = JSON.parse(rawData);
-                if (typeof parsed === 'object' && parsed !== null && !Array.isArray(parsed)) {
-                    for (let key in parsed) {
-                        if (parsed[key] && typeof parsed[key] === 'object') {
-                            completedSessions[key] = parsed[key];
-                        }
-                    }
-                }
-            }
-        } catch(e) {
-            completedSessions = {};
-        }
-
-        // -------------------------------------------------------
-        // 2. TEXTES RÉUTILISABLES
-        // -------------------------------------------------------
-        const forceRoutineDetails = `
-            <div class="space-y-3">
-                <div class="bg-slate-800/50 p-3 rounded-lg border border-slate-700/50">
-                    <span class="font-bold text-white block text-sm">1. Squat bulgare (Force Unilatérale)</span>
-                    <span class="text-xs text-slate-400">3 séries de 8 répétitions par jambe (Repos : 90s).<br/>Utilité : Stabilité du bassin.</span>
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="text-xs mb-1 block" style="color:#64748b">Date</label>
+                    <input id="log-date" type="date" class="w-full px-3 py-2 rounded-lg text-sm text-white focus:outline-none" style="background:#020617;border:1px solid #1e293b">
                 </div>
-                <div class="bg-slate-800/50 p-3 rounded-lg border border-slate-700/50">
-                    <span class="font-bold text-white block text-sm">2. Squat lourd contrôlé (Excentrique)</span>
-                    <span class="text-xs text-slate-400">3 séries de 8 rép (Tempo descente 4s).<br/>Utilité : Compense l'absence de descentes.</span>
-                </div>
-                <div class="bg-slate-800/50 p-3 rounded-lg border border-slate-700/50">
-                    <span class="font-bold text-white block text-sm">3. Nordic Hamstring Curl</span>
-                    <span class="text-xs text-slate-400">3 séries de 5 répétitions (Repos : 90s).</span>
-                </div>
-                <div class="bg-slate-800/50 p-3 rounded-lg border border-slate-700/50">
-                    <span class="font-bold text-white block text-sm">4. Élévations de mollets & Pogo Hops</span>
-                    <span class="text-xs text-slate-400">Raideur tendineuse vitale pour le terrain plat.</span>
+                <div>
+                    <label class="text-xs mb-1 block" style="color:#64748b">FC Moyenne (bpm)</label>
+                    <input id="log-hr" type="number" placeholder="Ex: 145" class="w-full px-3 py-2 rounded-lg text-sm text-white focus:outline-none" style="background:#020617;border:1px solid #1e293b">
                 </div>
             </div>
-        `;
-        const efObjective = "Sortir de la zone grise (4:07 - 4:22/km). Forcer l'endurance fondamentale stricte pour bâtir le réseau capillaire et développer les fibres de type I.";
-        const vmaObjective = "Cibler l'économie de course, la réactivité des appuis et la vitesse pure sans accumulation excessive d'acide lactique.";
-        const seuilObjective = "Repousser le point d'accumulation rapide du lactate dans le sang, permettant de courir plus vite avant l'acidose.";
 
-        // -------------------------------------------------------
-        // 3. UTILITAIRES
-        // -------------------------------------------------------
-        function secondsToPaceStr(secs) {
-            if (isNaN(secs) || secs <= 0) return "0:00/km";
-            const m = Math.floor(secs / 60);
-            const s = Math.floor(secs % 60);
-            return `${m}:${s.toString().padStart(2, '0')}/km`;
-        }
-        
-        function paceStrToSeconds(paceStr) {
-            if (!paceStr || typeof paceStr !== 'string' || !paceStr.includes(':')) return 0;
-            const parts = paceStr.replace('/km','').split(':');
-            return (parseInt(parts[0]) || 0) * 60 + (parseInt(parts[1]) || 0);
-        }
-
-        // -------------------------------------------------------
-        // 4. GÉNÉRATION DU PLAN
-        // -------------------------------------------------------
-        function buildBasePlan() {
-            let basePlan = [];
-            for (let w = 1; w <= 16; w++) {
-                let phase = "", focus = "", sessions = [];
-                
-                if (w <= 4) {
-                    phase = "Phase 1 : Base & Reconstruction";
-                    focus = "Reconstruction aérobie stricte (allure EF lente) et renforcement musculaire. On sort du piège de la zone grise.";
-                    if (w === 4) {
-                        sessions = [
-                            { id: `w${w}_s1`, day: "Mardi", type: "VMA", title: "Qualité - VMA Courte", desc: "6x 30s rapide / 45s lent.", target: "3:36/km", objective: vmaObjective, details: "Échauffement 15 min EF.<br/>6 répétitions de 30s à allure 3:36/km." },
-                            { id: `w${w}_s2`, day: "Mercredi", type: "Force", title: "Mobilité active", desc: "Auto-massages et étirements.", target: "20 min", objective: "Régénération neuromusculaire.", details: "Foam Roller et mobilité chevilles." },
-                            { id: `w${w}_s3`, day: "Jeudi", type: "EF", title: "Footing Récupération", desc: "30 min de footing en EF lente.", target: "5:35/km", objective: efObjective, details: "30 minutes à l'allure stricte de 5:35/km." },
-                            { id: `w${w}_s4`, day: "Dimanche", type: "Long", title: "Sortie Longue Décharge", desc: "45 min en EF pure.", target: "5:30/km", objective: efObjective, details: "45 minutes continues à allure 5:30/km." }
-                        ];
-                    } else {
-                        sessions = [
-                            { id: `w${w}_s1`, day: "Mardi", type: "VMA", title: `VMA Courte - ${6 + w*2}x 30"-30"`, desc: `${6 + w*2}x 30s rapide / 30s lent.`, target: "3:36/km", objective: vmaObjective, details: `Échauffement 20 min.<br/>${6 + w*2} répétitions de 30s (3:36/km).<br/>Récupération : 30s trot lent.` },
-                            { id: `w${w}_s2`, day: "Mercredi", type: "Force", title: "Routine de Force Biomécanique", desc: "Squats, Nordic Curl, Pogo Hops...", target: "30 min", objective: "Compenser l'absence de dénivelé.", details: forceRoutineDetails },
-                            { id: `w${w}_s3`, day: "Jeudi", type: "EF", title: "Footing EF (Reconstruction)", desc: `${25 + w*5} min de footing continu.`, target: "5:20/km", objective: efObjective, details: `Courez ${25 + w*5} minutes à l'allure stricte de 5:20/km. Refusez l'envie d'accélérer !` },
-                            { id: `w${w}_s4`, day: "Dimanche", type: "Long", title: `Sortie Longue progressive - ${45 + w*5} min`, desc: `${45 + w*5} min avec fin active.`, target: "Progressif", objective: "Habituer l'organisme à la durée.", details: `Terminez par 10 minutes à allure marathon actuelle (4:30/km).` }
-                        ];
-                    }
-                } else if (w <= 8) {
-                    phase = "Phase 2 : VMA & Seuil (VDOT 51-52)";
-                    focus = "Élévation progressive du seuil lactique de base et vitesse neuromusculaire.";
-                    if (w === 8) {
-                        sessions = [
-                            { id: `w${w}_s1`, day: "Mardi", type: "VMA", title: "Rappel Vitesse", desc: "6x 200m avec recup complète.", target: "3:28/km", objective: "Maintien stimulation nerveuse.", details: "6x 200m à allure 3:28/km.<br/>Marche complète 1 min." },
-                            { id: `w${w}_s2`, day: "Mercredi", type: "Force", title: "Mobilité", desc: "Séance d'auto-massages.", target: "25 min", objective: "Décharge.", details: "Focus récupération." },
-                            { id: `w${w}_s3`, day: "Jeudi", type: "EF", title: "Footing Récupération", desc: "35 min de footing très facile.", target: "5:35/km", objective: efObjective, details: "35 minutes à 5:35/km." },
-                            { id: `w${w}_s4`, day: "Dimanche", type: "Long", title: "Sortie Longue Décharge", desc: "60 min en EF pure.", target: "5:30/km", objective: "Assimilation.", details: "60 minutes à 5:30/km." }
-                        ];
-                    } else {
-                        sessions = [
-                            { id: `w${w}_s1`, day: "Mardi", type: "VMA", title: `Vitesse - ${6 + (w-4)*2}x 200m`, desc: `${6 + (w-4)*2}x 200m à 3:28/km.`, target: "3:28/km", objective: vmaObjective, details: `Échauffement 20 min.<br/>${6 + (w-4)*2}x 200m (3:28/km).` },
-                            { id: `w${w}_s2`, day: "Mercredi", type: "Force", title: "Routine de Force", desc: "Adaptation terrain plat.", target: "30 min", objective: "Contrôle rotulien.", details: forceRoutineDetails },
-                            { id: `w${w}_s3`, day: "Jeudi", type: "Seuil", title: `Seuil Lactique - ${w-3}x 1500m`, desc: `Allure seuil.`, target: "4:11/km", objective: seuilObjective, details: `${w-3}x 1500m à 4:11/km.` },
-                            { id: `w${w}_s4`, day: "Dimanche", type: "Long", title: `Sortie Longue - ${65 + (w-4)*5} min`, desc: "Inclusion allure semi.", target: "Progressif", objective: "Maintien posture sous fatigue.", details: `Incorporez 15 minutes à l'allure semi cible (4:15/km).` }
-                        ];
-                    }
-                } else if (w <= 12) {
-                    phase = "Phase 3 : Spécifique VDOT 56";
-                    focus = "Développement de la capacité de soutien spécifique à allure cible VDOT 56 (AS5 et AS10).";
-                    if (w === 12) {
-                        sessions = [
-                            { id: `w${w}_s1`, day: "Mardi", type: "VMA", title: "Rappel Allure 5K", desc: "3x 1000m.", target: "3:35/km", objective: "Stimulation VO2 Max.", details: "3x 1000m à 3:35/km." },
-                            { id: `w${w}_s2`, day: "Mercredi", type: "Force", title: "Mobilité active", desc: "Yoga.", target: "25 min", objective: "Relâchement.", details: "Yoga hanches et psoas." },
-                            { id: `w${w}_s3`, day: "Jeudi", type: "EF", title: "Footing Récupération", desc: "40 min très facile.", target: "5:35/km", objective: efObjective, details: "40 minutes à 5:35/km." },
-                            { id: `w${w}_s4`, day: "Dimanche", type: "Long", title: "Sortie Longue Décharge", desc: "70 min sur plat.", target: "5:30/km", objective: "Maintien aérobie.", details: "70 minutes en EF." }
-                        ];
-                    } else {
-                        sessions = [
-                            { id: `w${w}_s1`, day: "Mardi", type: "VMA", title: `VO2 Max / I-Pace - ${w-6}x 1000m`, desc: `Allure cible 5K.`, target: "3:35/km", objective: "Solliciter directement le VO2 max.", details: `${w-6}x 1000m à 3:35/km.` },
-                            { id: `w${w}_s2`, day: "Mercredi", type: "Force", title: "Routine Spécifique", desc: "Excentrique.", target: "30 min", objective: "Soutien mécanique.", details: forceRoutineDetails },
-                            { id: `w${w}_s3`, day: "Jeudi", type: "Seuil", title: `AS10 / Seuil - ${w-7}x 2000m`, desc: `Allure 10K ou Seuil.`, target: "3:52/km", objective: seuilObjective, details: `${w-7}x 2000m à 3:52/km.` },
-                            { id: `w${w}_s4`, day: "Dimanche", type: "Long", title: `Sortie Longue - ${80 + (w-8)*5} min`, desc: "Blocs allure semi.", target: "Progressif", objective: "Spécificité longue distance.", details: `Intégrez 2 blocs de 15 min à 4:15/km.` }
-                        ];
-                    }
-                } else {
-                    phase = "Phase 4 : Affûtage & Course (VDOT 56)";
-                    focus = "Dissipation complète de la fatigue et surcompensation.";
-                    if (w === 16) {
-                        sessions = [
-                            { id: `w${w}_s1`, day: "Mardi", type: "VMA", title: "Veille de Course - 6x 200m", desc: "Allure 3:18/km.", target: "3:18/km", objective: "Déblocage nerveux.", details: "6x 200m à 3:18/km." },
-                            { id: `w${w}_s2`, day: "Mercredi", type: "Force", title: "Stabilité Légère", desc: "Gainage statique.", target: "10 min", objective: "Tonicité centrale.", details: "Planche frontale/latérale." },
-                            { id: `w${w}_s3`, day: "Jeudi", type: "EF", title: "Réveil Musculaire", desc: "25 min EF + Lignes droites.", target: "5:35/km", objective: "Garder les jambes actives.", details: "25 min à 5:35/km." },
-                            { id: `w${w}_s4`, day: "Dimanche", type: "Course", title: "JOUR DE TEST : Objectif VDOT 56", desc: "Course ciblée.", target: "Course", objective: "Valider VDOT.", details: "Stratégie métronomique." }
-                        ];
-                    } else {
-                        let scale = 16 - w;
-                        sessions = [
-                            { id: `w${w}_s1`, day: "Mardi", type: "VMA", title: `VMA d'affûtage - ${6 + scale*2}x 200m`, desc: `Allure Repetition.`, target: "3:18/km", objective: "Maintien intensité.", details: `${6 + scale*2}x 200m à 3:18/km.` },
-                            { id: `w${w}_s2`, day: "Mercredi", type: "Force", title: "Gainage", desc: "Réduction charges.", target: "15 min", objective: "Surcompensation.", details: "Proprioception." },
-                            { id: `w${w}_s3`, day: "Jeudi", type: "Seuil", title: "Seuil Court", desc: `2x 1000m seuil cible.`, target: "3:52/km", objective: "Mémorisation allure.", details: `2x 1000m à 3:52/km.` },
-                            { id: `w${w}_s4`, day: "Dimanche", type: "Long", title: "Sortie Longue Réduite", desc: `${50 + scale*5} min en EF.`, target: "5:30/km", objective: "Garder l'endurance.", details: `${50 + scale*5} min à 5:30/km.` }
-                        ];
-                    }
-                }
-                basePlan.push({ week: w, phase, focus, sessions });
-            }
-            return basePlan;
-        }
-
-        // -------------------------------------------------------
-        // 5. MOTEUR D'ADAPTATION IA
-        // -------------------------------------------------------
-        function applyAdaptations(basePlan, logs) {
-            let adaptations = [];
-            let currentPaces = { VMA: 216, Seuil: 251, EF: 330 };
-            let grayZoneViolations = 0;
-            let weekExhaustionFlag = false;
-
-            basePlan.forEach(w => {
-                let weekRpeSum = 0;
-                let weekLogCount = 0;
-
-                w.sessions.forEach(session => {
-                    const log = logs[session.id];
-                    
-                    if (log && typeof log === 'object') {
-                        weekLogCount++;
-                        const rpe = parseInt(log.rpe) || 0;
-                        weekRpeSum += rpe;
-
-                        const dist = parseFloat(log.distance || 0);
-                        const durationStr = log.duration ? String(log.duration) : "00:00";
-                        const tParts = durationStr.split(':');
-                        const totalSecs = (parseInt(tParts[0]) || 0) * 60 + (parseInt(tParts[1]) || 0);
-                        const paceSecs = dist > 0 ? totalSecs / dist : 0;
-
-                        if (session.type === 'EF' && paceSecs > 0 && paceSecs < 310) {
-                            grayZoneViolations++;
-                        }
-
-                        const targetSecs = paceStrToSeconds(session.target);
-                        if (session.type === 'VMA' && targetSecs > 0 && paceSecs > 0 && paceSecs <= targetSecs + 3 && rpe <= 6) {
-                            currentPaces.VMA -= 2;
-                            currentPaces.Seuil -= 2;
-                            adaptations.push(`🔥 Progression ! Séance ${session.title} validée avec aisance. Cibles VMA/Seuil durcies (-2s/km).`);
-                        }
-                    } else {
-                        if (grayZoneViolations > 0 && (session.type === 'VMA' || session.type === 'Seuil')) {
-                            session.type = 'EF';
-                            session.title = "⚠️ Récupération Forcée (Alerte Zone Grise)";
-                            session.desc = "Séance transformée en récupération stricte pour éviter la fatigue.";
-                            session.target = "5:35/km";
-                            session.objective = "Dissiper la fatigue périphérique de la zone grise.";
-                            grayZoneViolations--;
-                            if (!adaptations.some(a => a.includes("Zone Grise"))) {
-                                adaptations.push("⚠️ Surcharge 'Zone Grise' détectée. Prochain intervalle converti en repos actif.");
-                            }
-                        } else if (weekExhaustionFlag && session.type === 'Long') {
-                            session.desc = "🔋 VOLUME RÉDUIT (-15%). " + session.desc;
-                            if (!adaptations.some(a => a.includes("Fatigue nerveuse"))) {
-                                adaptations.push("📉 Fatigue nerveuse (RPE > 7.5). Volume des sorties longues réduit de 15%.");
-                            }
-                        } else {
-                            if (session.type === 'VMA' && session.target && session.target.includes(':')) session.target = secondsToPaceStr(currentPaces.VMA);
-                            if (session.type === 'Seuil' && session.target && session.target.includes(':')) session.target = secondsToPaceStr(currentPaces.Seuil);
-                        }
-                    }
-                });
-
-                if (weekLogCount > 0) {
-                    weekExhaustionFlag = (weekRpeSum / weekLogCount) > 7.5;
-                }
-            });
-
-            return { finalPlan: basePlan, messages: [...new Set(adaptations)] };
-        }
-
-        // -------------------------------------------------------
-        // 6. INITIALISATION
-        // -------------------------------------------------------
-        document.addEventListener('DOMContentLoaded', () => {
-            // On attend que Lucide soit disponible avant de démarrer
-            const waitForLucide = setInterval(() => {
-                if (typeof lucide !== 'undefined') {
-                    clearInterval(waitForLucide);
-                    initLucide();
-                    generateAndRenderPlan();
-                    updateStravaUi();
-                }
-            }, 50);
-        });
-
-        function generateAndRenderPlan() {
-            const base = buildBasePlan();
-            const adaptationResult = applyAdaptations(base, completedSessions);
-            PLAN_WEEKS = adaptationResult.finalPlan;
-            
-            const alertsBox = document.getElementById('ai-coach-alerts');
-            const alertsList = document.getElementById('ai-alerts-list');
-            
-            if (alertsBox && alertsList) {
-                if (adaptationResult.messages.length > 0) {
-                    alertsList.innerHTML = '';
-                    adaptationResult.messages.forEach(msg => {
-                        const li = document.createElement('li');
-                        li.innerText = msg;
-                        alertsList.appendChild(li);
-                    });
-                    alertsBox.classList.remove('hidden');
-                } else {
-                    alertsBox.classList.add('hidden');
-                }
-            }
-
-            renderWeekSelector();
-            renderActiveWeek();
-            updateGlobalProgress();
-        }
-
-        function renderWeekSelector() {
-            const container = document.getElementById('week-selector-container');
-            if (!container) return;
-            container.innerHTML = '';
-            for (let i = 1; i <= 16; i++) {
-                const btn = document.createElement('button');
-                const isActiveWeek = currentWeek === i;
-                btn.style.cssText = isActiveWeek
-                    ? 'padding:8px 16px;border-radius:999px;font-weight:700;font-size:14px;flex-shrink:0;cursor:pointer;white-space:nowrap;background:#84cc16;color:#0f172a;box-shadow:0 4px 15px rgba(132,204,22,0.25);border:none'
-                    : 'padding:8px 16px;border-radius:999px;font-weight:700;font-size:14px;flex-shrink:0;cursor:pointer;white-space:nowrap;background:#0f172a;color:#94a3b8;border:1px solid #1e293b';
-                btn.innerText = `Sem. ${i}`;
-                btn.onclick = () => {
-                    currentWeek = i;
-                    localStorage.setItem('current_week', currentWeek.toString());
-                    renderWeekSelector();
-                    renderActiveWeek();
-                };
-                container.appendChild(btn);
-            }
-        }
-
-        function renderActiveWeek() {
-            let safeWeekData = PLAN_WEEKS.find(w => w.week === currentWeek);
-            if (!safeWeekData) {
-                currentWeek = 1;
-                localStorage.setItem('current_week', '1');
-                safeWeekData = PLAN_WEEKS.find(w => w.week === 1);
-                if (!safeWeekData) return;
-            }
-
-            const titleEl = document.getElementById('phase-title');
-            const focusEl = document.getElementById('phase-focus');
-            const container = document.getElementById('sessions-container');
-            
-            if (titleEl) titleEl.innerText = safeWeekData.phase;
-            if (focusEl) focusEl.innerText = safeWeekData.focus;
-            if (!container) return;
-            
-            container.innerHTML = '';
-
-            safeWeekData.sessions.forEach(session => {
-                const isCompleted = !!completedSessions[session.id];
-                const completedData = completedSessions[session.id];
-
-                // Styles inline pour éviter le problème Tailwind CDN + classes dynamiques JS
-                const badgeStyles = {
-                    'VMA':    'background:#450a0a;color:#f87171;border:1px solid rgba(239,68,68,0.3)',
-                    'Seuil':  'background:#431407;color:#fb923c;border:1px solid rgba(249,115,22,0.3)',
-                    'Force':  'background:#172554;color:#60a5fa;border:1px solid rgba(59,130,246,0.3)',
-                    'EF':     'background:#052e16;color:#4ade80;border:1px solid rgba(34,197,94,0.3)',
-                    'Long':   'background:#431407;color:#fdba74;border:1px solid rgba(251,146,60,0.3)',
-                    'Course': 'background:rgba(132,204,22,0.15);color:#84cc16;border:1px solid rgba(132,204,22,0.4)',
-                };
-                const badgeStyle = badgeStyles[session.type] || 'background:#1e293b;color:#94a3b8';
-
-                const isAdapted = session.title.includes('⚠️');
-
-                const card = document.createElement('div');
-                card.style.cssText = `
-                    background: ${isCompleted ? 'rgba(15,23,42,0.6)' : isAdapted ? 'rgba(49,46,129,0.08)' : '#0f172a'};
-                    border: 1px solid ${isCompleted ? 'rgba(132,204,22,0.35)' : isAdapted ? 'rgba(139,92,246,0.4)' : '#1e293b'};
-                    border-radius: 12px; padding: 16px; cursor: pointer; transition: background 0.2s;
-                `;
-                card.onmouseenter = () => card.style.background = isCompleted ? 'rgba(15,23,42,0.6)' : 'rgba(30,41,59,0.6)';
-                card.onmouseleave = () => card.style.background = isCompleted ? 'rgba(15,23,42,0.6)' : isAdapted ? 'rgba(49,46,129,0.08)' : '#0f172a';
-                card.onclick = () => openDetailsModal(session.id);
-
-                let completedStatsHtml = '';
-                if (isCompleted && completedData && typeof completedData === 'object') {
-                    completedStatsHtml = `
-                        <div class="mt-3 pt-3 border-t border-slate-800 text-xs grid grid-cols-2 gap-2 text-slate-400">
-                            <div>🏁 <strong>Distance :</strong> ${completedData.distance || '0'} km</div>
-                            <div>⏱️ <strong>Durée :</strong> ${completedData.duration || 'N/A'}</div>
-                            <div>❤️ <strong>FC Moy :</strong> ${completedData.hr || 'N/A'} bpm</div>
-                            <div>🧠 <strong>RPE :</strong> ${completedData.rpe || 'N/A'}/10</div>
-                            ${completedData.notes ? `<div class="col-span-2 mt-1 italic text-slate-500">"${completedData.notes}"</div>` : ''}
-                        </div>
-                    `;
-                }
-
-                // CORRECTIF : on utilise data-id pour éviter les problèmes de quotes dans onclick
-                const toggleBtnStyle = isCompleted
-                    ? 'background:rgba(132,204,22,0.1);border:1px solid #84cc16;color:#84cc16'
-                    : 'background:#020617;border:1px solid #1e293b;color:#475569';
-
-                card.innerHTML = `
-                    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
-                        <div style="min-width:0;flex:1">
-                            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px">
-                                <span style="font-size:11px;font-weight:700;color:#94a3b8">${session.day}</span>
-                                <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:999px;${badgeStyle}">${session.type}</span>
-                                ${isAdapted ? '<span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:999px;background:rgba(139,92,246,0.15);color:#a78bfa;border:1px solid rgba(139,92,246,0.3)">Auto-Adapté</span>' : ''}
-                            </div>
-                            <h4 style="font-weight:700;color:${isCompleted ? '#64748b' : '#fff'};font-size:14px;text-decoration:${isCompleted ? 'line-through' : 'none'};margin-bottom:4px">${session.title}</h4>
-                            <p style="font-size:12px;color:#94a3b8;line-height:1.5;margin-bottom:6px">${session.desc}</p>
-                            <div style="display:flex;align-items:center;gap:6px;font-size:10px;color:#84cc16;font-weight:700;text-transform:uppercase">
-                                <i data-lucide="target" style="width:14px;height:14px"></i> Target : ${session.target}
-                            </div>
-                        </div>
-                        <button class="session-toggle-btn" data-id="${session.id}"
-                            style="padding:8px;border-radius:8px;flex-shrink:0;cursor:pointer;transition:all 0.2s;${toggleBtnStyle}">
-                            <i data-lucide="${isCompleted ? 'check-square' : 'square'}" style="width:20px;height:20px;display:block"></i>
-                        </button>
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="text-xs mb-1 block" style="color:#64748b">Distance (km)</label>
+                    <input id="log-distance" type="number" step="0.01" placeholder="Ex: 8.5" oninput="computeRealPace()" class="w-full px-3 py-2 rounded-lg text-sm text-white focus:outline-none" style="background:#020617;border:1px solid #1e293b">
+                </div>
+                <div>
+                    <label class="text-xs mb-1 block" style="color:#64748b">Durée (Min : Sec)</label>
+                    <div class="flex gap-1 items-center">
+                        <input id="log-duration-min" type="number" placeholder="Min" oninput="computeRealPace()" class="w-1/2 px-2 py-2 rounded-lg text-sm text-white text-center focus:outline-none" style="background:#020617;border:1px solid #1e293b">
+                        <span style="color:#475569">:</span>
+                        <input id="log-duration-sec" type="number" placeholder="Sec" oninput="computeRealPace()" class="w-1/2 px-2 py-2 rounded-lg text-sm text-white text-center focus:outline-none" style="background:#020617;border:1px solid #1e293b">
                     </div>
-                    ${completedStatsHtml}
-                `;
+                </div>
+            </div>
 
-                container.appendChild(card);
-            });
+            <!-- Allure calculée en temps réel -->
+            <div id="real-pace-box" class="hidden rounded-xl p-3 flex items-center justify-between" style="background:rgba(132,204,22,0.07);border:1px solid rgba(132,204,22,0.3)">
+                <span class="text-xs font-bold" style="color:#84cc16">⚡ Allure réelle calculée</span>
+                <div class="text-right">
+                    <span id="real-pace-val" class="text-lg font-black text-white font-mono"></span>
+                    <span id="pace-diff-val" class="text-xs block font-bold"></span>
+                </div>
+            </div>
 
-            // Délégation d'événements pour les boutons toggle (évite les problèmes de quotes)
-            container.querySelectorAll('.session-toggle-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    toggleSessionState(btn.dataset.id);
-                });
-            });
+            <!-- RPE -->
+            <div class="p-4 rounded-xl space-y-5" style="background:#020617;border:1px solid #1e293b">
+                <div class="flex justify-between items-center pb-2" style="border-bottom:1px solid #1e293b">
+                    <label class="text-xs font-bold flex items-center gap-2" style="color:#64748b">
+                        <i data-lucide="activity" class="w-4 h-4"></i> RPE Multi-facteurs
+                    </label>
+                    <span id="rpe-result-display" class="text-sm font-black px-2 py-0.5 rounded" style="color:#84cc16;background:rgba(132,204,22,0.1)">RPE : 5/10</span>
+                </div>
+                <div>
+                    <div class="flex justify-between text-[11px] mb-2">
+                        <span class="font-bold text-white">🌬️ Respiration</span>
+                        <span id="val-resp" class="font-bold" style="color:#84cc16">5</span>
+                    </div>
+                    <input type="range" id="log-rpe-resp" min="1" max="10" value="5" oninput="updateRPE()">
+                    <p id="desc-resp" class="text-[10px] italic mt-1.5" style="color:#475569;min-height:12px"></p>
+                </div>
+                <div>
+                    <div class="flex justify-between text-[11px] mb-2">
+                        <span class="font-bold text-white">🦵 Muscles</span>
+                        <span id="val-musc" class="font-bold" style="color:#84cc16">5</span>
+                    </div>
+                    <input type="range" id="log-rpe-musc" min="1" max="10" value="5" oninput="updateRPE()">
+                    <p id="desc-musc" class="text-[10px] italic mt-1.5" style="color:#475569;min-height:12px"></p>
+                </div>
+                <div>
+                    <div class="flex justify-between text-[11px] mb-2">
+                        <span class="font-bold text-white">🧠 Mental</span>
+                        <span id="val-ment" class="font-bold" style="color:#84cc16">5</span>
+                    </div>
+                    <input type="range" id="log-rpe-ment" min="1" max="10" value="5" oninput="updateRPE()">
+                    <p id="desc-ment" class="text-[10px] italic mt-1.5" style="color:#475569;min-height:12px"></p>
+                </div>
+            </div>
 
-            initLucide();
+            <div>
+                <label class="text-xs mb-1 block" style="color:#64748b">Notes / Commentaires</label>
+                <textarea id="log-notes" rows="2" placeholder="Sensations physiques, météo..." class="w-full px-3 py-2 rounded-lg text-sm text-white focus:outline-none" style="background:#020617;border:1px solid #1e293b"></textarea>
+            </div>
+        </div>
+        <div class="p-4 shrink-0" style="border-top:1px solid #1e293b">
+            <button onclick="saveSessionLog()" class="w-full font-black py-3 rounded-xl transition text-sm flex items-center justify-center gap-2" style="background:#84cc16;color:#0f172a">
+                <i data-lucide="save" class="w-4 h-4"></i> Enregistrer l'activité
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     MODAL — SETTINGS
+══════════════════════════════════════════════════════════ -->
+<div id="settings-modal" class="fixed inset-0 z-[60] flex items-center justify-center hidden p-4" style="background:rgba(0,0,0,0.8);backdrop-filter:blur(4px)">
+    <div class="rounded-2xl w-full max-w-md p-6 space-y-4" style="background:#0f172a;border:1px solid #1e293b">
+        <div class="flex justify-between items-center">
+            <h3 class="text-lg font-bold">Options & Paramètres</h3>
+            <button onclick="toggleSettingsModal()" class="p-2 rounded-full" style="color:#64748b"><i data-lucide="x" class="w-5 h-5"></i></button>
+        </div>
+        <div class="space-y-2 pt-2">
+            <button onclick="resetAllData()" class="w-full font-bold py-3 rounded-xl text-sm transition" style="background:rgba(239,68,68,0.1);color:#f87171;border:1px solid rgba(239,68,68,0.4)">
+                Réinitialiser tout le programme
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     NAV
+══════════════════════════════════════════════════════════ -->
+<nav class="fixed bottom-0 left-0 right-0 flex justify-around py-3 px-6 z-50" style="background:rgba(15,23,42,0.95);backdrop-filter:blur(12px);border-top:1px solid #1e293b">
+    <button onclick="switchTab('programme')" id="nav-programme" class="flex flex-col items-center gap-1 font-semibold text-[10px] transition" style="color:#84cc16">
+        <i data-lucide="calendar" class="w-5 h-5"></i><span>Programme</span>
+    </button>
+    <button onclick="switchTab('stats')" id="nav-stats" class="flex flex-col items-center gap-1 text-[10px] transition" style="color:#475569">
+        <i data-lucide="trending-up" class="w-5 h-5"></i><span>Statistiques</span>
+    </button>
+    <button onclick="switchTab('strava')" id="nav-strava" class="flex flex-col items-center gap-1 text-[10px] transition" style="color:#475569">
+        <i data-lucide="shuffle" class="w-5 h-5"></i><span>Connexion</span>
+    </button>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════════════════════════ -->
+<script>
+// ─────────────────────────────────────────────────────────
+// HELPERS
+// ─────────────────────────────────────────────────────────
+function initLucide() {
+    if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+}
+function showToast(msg, color) {
+    const t = document.getElementById('toast');
+    t.innerText = msg;
+    t.style.background = color || '#15803d';
+    t.classList.remove('hidden');
+    clearTimeout(t._timeout);
+    t._timeout = setTimeout(() => t.classList.add('hidden'), 3500);
+}
+function secondsToPaceStr(s) {
+    if (!s || s <= 0) return '–';
+    return Math.floor(s/60)+':'+(Math.floor(s%60)).toString().padStart(2,'0')+'/km';
+}
+function paceToSec(p) {
+    if (!p || !p.includes(':')) return 0;
+    const [m,s] = p.replace('/km','').split(':');
+    return (+m)*60+(+s||0);
+}
+
+// ─────────────────────────────────────────────────────────
+// ÉTAT GLOBAL
+// ─────────────────────────────────────────────────────────
+let PLAN_WEEKS = [];
+let currentWeek = 1;
+let completedSessions = {};
+let activeSessionId = null;
+let chartRpe = null, chartPace = null;
+
+try {
+    const sw = localStorage.getItem('current_week');
+    if (sw) { currentWeek = parseInt(sw); if (isNaN(currentWeek)||currentWeek<1||currentWeek>16) currentWeek=1; }
+} catch(e) {}
+
+try {
+    const raw = localStorage.getItem('completed_sessions');
+    if (raw) {
+        const p = JSON.parse(raw);
+        if (typeof p==='object'&&p!==null&&!Array.isArray(p)) {
+            for (let k in p) { if (p[k]&&typeof p[k]==='object') completedSessions[k]=p[k]; }
         }
+    }
+} catch(e) { completedSessions={}; }
 
-        function openDetailsModal(sessionId) {
-            let foundSession = null;
-            PLAN_WEEKS.forEach(w => {
-                const s = w.sessions.find(ses => ses.id === sessionId);
-                if (s) foundSession = s;
-            });
-            if (!foundSession) return;
+// ─────────────────────────────────────────────────────────
+// TEXTES RÉUTILISABLES
+// ─────────────────────────────────────────────────────────
+const forceRoutineDetails = `<div class="space-y-3">
+<div class="p-3 rounded-lg" style="background:rgba(30,41,59,0.6);border:1px solid #334155"><span class="font-bold text-white block text-sm">1. Squat bulgare</span><span class="text-xs" style="color:#94a3b8">3×8 par jambe – Repos 90s. Stabilité du bassin.</span></div>
+<div class="p-3 rounded-lg" style="background:rgba(30,41,59,0.6);border:1px solid #334155"><span class="font-bold text-white block text-sm">2. Squat excentrique</span><span class="text-xs" style="color:#94a3b8">3×8, descente 4s. Compense l'absence de dénivelé.</span></div>
+<div class="p-3 rounded-lg" style="background:rgba(30,41,59,0.6);border:1px solid #334155"><span class="font-bold text-white block text-sm">3. Nordic Hamstring Curl</span><span class="text-xs" style="color:#94a3b8">3×5 – Repos 90s.</span></div>
+<div class="p-3 rounded-lg" style="background:rgba(30,41,59,0.6);border:1px solid #334155"><span class="font-bold text-white block text-sm">4. Élévations mollets + Pogo Hops</span><span class="text-xs" style="color:#94a3b8">Raideur tendineuse pour terrain plat.</span></div>
+</div>`;
+const EF_OBJ = "Sortir de la zone grise (4:07-4:22/km). Développer les fibres de type I et le réseau capillaire.";
+const VMA_OBJ = "Cibler l'économie de course et la vitesse pure sans accumulation lactique.";
+const SEUIL_OBJ = "Repousser le seuil lactique pour courir plus vite avant l'acidose.";
 
-            document.getElementById('details-type-badge').innerText = foundSession.type;
-            document.getElementById('details-day').innerText = foundSession.day;
-            document.getElementById('details-title').innerText = foundSession.title;
-            document.getElementById('details-target').innerText = foundSession.target;
-            document.getElementById('details-objective').innerHTML = foundSession.objective || "Amélioration globale.";
-            document.getElementById('details-content').innerHTML = foundSession.details || "Détails non spécifiés.";
-
-            document.getElementById('details-modal').classList.remove('hidden');
-            initLucide();
+// ─────────────────────────────────────────────────────────
+// CONSTRUCTION DU PLAN
+// ─────────────────────────────────────────────────────────
+function buildBasePlan() {
+    const plan = [];
+    for (let w=1; w<=16; w++) {
+        let phase='', focus='', sessions=[];
+        if (w<=4) {
+            phase='Phase 1 : Base & Reconstruction';
+            focus='Reconstruction aérobie stricte et renforcement musculaire. Sortir du piège de la zone grise.';
+            if (w===4) sessions=[
+                {id:`w${w}_s1`,day:'Mardi',type:'VMA',title:'Qualité - VMA Courte',desc:'6×30s rapide / 45s lent.',target:'3:36/km',objective:VMA_OBJ,details:'Éch. 15 min EF.<br/>6×30s à 3:36/km. Récup 45s trot.'},
+                {id:`w${w}_s2`,day:'Mercredi',type:'Force',title:'Mobilité active',desc:'Auto-massages et étirements.',target:'20 min',objective:'Régénération neuromusculaire.',details:'Foam Roller + mobilité chevilles.'},
+                {id:`w${w}_s3`,day:'Jeudi',type:'EF',title:'Footing Récupération',desc:'30 min de footing EF lente.',target:'5:35/km',objective:EF_OBJ,details:'30 min à 5:35/km strictement.'},
+                {id:`w${w}_s4`,day:'Dimanche',type:'Long',title:'Sortie Longue Décharge',desc:'45 min en EF pure.',target:'5:30/km',objective:EF_OBJ,details:'45 min continues à 5:30/km.'}
+            ];
+            else sessions=[
+                {id:`w${w}_s1`,day:'Mardi',type:'VMA',title:`VMA Courte – ${6+w*2}×30"`,desc:`${6+w*2}×30s rapide / 30s lent.`,target:'3:36/km',objective:VMA_OBJ,details:`Éch. 20 min.<br/>${6+w*2}×30s (3:36/km). Récup 30s.`},
+                {id:`w${w}_s2`,day:'Mercredi',type:'Force',title:'Routine Force Biomécanique',desc:'Squats, Nordic Curl, Pogo Hops.',target:'30 min',objective:'Compenser absence de dénivelé.',details:forceRoutineDetails},
+                {id:`w${w}_s3`,day:'Jeudi',type:'EF',title:'Footing EF Reconstruction',desc:`${25+w*5} min de footing continu.`,target:'5:20/km',objective:EF_OBJ,details:`${25+w*5} min à 5:20/km. Ne pas accélérer !`},
+                {id:`w${w}_s4`,day:'Dimanche',type:'Long',title:`Sortie Longue – ${45+w*5} min`,desc:`${45+w*5} min avec fin active.`,target:'Progressif',objective:'Habituer à la durée.',details:`Fin : 10 min à 4:30/km.`}
+            ];
+        } else if (w<=8) {
+            phase='Phase 2 : VMA & Seuil (VDOT 51-52)';
+            focus='Élévation progressive du seuil lactique et vitesse neuromusculaire.';
+            if (w===8) sessions=[
+                {id:`w${w}_s1`,day:'Mardi',type:'VMA',title:'Rappel Vitesse',desc:'6×200m récup complète.',target:'3:28/km',objective:'Maintien stimulation nerveuse.',details:'6×200m à 3:28/km. Marche 1 min.'},
+                {id:`w${w}_s2`,day:'Mercredi',type:'Force',title:'Mobilité',desc:'Auto-massages.',target:'25 min',objective:'Décharge.',details:'Focus récupération.'},
+                {id:`w${w}_s3`,day:'Jeudi',type:'EF',title:'Footing Récupération',desc:'35 min très facile.',target:'5:35/km',objective:EF_OBJ,details:'35 min à 5:35/km.'},
+                {id:`w${w}_s4`,day:'Dimanche',type:'Long',title:'Sortie Longue Décharge',desc:'60 min en EF pure.',target:'5:30/km',objective:'Assimilation.',details:'60 min à 5:30/km.'}
+            ];
+            else sessions=[
+                {id:`w${w}_s1`,day:'Mardi',type:'VMA',title:`Vitesse – ${6+(w-4)*2}×200m`,desc:`${6+(w-4)*2}×200m à 3:28/km.`,target:'3:28/km',objective:VMA_OBJ,details:`Éch. 20 min.<br/>${6+(w-4)*2}×200m (3:28/km).`},
+                {id:`w${w}_s2`,day:'Mercredi',type:'Force',title:'Routine Force',desc:'Adaptation terrain plat.',target:'30 min',objective:'Contrôle rotulien.',details:forceRoutineDetails},
+                {id:`w${w}_s3`,day:'Jeudi',type:'Seuil',title:`Seuil Lactique – ${w-3}×1500m`,desc:'Allure seuil.',target:'4:11/km',objective:SEUIL_OBJ,details:`${w-3}×1500m à 4:11/km.`},
+                {id:`w${w}_s4`,day:'Dimanche',type:'Long',title:`Sortie Longue – ${65+(w-4)*5} min`,desc:'Inclusion allure semi.',target:'Progressif',objective:'Maintien posture sous fatigue.',details:'15 min à allure semi 4:15/km.'}
+            ];
+        } else if (w<=12) {
+            phase='Phase 3 : Spécifique VDOT 56';
+            focus='Capacité de soutien à allure cible VDOT 56 (AS5 et AS10).';
+            if (w===12) sessions=[
+                {id:`w${w}_s1`,day:'Mardi',type:'VMA',title:'Rappel Allure 5K',desc:'3×1000m.',target:'3:35/km',objective:'Stimulation VO2 Max.',details:'3×1000m à 3:35/km.'},
+                {id:`w${w}_s2`,day:'Mercredi',type:'Force',title:'Mobilité active',desc:'Yoga.',target:'25 min',objective:'Relâchement.',details:'Yoga hanches et psoas.'},
+                {id:`w${w}_s3`,day:'Jeudi',type:'EF',title:'Footing Récupération',desc:'40 min très facile.',target:'5:35/km',objective:EF_OBJ,details:'40 min à 5:35/km.'},
+                {id:`w${w}_s4`,day:'Dimanche',type:'Long',title:'Sortie Longue Décharge',desc:'70 min sur plat.',target:'5:30/km',objective:'Maintien aérobie.',details:'70 min en EF.'}
+            ];
+            else sessions=[
+                {id:`w${w}_s1`,day:'Mardi',type:'VMA',title:`VO2 Max – ${w-6}×1000m`,desc:'Allure cible 5K.',target:'3:35/km',objective:'Solliciter directement le VO2 max.',details:`${w-6}×1000m à 3:35/km.`},
+                {id:`w${w}_s2`,day:'Mercredi',type:'Force',title:'Routine Spécifique',desc:'Excentrique.',target:'30 min',objective:'Soutien mécanique.',details:forceRoutineDetails},
+                {id:`w${w}_s3`,day:'Jeudi',type:'Seuil',title:`AS10 – ${w-7}×2000m`,desc:'Allure 10K.',target:'3:52/km',objective:SEUIL_OBJ,details:`${w-7}×2000m à 3:52/km.`},
+                {id:`w${w}_s4`,day:'Dimanche',type:'Long',title:`Sortie Longue – ${80+(w-8)*5} min`,desc:'Blocs allure semi.',target:'Progressif',objective:'Spécificité longue distance.',details:'2 blocs 15 min à 4:15/km.'}
+            ];
+        } else {
+            phase='Phase 4 : Affûtage & Course (VDOT 56)';
+            focus='Dissipation de la fatigue et surcompensation finale.';
+            const sc=16-w;
+            if (w===16) sessions=[
+                {id:`w${w}_s1`,day:'Mardi',type:'VMA',title:'Veille de Course – 6×200m',desc:'Allure 3:18/km.',target:'3:18/km',objective:'Déblocage nerveux.',details:'6×200m à 3:18/km.'},
+                {id:`w${w}_s2`,day:'Mercredi',type:'Force',title:'Stabilité Légère',desc:'Gainage statique.',target:'10 min',objective:'Tonicité centrale.',details:'Planche frontale/latérale.'},
+                {id:`w${w}_s3`,day:'Jeudi',type:'EF',title:'Réveil Musculaire',desc:'25 min EF + lignes droites.',target:'5:35/km',objective:'Garder les jambes actives.',details:'25 min à 5:35/km.'},
+                {id:`w${w}_s4`,day:'Dimanche',type:'Course',title:'JOUR DE TEST : Objectif VDOT 56',desc:'Course ciblée.',target:'Course',objective:'Valider le VDOT 56.',details:'Stratégie métronomique.'}
+            ];
+            else sessions=[
+                {id:`w${w}_s1`,day:'Mardi',type:'VMA',title:`VMA Affûtage – ${6+sc*2}×200m`,desc:'Allure Répétition.',target:'3:18/km',objective:'Maintien intensité.',details:`${6+sc*2}×200m à 3:18/km.`},
+                {id:`w${w}_s2`,day:'Mercredi',type:'Force',title:'Gainage',desc:'Réduction charges.',target:'15 min',objective:'Surcompensation.',details:'Proprioception.'},
+                {id:`w${w}_s3`,day:'Jeudi',type:'Seuil',title:'Seuil Court',desc:'2×1000m seuil.',target:'3:52/km',objective:'Mémorisation allure.',details:'2×1000m à 3:52/km.'},
+                {id:`w${w}_s4`,day:'Dimanche',type:'Long',title:'Sortie Longue Réduite',desc:`${50+sc*5} min en EF.`,target:'5:30/km',objective:"Garder l'endurance.",details:`${50+sc*5} min à 5:30/km.`}
+            ];
         }
+        plan.push({week:w, phase, focus, sessions});
+    }
+    return plan;
+}
 
-        function closeDetailsModal() {
-            document.getElementById('details-modal').classList.add('hidden');
-        }
+// ─────────────────────────────────────────────────────────
+// MOTEUR IA : ADAPTATIONS + PLATEAU + VDOT
+// ─────────────────────────────────────────────────────────
+function applyAdaptations(plan, logs) {
+    const adaptations = [];
+    let paces = {VMA:216, Seuil:251};
+    let grayVio = 0, exhaustFlag = false;
 
-        function updateGlobalProgress() {
-            const total = 64;
-            const done = Object.keys(completedSessions).length;
-            const percentage = Math.round((done / total) * 100) || 0;
-
-            const txtEl = document.getElementById('global-progress-txt');
-            const barEl = document.getElementById('global-progress-bar');
-            if (txtEl) txtEl.innerText = `${done}/${total} séances (${percentage}%)`;
-            if (barEl) barEl.style.width = `${percentage}%`;
-
-            const statCompletedEl = document.getElementById('stat-total-completed');
-            if (statCompletedEl) statCompletedEl.innerText = done;
-            
-            let totalDist = 0;
-            const historyContainer = document.getElementById('history-container');
-            if (!historyContainer) return;
-            historyContainer.innerHTML = '';
-
-            const completedKeys = Object.keys(completedSessions);
-            if (completedKeys.length === 0) {
-                historyContainer.innerHTML = '<p class="text-xs text-slate-500 text-center py-4">Aucune activité enregistrée.</p>';
-            } else {
-                completedKeys.sort().reverse().forEach(key => {
-                    const data = completedSessions[key];
-                    if (!data || typeof data !== 'object') return;
-                    totalDist += parseFloat(data.distance || 0);
-
-                    let sTitle = "Entraînement libre";
-                    PLAN_WEEKS.forEach(w => {
-                        const s = w.sessions.find(ses => ses.id === key);
-                        if (s) sTitle = `Sem. ${w.week} - ${s.title}`;
-                    });
-
-                    const histItem = document.createElement('div');
-                    histItem.className = 'flex justify-between items-center py-2 border-b border-slate-800 text-xs';
-                    histItem.innerHTML = `
-                        <div>
-                            <span class="text-[10px] text-slate-500 block">${data.date || ''}</span>
-                            <span class="font-bold text-white">${sTitle}</span>
-                        </div>
-                        <div class="text-right">
-                            <span class="font-mono text-brand-500 font-bold">${data.distance || '0'} km</span>
-                            <span class="text-[10px] text-slate-400 block">${data.duration || 'N/A'}</span>
-                        </div>
-                    `;
-                    historyContainer.appendChild(histItem);
-                });
-            }
-            
-            const distEl = document.getElementById('stat-total-dist');
-            if (distEl) distEl.innerText = `${totalDist.toFixed(1)} km`;
-        }
-
-        // -------------------------------------------------------
-        // 7. RPE
-        // -------------------------------------------------------
-        function updateRPE() {
-            const resp = parseInt(document.getElementById('log-rpe-resp')?.value) || 5;
-            const musc = parseInt(document.getElementById('log-rpe-musc')?.value) || 5;
-            const ment = parseInt(document.getElementById('log-rpe-ment')?.value) || 5;
-
-            const valRespEl = document.getElementById('val-resp');
-            const valMuscEl = document.getElementById('val-musc');
-            const valMentEl = document.getElementById('val-ment');
-            if (valRespEl) valRespEl.innerText = resp;
-            if (valMuscEl) valMuscEl.innerText = musc;
-            if (valMentEl) valMentEl.innerText = ment;
-
-            const descResp = document.getElementById('desc-resp');
-            if (descResp) {
-                if (resp <= 3) descResp.innerText = "Parle en continu, aucune gêne (Facile)";
-                else if (resp <= 6) descResp.innerText = "Phrases entières rythmées (Modéré)";
-                else if (resp <= 8) descResp.innerText = "Courtes phrases, souffle court (Difficile)";
-                else descResp.innerText = "Impossible de parler, haletant (Maximal)";
-            }
-            const descMusc = document.getElementById('desc-musc');
-            if (descMusc) {
-                if (musc <= 3) descMusc.innerText = "Jambes légères, aucune tension (Léger)";
-                else if (musc <= 6) descMusc.innerText = "Légère chaleur, foulée fluide (Soutenu)";
-                else if (musc <= 8) descMusc.innerText = "Cuisses dures, il faut forcer (Très lourd)";
-                else descMusc.innerText = "Épuisement total, jambes de bois (Tétanie)";
-            }
-            const descMent = document.getElementById('desc-ment');
-            if (descMent) {
-                if (ment <= 3) descMent.innerText = "Esprit libre, temps passe vite (Nul)";
-                else if (ment <= 6) descMent.innerText = "Concentré sur l'allure (Concentré)";
-                else if (ment <= 8) descMent.innerText = "Combat mental contre la montre (Intense)";
-                else descMent.innerText = "Souffrance, envie d'abandonner (Saturé)";
-            }
-
-            const rpe = Math.round((resp + musc + ment) / 3);
-            const rpeDisplay = document.getElementById('rpe-result-display');
-            if (rpeDisplay) rpeDisplay.innerText = `RPE : ${rpe}/10`;
-            return rpe;
-        }
-
-        // -------------------------------------------------------
-        // 8. SESSION TOGGLE & LOG
-        // -------------------------------------------------------
-        function toggleSessionState(id) {
-            if (completedSessions[id]) {
-                delete completedSessions[id];
-                localStorage.setItem('completed_sessions', JSON.stringify(completedSessions));
-                generateAndRenderPlan();
-                showToast("Séance marquée comme non faite.");
-            } else {
-                const dateInput = document.getElementById('log-date');
-                if (dateInput) dateInput.value = new Date().toISOString().split('T')[0];
-                const idInput = document.getElementById('log-session-id');
-                if (idInput) idInput.value = id;
-
-                let sTitle = "Activité";
-                PLAN_WEEKS.forEach(w => {
-                    const s = w.sessions.find(ses => ses.id === id);
-                    if (s) sTitle = s.title;
-                });
-                const titleEl = document.getElementById('log-modal-title');
-                if (titleEl) titleEl.innerText = sTitle;
-
-                ['log-distance', 'log-duration-min', 'log-duration-sec', 'log-hr', 'log-notes'].forEach(elId => {
-                    const el = document.getElementById(elId);
-                    if (el) el.value = '';
-                });
-                ['log-rpe-resp', 'log-rpe-musc', 'log-rpe-ment'].forEach(elId => {
-                    const el = document.getElementById(elId);
-                    if (el) el.value = 5;
-                });
-                updateRPE();
-                document.getElementById('log-modal').classList.remove('hidden');
-                initLucide();
-            }
-        }
-
-        function closeLogModal() {
-            document.getElementById('log-modal').classList.add('hidden');
-        }
-
-        function saveSessionLog() {
-            const idInput = document.getElementById('log-session-id');
-            if (!idInput) return;
-            const id = idInput.value;
-
-            const date = document.getElementById('log-date').value;
-            const dist = document.getElementById('log-distance').value || '0';
-            const min = document.getElementById('log-duration-min').value || '00';
-            const sec = document.getElementById('log-duration-sec').value || '00';
-            const hr = document.getElementById('log-hr').value || 'N/A';
-            const notes = document.getElementById('log-notes').value;
-            const computedRPE = updateRPE();
-            const duration = `${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
-
-            completedSessions[id] = {
-                date, rpe: computedRPE,
-                distance: parseFloat(dist).toFixed(2),
-                duration, hr, notes
-            };
-
-            localStorage.setItem('completed_sessions', JSON.stringify(completedSessions));
-
-            const accessToken = localStorage.getItem('strava_access_token');
-            if (accessToken) uploadActivityToStrava(id, completedSessions[id]);
-
-            closeLogModal();
-            generateAndRenderPlan();
-            showToast(`Activité enregistrée ! RPE retenu : ${computedRPE}/10`);
-        }
-
-        // -------------------------------------------------------
-        // 9. NAVIGATION & MODALS
-        // -------------------------------------------------------
-        function toggleSettingsModal() {
-            const modal = document.getElementById('settings-modal');
-            modal.classList.toggle('hidden');
-            initLucide();
-        }
-
-        function resetAllData() {
-            if (confirm("Voulez-vous vraiment réinitialiser tout le programme ? Vos séances validées seront perdues.")) {
-                document.getElementById('settings-modal').classList.add('hidden');
-                localStorage.removeItem('completed_sessions');
-                localStorage.removeItem('current_week');
-                completedSessions = {};
-                currentWeek = 1;
-                generateAndRenderPlan();
-                showToast("Application réinitialisée.");
-            }
-        }
-
-        function switchTab(tabId) {
-            ['programme', 'stats', 'strava'].forEach(t => {
-                document.getElementById(`tab-${t}`).classList.add('hidden');
-                document.getElementById(`nav-${t}`).className = 'flex flex-col items-center gap-1 text-slate-400 text-[10px] transition';
-            });
-            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
-            document.getElementById(`nav-${tabId}`).className = 'flex flex-col items-center gap-1 text-brand-500 font-semibold text-[10px] transition';
-            initLucide();
-        }
-
-        // -------------------------------------------------------
-        // 10. STRAVA
-        // -------------------------------------------------------
-        function saveManualToken() {
-            const tokenEl = document.getElementById('strava-manual-token');
-            if (!tokenEl) return;
-            const token = tokenEl.value.trim();
-            if (token) {
-                localStorage.setItem('strava_access_token', token);
-                showToast("Jeton Strava enregistré !");
-                updateStravaUi();
-            } else {
-                alert("Veuillez entrer un jeton valide.");
-            }
-        }
-
-        function updateStravaUi() {
-            const accessToken = localStorage.getItem('strava_access_token') || '';
-            const badge = document.getElementById('strava-status-badge');
-            if (!badge) return;
-            if (accessToken) {
-                badge.innerText = "Connecté";
-                badge.className = "px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-950 text-emerald-400 border border-emerald-800";
-            } else {
-                badge.innerText = "Déconnecté";
-                badge.className = "px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-950 text-red-400 border border-red-800";
-            }
-        }
-
-        async function uploadActivityToStrava(id, logData) {
-            const accessToken = localStorage.getItem('strava_access_token');
-            if (!accessToken) return;
-
-            let sTitle = "Séance VDOT 56";
-            PLAN_WEEKS.forEach(w => {
-                const s = w.sessions.find(ses => ses.id === id);
-                if (s) sTitle = `VDOT 56 : Semaine ${w.week} - ${s.title}`;
-            });
-
-            const timeParts = logData.duration.split(':');
-            const elapsedSeconds = (parseInt(timeParts[0] || 0) * 60) + (parseInt(timeParts[1] || 0));
-            const meters = parseFloat(logData.distance || 0) * 1000;
-
-            try {
-                const stravaDate = logData.date
-                    ? new Date(logData.date + "T12:00:00").toISOString()
-                    : new Date().toISOString();
-
-                const response = await fetch('https://www.strava.com/api/v3/activities', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${accessToken}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        name: sTitle,
-                        sport_type: "Run",
-                        start_date_local: stravaDate,
-                        elapsed_time: elapsedSeconds,
-                        distance: meters,
-                        description: `Séance validée sur Coach VDOT 56. RPE: ${logData.rpe}/10. Notes: ${logData.notes || 'aucune'}.`
-                    })
-                });
-
-                if (response.ok) {
-                    showToast("Activité partagée sur Strava ! 🏃‍♂️");
-                } else {
-                    showToast("Enregistré localement (erreur API Strava).");
+    plan.forEach(w => {
+        let weekRpe=0, weekCount=0;
+        w.sessions.forEach(s => {
+            const log = logs[s.id];
+            if (log && typeof log === 'object') {
+                weekCount++;
+                const rpe = +log.rpe||0;
+                weekRpe += rpe;
+                const dist = +log.distance||0;
+                const parts = (log.duration||'00:00').split(':');
+                const totalS = (+parts[0])*60+(+parts[1]||0);
+                const pace = dist>0 ? totalS/dist : 0;
+                if (s.type==='EF' && pace>0 && pace<310) grayVio++;
+                const tSec = paceToSec(s.target);
+                if (s.type==='VMA' && tSec>0 && pace>0 && pace<=tSec+3 && rpe<=6) {
+                    paces.VMA-=2; paces.Seuil-=2;
+                    adaptations.push(`🔥 ${s.title} validée avec aisance → allures durcies.`);
                 }
-            } catch (err) {
-                showToast("Activité locale enregistrée (Erreur réseau Strava).");
+            } else {
+                if (grayVio>0 && (s.type==='VMA'||s.type==='Seuil')) {
+                    s.type='EF'; s.title='⚠️ Récupération Forcée (Zone Grise)';
+                    s.desc='Transformée en récupération stricte.'; s.target='5:35/km';
+                    grayVio--;
+                    if (!adaptations.some(a=>a.includes('Zone Grise')))
+                        adaptations.push("⚠️ Zone Grise détectée → prochain intervalle en récupération.");
+                } else if (exhaustFlag && s.type==='Long') {
+                    s.desc='🔋 VOLUME -15%. '+s.desc;
+                    if (!adaptations.some(a=>a.includes('Fatigue')))
+                        adaptations.push("📉 Fatigue nerveuse → sorties longues réduites de 15%.");
+                } else {
+                    if (s.type==='VMA' && s.target.includes(':')) s.target = secondsToPaceStr(paces.VMA);
+                    if (s.type==='Seuil' && s.target.includes(':')) s.target = secondsToPaceStr(paces.Seuil);
+                }
+            }
+        });
+        if (weekCount>0) exhaustFlag = (weekRpe/weekCount)>7.5;
+    });
+
+    return {finalPlan:plan, messages:[...new Set(adaptations)]};
+}
+
+// ─ Prédiction VDOT depuis allure réelle sur séance qualitative ─
+function predictVDOT() {
+    // Table VDOT simplifiée : allure seuil → VDOT
+    const vdotTable = [
+        {vdot:46,seuil:272},{vdot:47,seuil:267},{vdot:48,seuil:263},{vdot:49,seuil:259},
+        {vdot:50,seuil:255},{vdot:51,seuil:251},{vdot:52,seuil:247},{vdot:53,seuil:243},
+        {vdot:54,seuil:240},{vdot:55,seuil:236},{vdot:56,seuil:233},{vdot:57,seuil:229},
+        {vdot:58,seuil:226},{vdot:59,seuil:223},{vdot:60,seuil:220}
+    ];
+    let bestVdot = 51;
+    // On cherche les séances Seuil avec allure réelle calculée
+    Object.keys(completedSessions).forEach(key => {
+        const data = completedSessions[key];
+        if (!data || !data.distance || !data.duration) return;
+        let sType = null;
+        PLAN_WEEKS.forEach(w => {
+            const s = w.sessions.find(ses=>ses.id===key);
+            if (s) sType = s.type;
+        });
+        if (sType !== 'Seuil') return;
+        const dist = +data.distance;
+        const parts = data.duration.split(':');
+        const totalS = (+parts[0])*60+(+parts[1]||0);
+        if (dist<=0||totalS<=0) return;
+        const realPace = totalS/dist; // sec/km
+        // Trouver le VDOT correspondant
+        for (let i=0; i<vdotTable.length-1; i++) {
+            if (realPace >= vdotTable[i+1].seuil && realPace <= vdotTable[i].seuil) {
+                const ratio = (vdotTable[i].seuil - realPace)/(vdotTable[i].seuil - vdotTable[i+1].seuil);
+                const v = Math.round(vdotTable[i].vdot + ratio);
+                if (v > bestVdot) bestVdot = v;
             }
         }
-    </script>
+    });
+    return bestVdot;
+}
+
+// ─ Détection de plateau ─
+function detectPlateau() {
+    // Regrouper les séances VMA/Seuil par semaine
+    const weekRPE = {};
+    Object.keys(completedSessions).forEach(key => {
+        const data = completedSessions[key];
+        if (!data) return;
+        let wNum=null, sType=null;
+        PLAN_WEEKS.forEach(w => {
+            const s = w.sessions.find(ses=>ses.id===key);
+            if (s) { wNum=w.week; sType=s.type; }
+        });
+        if ((sType==='VMA'||sType==='Seuil') && wNum) {
+            if (!weekRPE[wNum]) weekRPE[wNum]={sum:0,count:0};
+            weekRPE[wNum].sum += +data.rpe||5;
+            weekRPE[wNum].count++;
+        }
+    });
+    const weeks = Object.keys(weekRPE).map(Number).sort((a,b)=>a-b);
+    if (weeks.length < 3) return null;
+    const last3 = weeks.slice(-3);
+    const avgs = last3.map(w => weekRPE[w].sum/weekRPE[w].count);
+    const allHigh = avgs.every(a=>a>=6.5);
+    const stable = Math.max(...avgs)-Math.min(...avgs) < 1;
+    if (allHigh && stable) {
+        return `RPE moyen des 3 dernières semaines qualitatives : ${avgs.map(a=>a.toFixed(1)).join(', ')}. Pas d'amélioration détectée → envisager une semaine de décharge.`;
+    }
+    return null;
+}
+
+// ─ Charge hebdomadaire (km × RPE) ─
+function computeWeeklyLoad() {
+    let load = 0;
+    const now = new Date();
+    const weekStart = new Date(now);
+    weekStart.setDate(now.getDate()-now.getDay()+1);
+    weekStart.setHours(0,0,0,0);
+
+    Object.values(completedSessions).forEach(data => {
+        if (!data||!data.date) return;
+        const d = new Date(data.date);
+        if (d >= weekStart) {
+            load += (+data.distance||0) * (+data.rpe||5);
+        }
+    });
+    return Math.round(load);
+}
+
+// ─ Recommandation de récupération ─
+function getRecoveryReco() {
+    const load = computeWeeklyLoad();
+    if (load > 200) return {msg:`⚠️ Charge hebdo élevée (${load} UA). Priorisez le sommeil et réduisez l'intensité.`, color:'rgba(239,68,68,0.1)', border:'rgba(239,68,68,0.35)', text:'#f87171'};
+    if (load > 120) return {msg:`⚡ Charge modérée (${load} UA). Vous êtes dans la zone productive.`, color:'rgba(245,158,11,0.1)', border:'rgba(245,158,11,0.35)', text:'#fbbf24'};
+    return null;
+}
+
+// ─────────────────────────────────────────────────────────
+// GRAPHIQUES
+// ─────────────────────────────────────────────────────────
+function buildChartData() {
+    const rpeByWeek = {}, paceByWeek = {};
+    Object.keys(completedSessions).forEach(key => {
+        const data = completedSessions[key];
+        if (!data) return;
+        let wNum=null, sType=null, sTarget=null;
+        PLAN_WEEKS.forEach(w => {
+            const s=w.sessions.find(ses=>ses.id===key);
+            if (s) { wNum=w.week; sType=s.type; sTarget=s.target; }
+        });
+        if (!wNum) return;
+        // RPE
+        if (!rpeByWeek[wNum]) rpeByWeek[wNum]={sum:0,count:0};
+        rpeByWeek[wNum].sum += +data.rpe||5;
+        rpeByWeek[wNum].count++;
+        // Allure réelle
+        if (data.distance && data.duration && sTarget && sTarget.includes(':')) {
+            const dist=+data.distance;
+            const parts=data.duration.split(':');
+            const totalS=(+parts[0])*60+(+parts[1]||0);
+            if (dist>0&&totalS>0) {
+                const real=totalS/dist;
+                const target=paceToSec(sTarget);
+                if (!paceByWeek[wNum]) paceByWeek[wNum]={real:[],target:[]};
+                paceByWeek[wNum].real.push(real);
+                paceByWeek[wNum].target.push(target);
+            }
+        }
+    });
+    const weeks=[...new Set([...Object.keys(rpeByWeek),...Object.keys(paceByWeek)].map(Number))].sort((a,b)=>a-b);
+    return {
+        labels: weeks.map(w=>`S${w}`),
+        rpeVals: weeks.map(w=>rpeByWeek[w] ? +(rpeByWeek[w].sum/rpeByWeek[w].count).toFixed(1) : null),
+        realPaceVals: weeks.map(w=>{
+            if (!paceByWeek[w]) return null;
+            const avg=paceByWeek[w].real.reduce((a,b)=>a+b,0)/paceByWeek[w].real.length;
+            return +(avg/60).toFixed(2); // min/km float
+        }),
+        targetPaceVals: weeks.map(w=>{
+            if (!paceByWeek[w]) return null;
+            const avg=paceByWeek[w].target.reduce((a,b)=>a+b,0)/paceByWeek[w].target.length;
+            return +(avg/60).toFixed(2);
+        })
+    };
+}
+
+function renderCharts() {
+    const data = buildChartData();
+    const noData = data.labels.length === 0;
+    const chartDefaults = {
+        responsive:true, maintainAspectRatio:false,
+        plugins:{legend:{labels:{color:'#94a3b8',font:{size:10}}},tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': '+ctx.raw}}},
+        scales:{x:{ticks:{color:'#475569',font:{size:9}},grid:{color:'rgba(255,255,255,0.05)'}},y:{ticks:{color:'#475569',font:{size:9}},grid:{color:'rgba(255,255,255,0.05)'}}}
+    };
+
+    // RPE Chart
+    const rpeCtx = document.getElementById('chart-rpe');
+    if (rpeCtx) {
+        if (chartRpe) chartRpe.destroy();
+        chartRpe = new Chart(rpeCtx, {
+            type:'line',
+            data:{
+                labels: noData?['Pas encore de données']:data.labels,
+                datasets:[{
+                    label:'RPE moyen',
+                    data: noData?[null]:data.rpeVals,
+                    borderColor:'#84cc16', backgroundColor:'rgba(132,204,22,0.1)',
+                    tension:0.4, fill:true, pointBackgroundColor:'#84cc16', pointRadius:4
+                }]
+            },
+            options:{...chartDefaults, scales:{...chartDefaults.scales, y:{...chartDefaults.scales.y, min:1, max:10}}}
+        });
+    }
+
+    // Pace Chart
+    const paceCtx = document.getElementById('chart-pace');
+    if (paceCtx) {
+        if (chartPace) chartPace.destroy();
+        chartPace = new Chart(paceCtx, {
+            type:'bar',
+            data:{
+                labels: noData?['Pas encore de données']:data.labels,
+                datasets:[
+                    {label:'Allure réelle (min/km)', data: noData?[null]:data.realPaceVals, backgroundColor:'rgba(132,204,22,0.7)', borderRadius:4},
+                    {label:'Allure cible (min/km)',  data: noData?[null]:data.targetPaceVals, backgroundColor:'rgba(99,102,241,0.5)', borderRadius:4}
+                ]
+            },
+            options:{...chartDefaults, scales:{...chartDefaults.scales, y:{...chartDefaults.scales.y, reverse:true, title:{display:true,text:'min/km',color:'#475569',font:{size:9}}}}}
+        });
+    }
+}
+
+// ─────────────────────────────────────────────────────────
+// RENDU PRINCIPAL
+// ─────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+    const wait = setInterval(()=>{
+        if (typeof lucide!=='undefined' && typeof Chart!=='undefined') {
+            clearInterval(wait);
+            initLucide();
+            generateAndRenderPlan();
+            updateStravaUi();
+            scheduleNotificationCheck();
+        }
+    }, 50);
+});
+
+function generateAndRenderPlan() {
+    const base = buildBasePlan();
+    const result = applyAdaptations(base, completedSessions);
+    PLAN_WEEKS = result.finalPlan;
+
+    // Alertes IA
+    const alertsBox = document.getElementById('ai-coach-alerts');
+    const alertsList = document.getElementById('ai-alerts-list');
+    if (result.messages.length>0) {
+        alertsList.innerHTML = result.messages.map(m=>`<li>${m}</li>`).join('');
+        alertsBox.classList.remove('hidden');
+    } else alertsBox.classList.add('hidden');
+
+    // Récupération
+    const reco = getRecoveryReco();
+    const banner = document.getElementById('recovery-banner');
+    if (reco) {
+        banner.style.background=reco.color; banner.style.border=`1px solid ${reco.border}`;
+        document.getElementById('recovery-msg').style.color=reco.text;
+        document.getElementById('recovery-msg').innerText=reco.msg;
+        banner.classList.remove('hidden');
+    } else banner.classList.add('hidden');
+
+    renderWeekSelector();
+    renderActiveWeek();
+    updateGlobalProgress();
+
+    // VDOT badge
+    const vdot = predictVDOT();
+    document.getElementById('vdot-badge').innerText = `VDOT ~${vdot}`;
+    document.getElementById('stat-vdot').innerText = `~${vdot}`;
+
+    // Plateau
+    const plateau = detectPlateau();
+    const plateauBox = document.getElementById('plateau-box');
+    if (plateau) {
+        document.getElementById('plateau-msg').innerText = plateau;
+        plateauBox.classList.remove('hidden');
+    } else plateauBox.classList.add('hidden');
+
+    // Charge hebdo
+    const load = computeWeeklyLoad();
+    const maxLoad = 250;
+    document.getElementById('weekly-load-val').innerText = load+' UA';
+    document.getElementById('weekly-load-bar').style.width = Math.min(100,(load/maxLoad)*100)+'%';
+    document.getElementById('weekly-load-bar').style.background = load>200?'#ef4444':load>120?'#f59e0b':'#84cc16';
+}
+
+function renderWeekSelector() {
+    const container = document.getElementById('week-selector-container');
+    if (!container) return;
+    container.innerHTML='';
+    for (let i=1; i<=16; i++) {
+        const btn = document.createElement('button');
+        const active = currentWeek===i;
+        btn.style.cssText = active
+            ? 'padding:8px 16px;border-radius:999px;font-weight:700;font-size:13px;flex-shrink:0;cursor:pointer;white-space:nowrap;background:#84cc16;color:#0f172a;border:none;box-shadow:0 0 12px rgba(132,204,22,0.3)'
+            : 'padding:8px 16px;border-radius:999px;font-weight:700;font-size:13px;flex-shrink:0;cursor:pointer;white-space:nowrap;background:#0f172a;color:#64748b;border:1px solid #1e293b';
+        btn.innerText = `Sem. ${i}`;
+        btn.onclick = ()=>{ currentWeek=i; localStorage.setItem('current_week',i); renderWeekSelector(); renderActiveWeek(); };
+        container.appendChild(btn);
+    }
+}
+
+function renderActiveWeek() {
+    let wd = PLAN_WEEKS.find(w=>w.week===currentWeek);
+    if (!wd) { currentWeek=1; localStorage.setItem('current_week','1'); wd=PLAN_WEEKS[0]; }
+    if (!wd) return;
+    document.getElementById('phase-title').innerText = wd.phase;
+    document.getElementById('phase-focus').innerText = wd.focus;
+    const container = document.getElementById('sessions-container');
+    if (!container) return;
+    container.innerHTML='';
+
+    const badgeStyles = {
+        VMA:   'background:#450a0a;color:#f87171;border:1px solid rgba(239,68,68,0.3)',
+        Seuil: 'background:#431407;color:#fb923c;border:1px solid rgba(249,115,22,0.3)',
+        Force: 'background:#172554;color:#60a5fa;border:1px solid rgba(59,130,246,0.3)',
+        EF:    'background:#052e16;color:#4ade80;border:1px solid rgba(34,197,94,0.3)',
+        Long:  'background:#431407;color:#fdba74;border:1px solid rgba(251,146,60,0.3)',
+        Course:'background:rgba(132,204,22,0.15);color:#84cc16;border:1px solid rgba(132,204,22,0.4)'
+    };
+
+    wd.sessions.forEach(s => {
+        const done = !!completedSessions[s.id];
+        const data = completedSessions[s.id];
+        const adapted = s.title.includes('⚠️');
+        const bStyle = badgeStyles[s.type]||'background:#1e293b;color:#94a3b8';
+
+        // Allure réelle si dispo
+        let realPaceHtml='';
+        if (done && data && data.distance && data.duration) {
+            const dist=+data.distance, parts=data.duration.split(':');
+            const totalS=(+parts[0])*60+(+parts[1]||0);
+            if (dist>0&&totalS>0) {
+                const real=totalS/dist;
+                const target=paceToSec(s.target);
+                const diff=target>0?Math.round(real-target):null;
+                const diffStr=diff!==null?(diff>0?`+${diff}s/km`:`${diff}s/km`):'';
+                const diffColor=diff!==null?(diff>5?'#f87171':diff<-5?'#84cc16':'#fbbf24'):'#94a3b8';
+                realPaceHtml=`<div style="margin-top:6px;padding:6px 8px;border-radius:8px;background:rgba(132,204,22,0.07);border:1px solid rgba(132,204,22,0.2);display:flex;justify-content:space-between;align-items:center">
+                    <span style="font-size:10px;color:#64748b">Allure réelle</span>
+                    <span style="font-family:monospace;font-weight:900;color:#fff;font-size:13px">${secondsToPaceStr(real)} <span style="font-size:10px;font-weight:700;color:${diffColor}">${diffStr}</span></span>
+                </div>`;
+            }
+        }
+
+        let statsHtml='';
+        if (done && data) {
+            statsHtml=`<div style="margin-top:10px;padding-top:10px;border-top:1px solid #1e293b;display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:11px;color:#94a3b8">
+                <div>🏁 <strong>Dist :</strong> ${data.distance||'0'} km</div>
+                <div>⏱️ <strong>Durée :</strong> ${data.duration||'N/A'}</div>
+                <div>❤️ <strong>FC :</strong> ${data.hr||'N/A'} bpm</div>
+                <div>🧠 <strong>RPE :</strong> ${data.rpe||'N/A'}/10</div>
+                ${data.notes?`<div style="grid-column:span 2;font-style:italic;color:#475569;margin-top:2px">"${data.notes}"</div>`:''}
+            </div>${realPaceHtml}`;
+        }
+
+        const card = document.createElement('div');
+        card.style.cssText = `background:${done?'rgba(15,23,42,0.5)':adapted?'rgba(49,46,129,0.07)':'#0f172a'};border:1px solid ${done?'rgba(132,204,22,0.3)':adapted?'rgba(139,92,246,0.35)':'#1e293b'};border-radius:12px;padding:14px;cursor:pointer;transition:background .2s`;
+        card.onmouseenter=()=>card.style.background='rgba(30,41,59,0.7)';
+        card.onmouseleave=()=>card.style.background=done?'rgba(15,23,42,0.5)':adapted?'rgba(49,46,129,0.07)':'#0f172a';
+        card.onclick=()=>openDetailsModal(s.id);
+
+        const toggleStyle=done
+            ?'background:rgba(132,204,22,0.1);border:1px solid #84cc16;color:#84cc16'
+            :'background:#020617;border:1px solid #1e293b;color:#475569';
+
+        card.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
+            <div style="min-width:0;flex:1">
+                <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:5px">
+                    <span style="font-size:11px;font-weight:700;color:#64748b">${s.day}</span>
+                    <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:999px;${bStyle}">${s.type}</span>
+                    ${adapted?'<span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:999px;background:rgba(139,92,246,0.15);color:#a78bfa;border:1px solid rgba(139,92,246,0.3)">IA Adapté</span>':''}
+                </div>
+                <h4 style="font-weight:700;color:${done?'#64748b':'#fff'};font-size:14px;text-decoration:${done?'line-through':'none'};margin-bottom:3px">${s.title}</h4>
+                <p style="font-size:12px;color:#64748b;line-height:1.4;margin-bottom:5px">${s.desc}</p>
+                <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:#84cc16;font-weight:700;text-transform:uppercase">
+                    <i data-lucide="target" style="width:12px;height:12px"></i> ${s.target}
+                </div>
+            </div>
+            <button class="toggle-btn" data-id="${s.id}" style="padding:8px;border-radius:8px;flex-shrink:0;cursor:pointer;${toggleStyle}">
+                <i data-lucide="${done?'check-square':'square'}" style="width:20px;height:20px;display:block"></i>
+            </button>
+        </div>${statsHtml}`;
+
+        container.appendChild(card);
+    });
+
+    container.querySelectorAll('.toggle-btn').forEach(btn=>{
+        btn.addEventListener('click',e=>{e.stopPropagation(); toggleSessionState(btn.dataset.id);});
+    });
+    initLucide();
+}
+
+// ─────────────────────────────────────────────────────────
+// GLOBAL PROGRESS + STATS
+// ─────────────────────────────────────────────────────────
+function updateGlobalProgress() {
+    const total=64, done=Object.keys(completedSessions).length;
+    const pct=Math.round((done/total)*100)||0;
+    document.getElementById('global-progress-txt').innerText=`${done}/${total} séances (${pct}%)`;
+    document.getElementById('global-progress-bar').style.width=pct+'%';
+    document.getElementById('stat-total-completed').innerText=done;
+
+    let totalDist=0;
+    const hist=document.getElementById('history-container');
+    if (!hist) return;
+    hist.innerHTML='';
+    const keys=Object.keys(completedSessions).sort().reverse();
+    if (!keys.length) {
+        hist.innerHTML='<p style="font-size:12px;color:#475569;text-align:center;padding:16px">Aucune activité enregistrée.</p>';
+    } else {
+        keys.forEach(key=>{
+            const d=completedSessions[key];
+            if (!d||typeof d!=='object') return;
+            totalDist+=+d.distance||0;
+            let title='Entraînement';
+            PLAN_WEEKS.forEach(w=>{const s=w.sessions.find(ses=>ses.id===key);if(s)title=`S${w.week} – ${s.title}`;});
+            const el=document.createElement('div');
+            el.style.cssText='display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #1e293b;font-size:12px';
+            el.innerHTML=`<div><span style="font-size:10px;color:#475569;display:block">${d.date||''}</span><span style="font-weight:700;color:#fff">${title}</span></div>
+            <div style="text-align:right"><span style="font-family:monospace;font-weight:900;color:#84cc16">${d.distance||'0'} km</span><span style="font-size:10px;color:#64748b;display:block">${d.duration||'N/A'}</span></div>`;
+            hist.appendChild(el);
+        });
+    }
+    document.getElementById('stat-total-dist').innerText=totalDist.toFixed(1)+' km';
+}
+
+// ─────────────────────────────────────────────────────────
+// MODAL DÉTAILS
+// ─────────────────────────────────────────────────────────
+let _currentDetailSessionId = null;
+function openDetailsModal(sessionId) {
+    let found=null;
+    PLAN_WEEKS.forEach(w=>{const s=w.sessions.find(ses=>ses.id===sessionId);if(s)found=s;});
+    if (!found) return;
+    _currentDetailSessionId = sessionId;
+    document.getElementById('details-type-badge').innerText=found.type;
+    document.getElementById('details-day').innerText=found.day;
+    document.getElementById('details-title').innerText=found.title;
+    document.getElementById('details-target').innerText=found.target;
+    document.getElementById('details-objective').innerHTML=found.objective||'Amélioration globale.';
+    document.getElementById('details-content').innerHTML=found.details||'Détails non spécifiés.';
+    document.getElementById('details-modal').classList.remove('hidden');
+    initLucide();
+}
+function closeDetailsModal() { document.getElementById('details-modal').classList.add('hidden'); }
+
+// ─────────────────────────────────────────────────────────
+// MODE SÉANCE ACTIVE + MINUTEUR
+// ─────────────────────────────────────────────────────────
+let timerInterval=null, timerSeconds=0, timerTotal=0, timerRunning=false, timerCountdown=false;
+
+function startActiveSession() {
+    if (!_currentDetailSessionId) return;
+    closeDetailsModal();
+    activeSessionId = _currentDetailSessionId;
+    let found=null;
+    PLAN_WEEKS.forEach(w=>{const s=w.sessions.find(ses=>ses.id===activeSessionId);if(s)found=s;});
+    if (!found) return;
+
+    document.getElementById('active-session-title').innerText=found.title;
+    document.getElementById('active-type-badge').innerText=found.type;
+    document.getElementById('active-day-label').innerText=found.day;
+
+    // Construire les étapes
+    const stepsContainer=document.getElementById('active-steps-container');
+    stepsContainer.innerHTML='';
+    // Parser les détails en étapes
+    const rawHtml=found.details||found.desc;
+    const tmpDiv=document.createElement('div');
+    tmpDiv.innerHTML=rawHtml;
+    const items=[...tmpDiv.querySelectorAll('.p-3, div')].filter(el=>el.children.length>0);
+    const steps = items.length>0
+        ? items.map(el=>el.innerText.trim()).filter(Boolean)
+        : rawHtml.split('<br/>').map(s=>s.replace(/<[^>]*>/g,'').trim()).filter(Boolean);
+
+    steps.forEach((step,i)=>{
+        const el=document.createElement('div');
+        el.id=`step-${i}`;
+        el.style.cssText='padding:12px 14px;border-radius:10px;background:#0f172a;border:1px solid #1e293b;cursor:pointer;transition:all .2s';
+        el.innerHTML=`<div style="display:flex;align-items:flex-start;gap:10px"><span style="font-size:12px;font-weight:900;color:#84cc16;min-width:20px">${i+1}.</span><p style="font-size:13px;color:#cbd5e1;line-height:1.5">${step}</p></div>`;
+        el.onclick=()=>{
+            document.querySelectorAll('#active-steps-container > div').forEach(d=>d.classList.remove('step-active'));
+            el.classList.add('step-active');
+        };
+        stepsContainer.appendChild(el);
+    });
+    if (steps.length>0) document.getElementById('step-0')?.classList.add('step-active');
+
+    // Afficher les boutons intervalles si VMA
+    const intCtrl=document.getElementById('interval-controls');
+    intCtrl.classList.toggle('hidden', found.type!=='VMA');
+
+    // Timer reset
+    timerReset();
+    document.getElementById('active-session-modal').classList.remove('hidden');
+    document.getElementById('active-session-modal').style.display='flex';
+    initLucide();
+}
+
+function closeActiveSession() {
+    timerPause();
+    document.getElementById('active-session-modal').style.display='none';
+    document.getElementById('active-session-modal').classList.add('hidden');
+    activeSessionId=null;
+}
+
+function timerStart() {
+    if (timerRunning) return;
+    timerRunning=true;
+    document.getElementById('btn-start').classList.add('hidden');
+    document.getElementById('btn-pause').classList.remove('hidden');
+    document.getElementById('timer-label').innerText = timerCountdown?'Compte à rebours':'Chrono';
+    timerInterval=setInterval(()=>{
+        if (timerCountdown) {
+            timerSeconds--;
+            if (timerSeconds<=0) { timerSeconds=0; timerAlert(); timerPause(); }
+        } else { timerSeconds++; }
+        updateTimerDisplay();
+    },1000);
+}
+
+function timerPause() {
+    timerRunning=false;
+    clearInterval(timerInterval);
+    document.getElementById('btn-start').classList.remove('hidden');
+    document.getElementById('btn-pause').classList.add('hidden');
+    document.getElementById('timer-label').innerText='Pause';
+}
+
+function timerReset() {
+    timerPause();
+    timerSeconds=0; timerTotal=0; timerCountdown=false;
+    updateTimerDisplay();
+    document.getElementById('timer-label').innerText='Prêt';
+    document.getElementById('timer-ring').style.strokeDashoffset='283';
+}
+
+function setIntervalTimer(secs) {
+    timerPause();
+    timerSeconds=secs; timerTotal=secs; timerCountdown=true;
+    updateTimerDisplay();
+    document.getElementById('timer-label').innerText=`Intervalle ${secs}s`;
+    timerStart();
+}
+
+function updateTimerDisplay() {
+    const m=Math.floor(timerSeconds/60), s=timerSeconds%60;
+    document.getElementById('timer-display').innerText=`${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+    if (timerCountdown && timerTotal>0) {
+        const prog=(timerTotal-timerSeconds)/timerTotal;
+        const offset=283-(283*prog);
+        document.getElementById('timer-ring').style.strokeDashoffset=offset;
+    } else if (!timerCountdown) {
+        // Chrono positif : on fait tourner lentement
+        const offset=283-((timerSeconds%60)/60)*283;
+        document.getElementById('timer-ring').style.strokeDashoffset=offset;
+    }
+}
+
+function timerAlert() {
+    // Vibration + son
+    if (navigator.vibrate) navigator.vibrate([200,100,200]);
+    try {
+        const ctx=new (window.AudioContext||window.webkitAudioContext)();
+        [880,660].forEach((freq,i)=>{
+            const osc=ctx.createOscillator(); const gain=ctx.createGain();
+            osc.connect(gain); gain.connect(ctx.destination);
+            osc.frequency.value=freq; gain.gain.setValueAtTime(0.3,ctx.currentTime+i*0.3);
+            gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+i*0.3+0.25);
+            osc.start(ctx.currentTime+i*0.3); osc.stop(ctx.currentTime+i*0.3+0.25);
+        });
+    } catch(e) {}
+    showToast('⏱️ Intervalle terminé !');
+    document.getElementById('timer-label').innerText='✅ Terminé';
+}
+
+function openLogFromActive() {
+    closeActiveSession();
+    if (activeSessionId || _currentDetailSessionId) {
+        const id = activeSessionId||_currentDetailSessionId;
+        activeSessionId=null;
+        toggleSessionState(id);
+    }
+}
+
+// ─────────────────────────────────────────────────────────
+// LOG PERFORMANCE
+// ─────────────────────────────────────────────────────────
+function toggleSessionState(id) {
+    if (completedSessions[id]) {
+        delete completedSessions[id];
+        localStorage.setItem('completed_sessions',JSON.stringify(completedSessions));
+        generateAndRenderPlan();
+        showToast('Séance marquée non faite.','#334155');
+    } else {
+        document.getElementById('log-date').value=new Date().toISOString().split('T')[0];
+        document.getElementById('log-session-id').value=id;
+        let title='Activité';
+        PLAN_WEEKS.forEach(w=>{const s=w.sessions.find(ses=>ses.id===id);if(s)title=s.title;});
+        document.getElementById('log-modal-title').innerText=title;
+        ['log-distance','log-duration-min','log-duration-sec','log-hr','log-notes'].forEach(el=>{const e=document.getElementById(el);if(e)e.value='';});
+        ['log-rpe-resp','log-rpe-musc','log-rpe-ment'].forEach(el=>{const e=document.getElementById(el);if(e)e.value=5;});
+        document.getElementById('real-pace-box').classList.add('hidden');
+        updateRPE();
+        document.getElementById('log-modal').classList.remove('hidden');
+        initLucide();
+    }
+}
+
+function closeLogModal() { document.getElementById('log-modal').classList.add('hidden'); }
+
+// Calcul allure en temps réel dans le formulaire
+function computeRealPace() {
+    const dist=+document.getElementById('log-distance').value||0;
+    const min=+document.getElementById('log-duration-min').value||0;
+    const sec=+document.getElementById('log-duration-sec').value||0;
+    const totalS=min*60+sec;
+    const box=document.getElementById('real-pace-box');
+    if (dist>0&&totalS>0) {
+        const real=totalS/dist;
+        document.getElementById('real-pace-val').innerText=secondsToPaceStr(real);
+        // Comparer à la cible
+        const sessionId=document.getElementById('log-session-id').value;
+        let target=null;
+        PLAN_WEEKS.forEach(w=>{const s=w.sessions.find(ses=>ses.id===sessionId);if(s&&s.target.includes(':'))target=paceToSec(s.target);});
+        if (target) {
+            const diff=Math.round(real-target);
+            const el=document.getElementById('pace-diff-val');
+            el.innerText=(diff>0?`+${diff}s/km lente`:diff<0?`${diff}s/km rapide`:'Dans la cible ✅');
+            el.style.color=diff>10?'#f87171':diff<-10?'#84cc16':'#fbbf24';
+        } else { document.getElementById('pace-diff-val').innerText=''; }
+        box.classList.remove('hidden');
+    } else box.classList.add('hidden');
+}
+
+function updateRPE() {
+    const resp=+document.getElementById('log-rpe-resp')?.value||5;
+    const musc=+document.getElementById('log-rpe-musc')?.value||5;
+    const ment=+document.getElementById('log-rpe-ment')?.value||5;
+    document.getElementById('val-resp').innerText=resp;
+    document.getElementById('val-musc').innerText=musc;
+    document.getElementById('val-ment').innerText=ment;
+    const descs={resp:[,'Aucune gêne (Facile)','Aucune gêne (Facile)','Aucune gêne (Facile)','Phrases rythmées (Modéré)','Phrases rythmées (Modéré)','Phrases rythmées (Modéré)','Souffle court (Difficile)','Souffle court (Difficile)','Haletant (Très difficile)','Impossible de parler (Maximal)'],musc:[,'Léger (Aucun effort)','Léger (Aucun effort)','Léger (Aucun effort)','Chaleur légère (Soutenu)','Chaleur légère (Soutenu)','Chaleur légère (Soutenu)','Cuisses lourdes (Difficile)','Cuisses lourdes (Difficile)','Il faut forcer (Très lourd)','Jambes de bois (Épuisé)'],ment:[,'Esprit libre (Nul)','Esprit libre (Nul)','Esprit libre (Nul)','Concentré (Modéré)','Concentré (Modéré)','Concentré (Modéré)','Combat mental (Intense)','Combat mental (Intense)','Souffrance (Sévère)','Envie d\'abandonner (Saturé)']};
+    document.getElementById('desc-resp').innerText=descs.resp[resp]||'';
+    document.getElementById('desc-musc').innerText=descs.musc[musc]||'';
+    document.getElementById('desc-ment').innerText=descs.ment[ment]||'';
+    const rpe=Math.round((resp+musc+ment)/3);
+    document.getElementById('rpe-result-display').innerText=`RPE : ${rpe}/10`;
+    return rpe;
+}
+
+function saveSessionLog() {
+    const id=document.getElementById('log-session-id').value;
+    if (!id) return;
+    const date=document.getElementById('log-date').value;
+    const dist=document.getElementById('log-distance').value||'0';
+    const min=document.getElementById('log-duration-min').value||'00';
+    const sec=document.getElementById('log-duration-sec').value||'00';
+    const hr=document.getElementById('log-hr').value||'N/A';
+    const notes=document.getElementById('log-notes').value;
+    const rpe=updateRPE();
+    const duration=`${String(min).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+    completedSessions[id]={date,rpe,distance:parseFloat(dist).toFixed(2),duration,hr,notes};
+    localStorage.setItem('completed_sessions',JSON.stringify(completedSessions));
+    const token=localStorage.getItem('strava_access_token');
+    if (token) uploadActivityToStrava(id,completedSessions[id]);
+    closeLogModal();
+    generateAndRenderPlan();
+    renderCharts();
+    showToast(`✅ Activité enregistrée ! RPE : ${rpe}/10`);
+}
+
+// ─────────────────────────────────────────────────────────
+// NAVIGATION
+// ─────────────────────────────────────────────────────────
+function switchTab(tabId) {
+    ['programme','stats','strava'].forEach(t=>{
+        document.getElementById('tab-'+t).classList.add('hidden');
+        document.getElementById('nav-'+t).style.color='#475569';
+    });
+    document.getElementById('tab-'+tabId).classList.remove('hidden');
+    document.getElementById('nav-'+tabId).style.color='#84cc16';
+    if (tabId==='stats') { renderCharts(); }
+    initLucide();
+}
+
+function toggleSettingsModal() {
+    const m=document.getElementById('settings-modal');
+    m.classList.toggle('hidden'); initLucide();
+}
+
+function resetAllData() {
+    if (confirm('Réinitialiser tout le programme ? Données perdues.')) {
+        document.getElementById('settings-modal').classList.add('hidden');
+        localStorage.removeItem('completed_sessions'); localStorage.removeItem('current_week');
+        completedSessions={}; currentWeek=1;
+        generateAndRenderPlan();
+        showToast('Application réinitialisée.','#334155');
+    }
+}
+
+// ─────────────────────────────────────────────────────────
+// NOTIFICATIONS PUSH
+// ─────────────────────────────────────────────────────────
+function requestNotifications() {
+    if (!('Notification' in window)) {
+        document.getElementById('notif-status').innerText="Notifications non supportées sur ce navigateur.";
+        return;
+    }
+    Notification.requestPermission().then(perm=>{
+        const btn=document.getElementById('notif-btn');
+        const status=document.getElementById('notif-status');
+        if (perm==='granted') {
+            btn.innerText='✅ Notifications activées';
+            btn.style.background='rgba(132,204,22,0.1)'; btn.style.color='#84cc16'; btn.style.borderColor='rgba(132,204,22,0.4)';
+            status.innerText='Vous recevrez un rappel la veille de chaque séance.';
+            localStorage.setItem('notif_enabled','1');
+            scheduleNotificationCheck();
+        } else {
+            status.innerText='Permission refusée. Activez les notifications dans les paramètres du navigateur.';
+        }
+    });
+}
+
+function scheduleNotificationCheck() {
+    if (Notification.permission!=='granted') return;
+    const tomorrow=new Date();
+    tomorrow.setDate(tomorrow.getDate()+1);
+    const tomorrowDay=tomorrow.toLocaleDateString('fr-FR',{weekday:'long'});
+    const capitalize=s=>s.charAt(0).toUpperCase()+s.slice(1);
+    const dayCapitalized=capitalize(tomorrowDay);
+    PLAN_WEEKS.forEach(w=>{
+        w.sessions.forEach(s=>{
+            if (s.day===dayCapitalized && !completedSessions[s.id]) {
+                new Notification('⚡ Coach VDOT 56',{
+                    body:`Demain : ${s.title} (${s.target}) — Semaine ${w.week}`,
+                    icon:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><circle cx="16" cy="16" r="16" fill="%2384cc16"/><text y=".9em" font-size="20" x="4">⚡</text></svg>'
+                });
+            }
+        });
+    });
+}
+
+// Mettre à jour le bouton notif si déjà activé
+if (Notification.permission==='granted') {
+    setTimeout(()=>{
+        const btn=document.getElementById('notif-btn');
+        if (btn) { btn.innerText='✅ Notifications activées'; btn.style.color='#84cc16'; }
+    },100);
+}
+
+// ─────────────────────────────────────────────────────────
+// STRAVA
+// ─────────────────────────────────────────────────────────
+function saveManualToken() {
+    const t=document.getElementById('strava-manual-token')?.value.trim();
+    if (t) { localStorage.setItem('strava_access_token',t); showToast('Jeton Strava enregistré !'); updateStravaUi(); }
+}
+
+function updateStravaUi() {
+    const token=localStorage.getItem('strava_access_token')||'';
+    const badge=document.getElementById('strava-status-badge');
+    if (!badge) return;
+    if (token) {
+        badge.innerText='Connecté';
+        badge.style.cssText='padding:2px 8px;border-radius:999px;font-size:10px;font-weight:700;background:#052e16;color:#4ade80;border:1px solid rgba(34,197,94,0.4)';
+    } else {
+        badge.innerText='Déconnecté';
+        badge.style.cssText='padding:2px 8px;border-radius:999px;font-size:10px;font-weight:700;background:#450a0a;color:#f87171;border:1px solid #7f1d1d';
+    }
+}
+
+async function uploadActivityToStrava(id,logData) {
+    const token=localStorage.getItem('strava_access_token');
+    if (!token) return;
+    let title='Séance VDOT 56';
+    PLAN_WEEKS.forEach(w=>{const s=w.sessions.find(ses=>ses.id===id);if(s)title=`VDOT 56 S${w.week} – ${s.title}`;});
+    const [m,s]=(logData.duration||'0:0').split(':');
+    const elapsed=(+m)*60+(+s||0);
+    const meters=(+logData.distance||0)*1000;
+    try {
+        const res=await fetch('https://www.strava.com/api/v3/activities',{
+            method:'POST',headers:{'Authorization':`Bearer ${token}`,'Content-Type':'application/json'},
+            body:JSON.stringify({name:title,sport_type:'Run',start_date_local:logData.date?new Date(logData.date+'T12:00:00').toISOString():new Date().toISOString(),elapsed_time:elapsed,distance:meters,description:`RPE: ${logData.rpe}/10. ${logData.notes||''}`})
+        });
+        showToast(res.ok?'Activité partagée sur Strava 🏃':'Enregistré localement (erreur Strava).',res.ok?'#15803d':'#92400e');
+    } catch(e) { showToast('Enregistré localement.','#334155'); }
+}
+</script>
 </body>
 </html>
