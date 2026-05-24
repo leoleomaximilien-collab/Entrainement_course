@@ -18,6 +18,7 @@
   --surface: #0f1117;
   --surface2: #161b27;
   --surface3: #1e2535;
+  --surface-ai: rgba(139, 92, 246, 0.15);
   --border: rgba(255,255,255,0.07);
   --border2: rgba(255,255,255,0.12);
   --text: #e2e8f0;
@@ -184,7 +185,6 @@ html.light .glass2 { background: rgba(241,245,249,0.95); }
 </head>
 <body>
 
-<!-- ░░░░ ONBOARDING ░░░░ -->
 <div id="onboarding" class="fixed inset-0 z-[300] flex flex-col items-center justify-center p-6" style="background:#080b12;display:none">
   <div class="w-full max-w-sm space-y-6">
     <div class="text-center space-y-2">
@@ -192,7 +192,6 @@ html.light .glass2 { background: rgba(241,245,249,0.95); }
       <h1 class="text-2xl font-black text-white">Coach VDOT 56</h1>
       <p class="text-sm" style="color:var(--text2)">Personnalisons ton programme en 30 secondes.</p>
     </div>
-    <!-- Step 1 -->
     <div id="ob-step1" class="form-step active space-y-4">
       <div>
         <label class="text-xs font-bold mb-2 block" style="color:var(--text2)">Ton prénom</label>
@@ -209,7 +208,6 @@ html.light .glass2 { background: rgba(241,245,249,0.95); }
       </div>
       <button onclick="obNext()" class="btn-brand w-full py-3 text-sm">Continuer →</button>
     </div>
-    <!-- Step 2 -->
     <div id="ob-step2" class="form-step space-y-4">
       <div>
         <label class="text-xs font-bold mb-2 block" style="color:var(--text2)">Date de ta course objectif</label>
@@ -228,19 +226,15 @@ html.light .glass2 { background: rgba(241,245,249,0.95); }
   </div>
 </div>
 
-<!-- ░░░░ TOAST ░░░░ -->
 <div id="toast" class="fixed top-6 left-1/2 z-[250] px-4 py-2.5 rounded-full text-sm font-bold shadow-xl pointer-events-none hide" style="transform:translate(-50%,-8px);opacity:0;background:var(--surface);border:1px solid var(--border);color:var(--text)"></div>
 
-<!-- ░░░░ HEADER ░░░░ -->
 <header id="main-header" class="glass sticky top-0 z-50 px-4 pt-safe" style="padding-top:max(16px,env(safe-area-inset-top));padding-bottom:14px">
   <div class="max-w-lg mx-auto">
     <div class="flex justify-between items-center">
-      <!-- Left: greeting + phase -->
       <div>
         <p class="text-xs font-bold" style="color:var(--brand);letter-spacing:.08em;text-transform:uppercase" id="header-greeting">⚡ Coach IA</p>
         <h1 class="text-lg font-black text-white leading-tight" id="header-phase">Programme VDOT 56</h1>
       </div>
-      <!-- Right: VDOT + theme + settings -->
       <div class="flex items-center gap-2">
         <div id="vdot-badge" class="px-3 py-1 rounded-full text-xs font-black" style="background:var(--brand-dim);border:1px solid rgba(132,204,22,0.3);color:var(--brand)">VDOT ~51</div>
         <button onclick="toggleTheme()" id="theme-btn" class="btn-ghost w-8 h-8 flex items-center justify-center text-xs">☀️</button>
@@ -249,7 +243,6 @@ html.light .glass2 { background: rgba(241,245,249,0.95); }
         </button>
       </div>
     </div>
-    <!-- Progress bar -->
     <div class="mt-3 space-y-1">
       <div class="flex justify-between items-center">
         <span class="text-[10px] font-semibold" style="color:var(--text3)" id="progress-label">0/64 séances</span>
@@ -262,13 +255,10 @@ html.light .glass2 { background: rgba(241,245,249,0.95); }
   </div>
 </header>
 
-<!-- ░░░░ MAIN ░░░░ -->
 <main class="max-w-lg mx-auto px-4 pt-4 space-y-3">
 
-  <!-- ── TAB: PROGRAMME ── -->
   <div id="tab-programme" class="tab-content active space-y-3">
 
-    <!-- Week summary -->
     <div id="week-summary-card" class="card p-4 space-y-3">
       <div class="flex justify-between items-start">
         <div>
@@ -281,13 +271,11 @@ html.light .glass2 { background: rgba(241,245,249,0.95); }
           <span class="summary-pill" id="summary-rpe" style="color:var(--brand)">RPE –</span>
         </div>
       </div>
-      <!-- Week selector pills -->
       <div class="overflow-x-auto no-scroll -mx-1 px-1" style="scrollbar-width:none">
         <div id="week-selector" class="flex gap-1.5 week-scroll pb-1" style="width:max-content"></div>
       </div>
     </div>
 
-    <!-- AI alerts + Recovery -->
     <div id="ai-alerts-card" class="hidden p-4 rounded-2xl space-y-1" style="background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.25)">
       <p class="text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5" style="color:#a78bfa">
         <i data-lucide="cpu" class="w-3.5 h-3.5"></i> IA · Adaptations actives
@@ -302,7 +290,6 @@ html.light .glass2 { background: rgba(241,245,249,0.95); }
       <p id="plateau-msg" class="text-xs" style="color:#fcd34d"></p>
     </div>
 
-    <!-- Phase info -->
     <div class="card p-3 flex items-start gap-3">
       <div class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style="background:var(--brand-dim)">
         <i data-lucide="award" class="w-4 h-4" style="color:var(--brand)"></i>
@@ -313,15 +300,12 @@ html.light .glass2 { background: rgba(241,245,249,0.95); }
       </div>
     </div>
 
-    <!-- Sessions list -->
     <div id="sessions-container" class="space-y-2.5"></div>
   </div>
 
-  <!-- ── TAB: STATS ── -->
   <div id="tab-stats" class="tab-content space-y-3">
     <h2 class="text-base font-black text-white">Statistiques & Analyse</h2>
 
-    <!-- KPI row -->
     <div class="grid grid-cols-3 gap-2">
       <div class="card p-3 text-center">
         <p class="text-[10px] mb-1" style="color:var(--text3)">Distance</p>
@@ -337,7 +321,6 @@ html.light .glass2 { background: rgba(241,245,249,0.95); }
       </div>
     </div>
 
-    <!-- Weekly load -->
     <div class="card p-4 space-y-2">
       <div class="flex justify-between items-center">
         <p class="text-xs font-black text-white flex items-center gap-1.5"><i data-lucide="zap" class="w-3.5 h-3.5" style="color:var(--brand)"></i> Charge Hebdo</p>
@@ -349,23 +332,20 @@ html.light .glass2 { background: rgba(241,245,249,0.95); }
       <p id="load-msg" class="text-[10px]" style="color:var(--text3)">Charge = distance × RPE (seuil critique : 200 UA)</p>
     </div>
 
-    <!-- Charts -->
     <div class="card p-4">
       <p class="text-xs font-black text-white mb-3">RPE moyen / semaine</p>
       <div style="height:160px"><canvas id="chart-rpe"></canvas></div>
     </div>
     <div class="card p-4">
-      <p class="text-xs font-black text-white mb-3">Allure réelle vs cible (min/km)</p>
+      <p class="text-xs font-black text-white mb-3">Allure réelle vs cible (fractionné exclus de la moyenne)</p>
       <div style="height:160px"><canvas id="chart-pace"></canvas></div>
     </div>
 
-    <!-- History -->
     <div class="card p-4">
       <p class="text-xs font-black text-white mb-3 flex items-center gap-1.5"><i data-lucide="history" class="w-3.5 h-3.5" style="color:var(--brand)"></i> Historique</p>
       <div id="history-list" class="space-y-2 max-h-56 overflow-y-auto"></div>
     </div>
 
-    <!-- Reference paces -->
     <div class="card p-4">
       <p class="text-xs font-black text-white mb-3">Allures de référence</p>
       <div class="space-y-2 text-xs" id="ref-paces">
@@ -385,7 +365,6 @@ html.light .glass2 { background: rgba(241,245,249,0.95); }
     </div>
   </div>
 
-  <!-- ── TAB: CALENDRIER ── -->
   <div id="tab-calendar" class="tab-content space-y-3">
     <h2 class="text-base font-black text-white">Vue Calendrier</h2>
     <div class="card p-4">
@@ -408,11 +387,9 @@ html.light .glass2 { background: rgba(241,245,249,0.95); }
     <div id="cal-session-preview" class="hidden card p-4 space-y-2"></div>
   </div>
 
-  <!-- ── TAB: CONNEXION ── -->
   <div id="tab-connect" class="tab-content space-y-3">
     <h2 class="text-base font-black text-white">Connexion & Options</h2>
 
-    <!-- Strava -->
     <div class="card p-4 space-y-3">
       <div class="flex justify-between items-center">
         <span class="font-bold flex items-center gap-2 text-sm" style="color:#f97316">
@@ -425,7 +402,6 @@ html.light .glass2 { background: rgba(241,245,249,0.95); }
       <button onclick="saveToken()" class="btn-brand w-full py-2.5 text-sm">Enregistrer</button>
     </div>
 
-    <!-- Notifications -->
     <div class="card p-4 space-y-3">
       <div class="flex items-center gap-2">
         <i data-lucide="bell" class="w-4 h-4" style="color:var(--brand)"></i>
@@ -436,7 +412,6 @@ html.light .glass2 { background: rgba(241,245,249,0.95); }
       <p id="notif-status" class="text-[10px] text-center" style="color:var(--text3)"></p>
     </div>
 
-    <!-- Reset -->
     <div class="card p-4">
       <button onclick="resetAll()" class="w-full py-2.5 rounded-full text-sm font-bold transition" style="background:rgba(239,68,68,.1);color:#fca5a5;border:1px solid rgba(239,68,68,.25)">
         Réinitialiser le programme
@@ -446,7 +421,6 @@ html.light .glass2 { background: rgba(241,245,249,0.95); }
 
 </main>
 
-<!-- ░░░░ BOTTOM NAV ░░░░ -->
 <nav class="glass fixed bottom-0 left-0 right-0 z-50 flex justify-around items-center px-2" style="padding-top:10px;padding-bottom:max(10px,var(--safe-bottom))">
   <button onclick="switchTab('programme')" id="nav-programme" class="nav-btn active-nav flex flex-col items-center gap-0.5 px-4 py-1 rounded-xl transition" style="color:var(--brand)">
     <i data-lucide="calendar-days" class="w-5 h-5"></i>
@@ -466,7 +440,6 @@ html.light .glass2 { background: rgba(241,245,249,0.95); }
   </button>
 </nav>
 
-<!-- ░░░░ MODAL: SETTINGS ░░░░ -->
 <div id="settings-modal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4" style="background:rgba(0,0,0,0.7);backdrop-filter:blur(8px)">
   <div class="glass2 rounded-2xl w-full max-w-sm p-5 space-y-4">
     <div class="flex justify-between items-center">
@@ -492,17 +465,16 @@ html.light .glass2 { background: rgba(241,245,249,0.95); }
   </div>
 </div>
 
-<!-- ░░░░ MODAL: DETAILS SESSION ░░░░ -->
 <div id="details-modal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4" style="background:rgba(0,0,0,0.75);backdrop-filter:blur(10px)">
-  <div class="glass2 rounded-2xl w-full max-w-md flex flex-col shadow-2xl" style="max-height:88vh">
-    <div class="p-4 flex justify-between items-center shrink-0" style="border-bottom:1px solid var(--border)">
+  <div class="glass2 rounded-2xl w-full max-w-md p-5 space-y-4 shadow-2xl" style="max-height:88vh; overflow-y:auto">
+    <div class="flex justify-between items-center shrink-0 border-b border-white/5 pb-3">
       <div class="flex items-center gap-2">
         <span id="det-badge" class="badge">Type</span>
         <span id="det-day" class="text-xs font-bold" style="color:var(--text3)">Jour</span>
       </div>
       <button onclick="closeDetails()" class="btn-ghost w-8 h-8 flex items-center justify-center"><i data-lucide="x" class="w-4 h-4"></i></button>
     </div>
-    <div class="overflow-y-auto p-5 space-y-4">
+    <div class="space-y-4">
       <div>
         <h3 class="text-lg font-black text-white" id="det-title"></h3>
         <div class="flex items-center gap-1.5 text-xs font-bold mt-1" style="color:var(--brand)">
@@ -512,18 +484,16 @@ html.light .glass2 { background: rgba(241,245,249,0.95); }
       <div class="p-3 rounded-xl text-sm leading-relaxed" style="background:var(--surface2);color:var(--text2)" id="det-objective"></div>
       <div id="det-content" class="text-sm leading-relaxed space-y-2" style="color:var(--text)"></div>
     </div>
-    <div class="p-4 flex gap-2 shrink-0" style="border-top:1px solid var(--border)">
+    <div class="flex gap-2 shrink-0 pt-3 border-t border-white/5">
       <button id="btn-launch" onclick="launchActiveSession()" class="btn-brand flex-1 py-3 text-sm flex items-center justify-center gap-2">
-        <i data-lucide="play" class="w-4 h-4"></i> Lancer
+        <i data-lucide="play" class="w-4 h-4"></i> Lancer la séance
       </button>
       <button onclick="closeDetails()" class="btn-ghost px-4 py-3 text-sm font-bold">Fermer</button>
     </div>
   </div>
 </div>
 
-<!-- ░░░░ MODAL: SÉANCE ACTIVE ░░░░ -->
 <div id="active-modal" class="fixed inset-0 z-[150] hidden flex-col" style="background:#080b12">
-  <!-- Header -->
   <div class="glass px-4 shrink-0" style="padding-top:max(16px,env(safe-area-inset-top));padding-bottom:14px;border-bottom:1px solid var(--border)">
     <div class="flex justify-between items-center max-w-lg mx-auto">
       <div class="flex items-center gap-2">
@@ -536,7 +506,6 @@ html.light .glass2 { background: rgba(241,245,249,0.95); }
   </div>
 
   <div class="flex-1 overflow-y-auto max-w-lg mx-auto w-full px-4 py-4 space-y-4">
-    <!-- Mood check -->
     <div id="mood-section" class="card p-4 space-y-3">
       <p class="text-xs font-black text-white">Comment tu te sens aujourd'hui ?</p>
       <div class="flex gap-2">
@@ -556,7 +525,6 @@ html.light .glass2 { background: rgba(241,245,249,0.95); }
       <div id="mood-advice" class="text-xs p-2 rounded-lg hidden" style="background:var(--surface2);color:var(--text2)"></div>
     </div>
 
-    <!-- Timer -->
     <div class="card p-5 flex flex-col items-center space-y-4">
       <div class="relative w-32 h-32">
         <svg class="w-full h-full -rotate-90" viewBox="0 0 100 100">
@@ -568,7 +536,6 @@ html.light .glass2 { background: rgba(241,245,249,0.95); }
           <span id="timer-label" class="text-[9px] font-bold uppercase mt-1" style="color:var(--brand)">Prêt</span>
         </div>
       </div>
-      <!-- Controls -->
       <div class="flex gap-2">
         <button onclick="timerStart()" id="btn-timer-start" class="btn-brand px-5 py-2 text-sm flex items-center gap-1.5">
           <i data-lucide="play" class="w-4 h-4"></i> Start
@@ -580,7 +547,6 @@ html.light .glass2 { background: rgba(241,245,249,0.95); }
           <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
         </button>
       </div>
-      <!-- Quick intervals -->
       <div id="interval-btns" class="hidden flex gap-1.5 flex-wrap justify-center">
         <p class="w-full text-center text-[10px] font-bold mb-1" style="color:var(--text3)">Intervalles rapides</p>
         <button onclick="startInterval(30)" class="px-3 py-1.5 rounded-full text-xs font-bold" style="background:var(--brand-dim);color:var(--brand);border:1px solid rgba(132,204,22,.3)">30s</button>
@@ -591,7 +557,6 @@ html.light .glass2 { background: rgba(241,245,249,0.95); }
       </div>
     </div>
 
-    <!-- Steps -->
     <div>
       <p class="text-xs font-black text-white mb-2">Étapes de la séance</p>
       <div id="active-steps" class="space-y-2"></div>
@@ -605,15 +570,13 @@ html.light .glass2 { background: rgba(241,245,249,0.95); }
   </div>
 </div>
 
-<!-- ░░░░ MODAL: LOG PERFORMANCE (2 steps) ░░░░ -->
-<div id="log-modal" class="fixed inset-0 z-[120] hidden items-end sm:items-center justify-center" style="background:rgba(0,0,0,0.75);backdrop-filter:blur(8px)">
-  <div class="glass2 rounded-t-2xl sm:rounded-2xl w-full max-w-md flex flex-col shadow-2xl" style="max-height:92vh">
-    <!-- Header -->
-    <div class="p-4 flex justify-between items-center shrink-0" style="border-bottom:1px solid var(--border)">
+<div id="log-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[120] hidden items-end sm:items-center justify-center p-4 sm:p-0">
+  <div class="glass2 rounded-2xl w-full max-w-md shadow-2xl flex flex-col max-h-[92vh]">
+    <div class="p-4 flex justify-between items-center shrink-0 border-b border-white/5">
       <div>
         <p id="log-title" class="font-black text-white text-sm"></p>
         <div class="flex gap-1.5 mt-1">
-          <button onclick="logStep(1)" id="log-step-btn1" class="text-[10px] font-bold px-2 py-0.5 rounded-full transition" style="background:var(--brand);color:#0a0f05">1 · Perf</button>
+          <button onclick="logStep(1)" id="log-step-btn1" class="text-[10px] font-bold px-2 py-0.5 rounded-full transition" style="background:var(--brand);color:#0a0f05">1 · Données</button>
           <button onclick="logStep(2)" id="log-step-btn2" class="text-[10px] font-bold px-2 py-0.5 rounded-full transition" style="background:var(--surface3);color:var(--text3)">2 · Ressenti</button>
         </div>
       </div>
@@ -623,7 +586,6 @@ html.light .glass2 { background: rgba(241,245,249,0.95); }
     <div class="overflow-y-auto p-5">
       <input type="hidden" id="log-session-id">
 
-      <!-- STEP 1 : Performance -->
       <div id="log-form-step1" class="form-step active space-y-4">
         <div class="grid grid-cols-2 gap-3">
           <div>
@@ -635,13 +597,14 @@ html.light .glass2 { background: rgba(241,245,249,0.95); }
             <input id="log-hr" type="number" placeholder="145" class="input text-sm">
           </div>
         </div>
-        <div class="grid grid-cols-2 gap-3">
+
+        <div id="log-standard-fields" class="grid grid-cols-2 gap-3">
           <div>
-            <label class="text-[11px] font-bold mb-1.5 block" style="color:var(--text2)">Distance (km)</label>
+            <label class="text-[11px] font-bold mb-1.5 block" style="color:var(--text2)">Distance Totale (km)</label>
             <input id="log-dist" type="number" step="0.01" placeholder="8.5" oninput="computePace()" class="input text-sm">
           </div>
           <div>
-            <label class="text-[11px] font-bold mb-1.5 block" style="color:var(--text2)">Durée (min : sec)</label>
+            <label class="text-[11px] font-bold mb-1.5 block" style="color:var(--text2)">Durée Totale (min:sec)</label>
             <div class="flex gap-1 items-center">
               <input id="log-min" type="number" placeholder="Min" oninput="computePace()" class="input text-sm text-center">
               <span style="color:var(--text3)">:</span>
@@ -649,29 +612,49 @@ html.light .glass2 { background: rgba(241,245,249,0.95); }
             </div>
           </div>
         </div>
-        <!-- Real pace display -->
+
+        <div id="log-interval-fields" class="hidden bg-purple-950/20 border border-purple-500/20 p-4 rounded-xl space-y-3">
+          <p class="text-[11px] font-black text-purple-400 uppercase tracking-wide flex items-center gap-1.5">
+            <i data-lucide="zap" class="w-3.5 h-3.5"></i> Saisie Spécifique Fractionné
+          </p>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="text-[10px] font-bold mb-1 block text-slate-400">Allure moy. des blocs rapides</label>
+              <div class="flex gap-1 items-center">
+                <input id="log-int-min" type="number" placeholder="Min" oninput="computeIntervalStats()" class="input text-sm text-center">
+                <span style="color:var(--text3)">:</span>
+                <input id="log-int-sec" type="number" placeholder="Sec" oninput="computeIntervalStats()" class="input text-sm text-center">
+              </div>
+            </div>
+            <div>
+              <label class="text-[10px] font-bold mb-1 block text-slate-400">Nb de répétitions validées</label>
+              <input id="log-int-reps" type="number" placeholder="Ex: 10" oninput="computeIntervalStats()" class="input text-sm">
+            </div>
+          </div>
+          <p id="interval-auto-calc-info" class="text-[10px] text-slate-500 leading-normal italic"></p>
+        </div>
+
         <div id="pace-box" class="hidden p-3 rounded-xl flex items-center justify-between" style="background:var(--brand-dim);border:1px solid rgba(132,204,22,0.25)">
-          <span class="text-xs font-bold" style="color:var(--brand)">⚡ Allure réelle</span>
+          <span id="pace-box-label" class="text-xs font-bold" style="color:var(--brand)">⚡ Allure calculée</span>
           <div class="text-right">
             <span id="pace-val" class="font-black text-white font-mono text-sm"></span>
             <span id="pace-diff" class="text-[10px] font-bold block"></span>
           </div>
         </div>
+
         <div>
           <label class="text-[11px] font-bold mb-1.5 block" style="color:var(--text2)">Notes</label>
-          <textarea id="log-notes" rows="2" placeholder="Sensations, météo..." class="input text-sm resize-none"></textarea>
+          <textarea id="log-notes" rows="2" placeholder="Sensation sur les blocs, conditions de récupération..." class="input text-sm resize-none"></textarea>
         </div>
         <button onclick="logStep(2)" class="btn-brand w-full py-3 text-sm">Continuer → Ressenti</button>
       </div>
 
-      <!-- STEP 2 : RPE -->
       <div id="log-form-step2" class="form-step space-y-5">
         <div class="flex justify-between items-center p-3 rounded-xl" style="background:var(--surface2)">
           <span class="text-xs font-black text-white flex items-center gap-1.5"><i data-lucide="activity" class="w-3.5 h-3.5" style="color:var(--brand)"></i> RPE global</span>
           <span id="rpe-display" class="font-black text-sm px-3 py-0.5 rounded-full" style="background:var(--brand-dim);color:var(--brand)">5 / 10</span>
         </div>
         <div class="space-y-5">
-          <!-- Resp -->
           <div>
             <div class="flex justify-between text-xs mb-3">
               <span class="font-bold text-white">🌬️ Respiration</span>
@@ -680,7 +663,6 @@ html.light .glass2 { background: rgba(241,245,249,0.95); }
             <input type="range" id="rpe-resp" min="1" max="10" value="5" oninput="updateRPE()">
             <p id="d-resp" class="text-[10px] mt-2" style="color:var(--text3);min-height:14px"></p>
           </div>
-          <!-- Musc -->
           <div>
             <div class="flex justify-between text-xs mb-3">
               <span class="font-bold text-white">🦵 Muscles</span>
@@ -689,7 +671,6 @@ html.light .glass2 { background: rgba(241,245,249,0.95); }
             <input type="range" id="rpe-musc" min="1" max="10" value="5" oninput="updateRPE()">
             <p id="d-musc" class="text-[10px] mt-2" style="color:var(--text3);min-height:14px"></p>
           </div>
-          <!-- Ment -->
           <div>
             <div class="flex justify-between text-xs mb-3">
               <span class="font-bold text-white">🧠 Mental</span>
@@ -702,7 +683,7 @@ html.light .glass2 { background: rgba(241,245,249,0.95); }
         <div class="flex gap-2">
           <button onclick="logStep(1)" class="btn-ghost px-4 py-3 text-sm font-bold">← Retour</button>
           <button onclick="saveLog()" class="btn-brand flex-1 py-3 text-sm flex items-center justify-center gap-2">
-            <i data-lucide="save" class="w-4 h-4"></i> Enregistrer
+            <i data-lucide="save" class="w-4 h-4"></i> Enregistrer la performance
           </button>
         </div>
       </div>
@@ -710,11 +691,8 @@ html.light .glass2 { background: rgba(241,245,249,0.95); }
   </div>
 </div>
 
-<!-- ░░░░░░░░░░░░░░░░  JAVASCRIPT  ░░░░░░░░░░░░░░░░ -->
 <script>
-// ══════════════════════════════════════════════
 // STATE
-// ══════════════════════════════════════════════
 let PLAN = [];
 let currentWeek = 1;
 let logs = {};
@@ -729,9 +707,7 @@ calMonth.setDate(1);
 // Timer state
 let timerRunning = false, timerSeconds = 0, timerTotal = 0, timerCountdown = false, timerInt = null;
 
-// ══════════════════════════════════════════════
 // PERSISTENCE
-// ══════════════════════════════════════════════
 function save() {
   try {
     localStorage.setItem('vdot_logs', JSON.stringify(logs));
@@ -752,14 +728,11 @@ function load() {
         for (let k in parsed) if (parsed[k] && typeof parsed[k]==='object') logs[k] = parsed[k];
       }
     }
-    // theme
     if (localStorage.getItem('vdot_theme') === 'light') document.documentElement.classList.replace('dark','light');
   } catch(e) {}
 }
 
-// ══════════════════════════════════════════════
 // HELPERS
-// ══════════════════════════════════════════════
 function IL() { if (typeof lucide!=='undefined') lucide.createIcons(); }
 let toastT;
 function toast(msg, color) {
@@ -795,9 +768,7 @@ function beep() {
   } catch(e){}
 }
 
-// ══════════════════════════════════════════════
 // PLAN DATA
-// ══════════════════════════════════════════════
 const FORCE_HTML = `<div class="space-y-2">
 <div class="step-item"><strong class="text-white text-xs">1. Squat bulgare</strong><p class="text-xs mt-0.5" style="color:var(--text2)">3×8/jambe · Repos 90s · Stabilité du bassin</p></div>
 <div class="step-item"><strong class="text-white text-xs">2. Squat excentrique</strong><p class="text-xs mt-0.5" style="color:var(--text2)">3×8 · Descente 4s · Compense l'absence de dénivelé</p></div>
@@ -815,13 +786,13 @@ function buildPlan() {
     if(w<=4){
       phase='Phase 1 · Base & Reconstruction';focus='Aérobie strict + renforcement. Sortir du piège de la zone grise.';
       if(w===4)sessions=[
-        {id:`w${w}_s1`,day:'Mardi',type:'VMA',title:'VMA Courte – 6×30"',desc:'6×30s/45s.',target:'3:36/km',obj:VMA_OBJ,det:'Éch. 15 min EF.<br/>6×30s à 3:36/km · récup 45s trot.'},
+        {id:`w${w}_s1`,day:'Mardi',type:'VMA',title:'VMA Courte – 6×30"',desc:'6×30s/45s.',target:'3:36/km',obj:VMA_OBJ,det:'Éch. 15 min EF.<br/>6×30s à 3:36/km · récup 45s trot.', unitVol: 0.14}, // ~140m par 30s
         {id:`w${w}_s2`,day:'Mercredi',type:'Force',title:'Mobilité Active',desc:'Auto-massages.',target:'20 min',obj:'Régénération neuromusculaire.',det:'Foam Roller + mobilité chevilles.'},
-        {id:`w${w}_s3`,day:'Jeudi',type:'EF',title:'Footing Récupération',desc:'30 min EF lente.',target:'5:35/km',obj:EF_OBJ,det:'30 min à 5:35/km strictement.'},
+        {id:`w${w}_s3`,day:'Jeudi',type:'EF',title:'Footing Récupération',desc:'30 min EF lente.',target:'5:35/km',obj:EF_OBJ,det:'30 min à 5:35/km strictly.'},
         {id:`w${w}_s4`,day:'Dimanche',type:'Long',title:'Sortie Longue Décharge',desc:'45 min EF.',target:'5:30/km',obj:EF_OBJ,det:'45 min continues à 5:30/km.'}
       ];
       else sessions=[
-        {id:`w${w}_s1`,day:'Mardi',type:'VMA',title:`VMA – ${6+w*2}×30"`,desc:`${6+w*2}×30s/30s.`,target:'3:36/km',obj:VMA_OBJ,det:`Éch. 20 min.<br/>${6+w*2}×30s (3:36/km) · récup 30s.`},
+        {id:`w${w}_s1`,day:'Mardi',type:'VMA',title:`VMA – ${6+w*2}×30"`,desc:`${6+w*2}×30s/30s.`,target:'3:36/km',obj:VMA_OBJ,det:`Éch. 20 min.<br/>${6+w*2}×30s (3:36/km) · récup 30s.`, unitVol: 0.14},
         {id:`w${w}_s2`,day:'Mercredi',type:'Force',title:'Routine Force',desc:'Squats, Nordic Curl…',target:'30 min',obj:'Compenser l\'absence de dénivelé.',det:FORCE_HTML},
         {id:`w${w}_s3`,day:'Jeudi',type:'EF',title:'Footing EF',desc:`${25+w*5} min continu.`,target:'5:20/km',obj:EF_OBJ,det:`${25+w*5} min à 5:20/km. Pas d'accélération !`},
         {id:`w${w}_s4`,day:'Dimanche',type:'Long',title:`Sortie Longue – ${45+w*5} min`,desc:'Fin active.',target:'Progressif',obj:'Habituer à la durée.',det:`Terminer par 10 min à 4:30/km.`}
@@ -829,44 +800,44 @@ function buildPlan() {
     } else if(w<=8){
       phase='Phase 2 · VMA & Seuil';focus='Élévation du seuil lactique + vitesse neuromusculaire.';
       if(w===8)sessions=[
-        {id:`w${w}_s1`,day:'Mardi',type:'VMA',title:'Rappel Vitesse – 6×200m',desc:'6×200m récup complète.',target:'3:28/km',obj:'Maintien stimulation nerveuse.',det:'6×200m à 3:28/km · marche 1 min.'},
+        {id:`w${w}_s1`,day:'Mardi',type:'VMA',title:'Rappel Vitesse – 6×200m',desc:'6×200m récup complète.',target:'3:28/km',obj:'Maintien stimulation nerveuse.',det:'6×200m à 3:28/km · marche 1 min.', unitVol: 0.20},
         {id:`w${w}_s2`,day:'Mercredi',type:'Force',title:'Mobilité',desc:'Auto-massages.',target:'25 min',obj:'Décharge.',det:'Focus récupération.'},
         {id:`w${w}_s3`,day:'Jeudi',type:'EF',title:'Footing Récupération',desc:'35 min très facile.',target:'5:35/km',obj:EF_OBJ,det:'35 min à 5:35/km.'},
         {id:`w${w}_s4`,day:'Dimanche',type:'Long',title:'Sortie Longue Décharge',desc:'60 min EF.',target:'5:30/km',obj:'Assimilation.',det:'60 min à 5:30/km.'}
       ];
       else sessions=[
-        {id:`w${w}_s1`,day:'Mardi',type:'VMA',title:`Vitesse – ${6+(w-4)*2}×200m`,desc:`${6+(w-4)*2}×200m.`,target:'3:28/km',obj:VMA_OBJ,det:`Éch. 20 min.<br/>${6+(w-4)*2}×200m (3:28/km).`},
+        {id:`w${w}_s1`,day:'Mardi',type:'VMA',title:`Vitesse – ${6+(w-4)*2}×200m`,desc:`${6+(w-4)*2}×200m.`,target:'3:28/km',obj:VMA_OBJ,det:`Éch. 20 min.<br/>${6+(w-4)*2}×200m (3:28/km).`, unitVol: 0.20},
         {id:`w${w}_s2`,day:'Mercredi',type:'Force',title:'Routine Force',desc:'Terrain plat.',target:'30 min',obj:'Contrôle rotulien.',det:FORCE_HTML},
-        {id:`w${w}_s3`,day:'Jeudi',type:'Seuil',title:`Seuil – ${w-3}×1500m`,desc:'Allure seuil.',target:'4:11/km',obj:SEUIL_OBJ,det:`${w-3}×1500m à 4:11/km.`},
+        {id:`w${w}_s3`,day:'Jeudi',type:'Seuil',title:`Seuil – ${w-3}×1500m`,desc:'Allure seuil.',target:'4:11/km',obj:SEUIL_OBJ,det:`${w-3}×1500m à 4:11/km.`, unitVol: 1.50},
         {id:`w${w}_s4`,day:'Dimanche',type:'Long',title:`Sortie Longue – ${65+(w-4)*5} min`,desc:'Allure semi intégrée.',target:'Progressif',obj:'Posture sous fatigue.',det:'15 min à 4:15/km.'}
       ];
     } else if(w<=12){
       phase='Phase 3 · Spécifique VDOT 56';focus='Soutien à allure cible AS5/AS10.';
       if(w===12)sessions=[
-        {id:`w${w}_s1`,day:'Mardi',type:'VMA',title:'Rappel 5K – 3×1000m',desc:'3×1000m.',target:'3:35/km',obj:'Stimulation VO2max.',det:'3×1000m à 3:35/km.'},
+        {id:`w${w}_s1`,day:'Mardi',type:'VMA',title:'Rappel 5K – 3×1000m',desc:'3×1000m.',target:'3:35/km',obj:'Stimulation VO2max.',det:'3×1000m à 3:35/km.', unitVol: 1.00},
         {id:`w${w}_s2`,day:'Mercredi',type:'Force',title:'Mobilité / Yoga',desc:'Yoga.',target:'25 min',obj:'Relâchement.',det:'Yoga hanches et psoas.'},
         {id:`w${w}_s3`,day:'Jeudi',type:'EF',title:'Footing Récupération',desc:'40 min EF.',target:'5:35/km',obj:EF_OBJ,det:'40 min à 5:35/km.'},
         {id:`w${w}_s4`,day:'Dimanche',type:'Long',title:'Sortie Longue Décharge',desc:'70 min EF.',target:'5:30/km',obj:'Maintien aérobie.',det:'70 min EF.'}
       ];
       else sessions=[
-        {id:`w${w}_s1`,day:'Mardi',type:'VMA',title:`VO2max – ${w-6}×1000m`,desc:'5K pace.',target:'3:35/km',obj:'Solliciter le VO2max.',det:`${w-6}×1000m à 3:35/km.`},
+        {id:`w${w}_s1`,day:'Mardi',type:'VMA',title:`VO2max – ${w-6}×1000m`,desc:'5K pace.',target:'3:35/km',obj:'Solliciter le VO2max.',det:`${w-6}×1000m à 3:35/km.`, unitVol: 1.00},
         {id:`w${w}_s2`,day:'Mercredi',type:'Force',title:'Routine Spéc.',desc:'Excentrique.',target:'30 min',obj:'Soutien mécanique.',det:FORCE_HTML},
-        {id:`w${w}_s3`,day:'Jeudi',type:'Seuil',title:`AS10 – ${w-7}×2000m`,desc:'10K pace.',target:'3:52/km',obj:SEUIL_OBJ,det:`${w-7}×2000m à 3:52/km.`},
+        {id:`w${w}_s3`,day:'Jeudi',type:'Seuil',title:`AS10 – ${w-7}×2000m`,desc:'10K pace.',target:'3:52/km',obj:SEUIL_OBJ,det:`${w-7}×2000m à 3:52/km.`, unitVol: 2.00},
         {id:`w${w}_s4`,day:'Dimanche',type:'Long',title:`Sortie Longue – ${80+(w-8)*5} min`,desc:'Blocs semi.',target:'Progressif',obj:'Spécificité.',det:'2×15 min à 4:15/km.'}
       ];
     } else {
       phase='Phase 4 · Affûtage & Course';focus='Dissipation fatigue + surcompensation finale.';
       const sc=16-w;
       if(w===16)sessions=[
-        {id:`w${w}_s1`,day:'Mardi',type:'VMA',title:'Veille Course – 6×200m',desc:'3:18/km.',target:'3:18/km',obj:'Déblocage nerveux.',det:'6×200m à 3:18/km.'},
+        {id:`w${w}_s1`,day:'Mardi',type:'VMA',title:'Veille Course – 6×200m',desc:'3:18/km.',target:'3:18/km',obj:'Déblocage nerveux.',det:'6×200m à 3:18/km.', unitVol: 0.20},
         {id:`w${w}_s2`,day:'Mercredi',type:'Force',title:'Gainage Léger',desc:'Statique.',target:'10 min',obj:'Tonicité.',det:'Planche front/lat.'},
         {id:`w${w}_s3`,day:'Jeudi',type:'EF',title:'Réveil Musculaire',desc:'25 min + lignes.',target:'5:35/km',obj:'Activer les jambes.',det:'25 min à 5:35/km.'},
         {id:`w${w}_s4`,day:'Dimanche',type:'Course',title:'🏆 JOUR DE COURSE – VDOT 56',desc:'Course objectif.',target:'Course',obj:'Valider VDOT 56.',det:'Stratégie métronomique. Bonne course !'}
       ];
       else sessions=[
-        {id:`w${w}_s1`,day:'Mardi',type:'VMA',title:`VMA Affûtage – ${6+sc*2}×200m`,desc:'R-Pace.',target:'3:18/km',obj:'Maintien intensité.',det:`${6+sc*2}×200m à 3:18/km.`},
+        {id:`w${w}_s1`,day:'Mardi',type:'VMA',title:`VMA Affûtage – ${6+sc*2}×200m`,desc:'R-Pace.',target:'3:18/km',obj:'Maintien intensité.',det:`${6+sc*2}×200m à 3:18/km.`, unitVol: 0.20},
         {id:`w${w}_s2`,day:'Mercredi',type:'Force',title:'Gainage',desc:'Charges réduites.',target:'15 min',obj:'Surcompensation.',det:'Proprioception.'},
-        {id:`w${w}_s3`,day:'Jeudi',type:'Seuil',title:'Seuil Court – 2×1000m',desc:'Allure seuil.',target:'3:52/km',obj:'Mémorisation allure.',det:'2×1000m à 3:52/km.'},
+        {id:`w${w}_s3`,day:'Jeudi',type:'Seuil',title:'Seuil Court – 2×1000m',desc:'Allure seuil.',target:'3:52/km',obj:'Mémorisation allure.',det:'2×1000m à 3:52/km.', unitVol: 1.00},
         {id:`w${w}_s4`,day:'Dimanche',type:'Long',title:`Sortie Réduite – ${50+sc*5} min`,desc:'EF.',target:'5:30/km',obj:'Endurance.',det:`${50+sc*5} min à 5:30/km.`}
       ];
     }
@@ -886,12 +857,15 @@ function adaptPlan(plan,logs) {
         const dist=+l.distance||0;
         const [pm,ps]=(l.duration||'00:00').split(':');
         const totalS=(+pm)*60+(+ps||0);
-        const pace=dist>0?totalS/dist:0;
+        
+        // On récupère l'allure enregistrée (qu'elle vienne du fractionné ou du global)
+        const pace=l.intervalPace ? l.intervalPace : (dist>0?totalS/dist:0);
+        
         if(s.type==='EF'&&pace>0&&pace<310)gv++;
         const tSec=p2s(s.target);
-        if(s.type==='VMA'&&tSec>0&&pace>0&&pace<=tSec+3&&rpe<=6){
+        if((s.type Barra ==='VMA'||s.type==='Seuil')&&tSec>0&&pace>0&&pace<=tSec+3&&rpe <=6){
           paces.VMA-=2;paces.Seuil-=2;
-          msgs.push(`🔥 ${s.title.slice(0,30)}… validée avec aisance → allures durcies.`);
+          msgs.push(`🔥 ${s.title.slice(0,25)}… faite sur cible → Allures ajustées.`);
         }
       } else {
         if(gv>0&&(s.type==='VMA'||s.type==='Seuil')){
@@ -911,21 +885,21 @@ function adaptPlan(plan,logs) {
   return {plan,msgs:[...new Set(msgs)]};
 }
 
-// ══════════════════════════════════════════════
 // ANALYTICS
-// ══════════════════════════════════════════════
 function predictVDOT() {
   const tbl=[{v:46,s:272},{v:47,s:267},{v:48,s:263},{v:49,s:259},{v:50,s:255},{v:51,s:251},{v:52,s:247},{v:53,s:243},{v:54,s:240},{v:55,s:236},{v:56,s:233},{v:57,s:229},{v:58,s:226},{v:59,s:223},{v:60,s:220}];
   let best=profile.vdot||51;
   Object.keys(logs).forEach(key=>{
     const d=logs[key]; if(!d||!d.distance||!d.duration)return;
     let t=null; PLAN.forEach(w=>{const s=w.sessions.find(ses=>ses.id===key);if(s)t=s.type;});
-    if(t!=='Seuil')return;
-    const dist=+d.distance; const [pm,ps]=d.duration.split(':'); const tot=(+pm)*60+(+ps||0);
-    if(dist<=0||tot<=0)return;
-    const pace=tot/dist;
+    
+    // On analyse préférentiellement l'allure cible stabilisée du fractionné ou du seuil
+    const pace = d.intervalPace ? d.intervalPace : (parseFloat(d.distance)>0 ? (p2s(d.duration)/parseFloat(d.distance)) : 0);
+    if(t!=='Seuil' && t!=='VMA')return;
+    if(pace<=0)return;
+    
     for(let i=0;i<tbl.length-1;i++){
-      if(pace>=tbl[i+1].s&&pace<=tbl[i].s){
+      if(pace>200 && pace>=tbl[i+1].s&&pace<=tbl[i].s){
         const r=(tbl[i].s-pace)/(tbl[i].s-tbl[i+1].s);
         const v=Math.round(tbl[i].v+r);
         if(v>best)best=v;
@@ -966,25 +940,20 @@ function detectPlateau() {
   return null;
 }
 
-// ══════════════════════════════════════════════
 // RENDER
-// ══════════════════════════════════════════════
 function init() {
   const base=buildPlan();
   const result=adaptPlan(base,logs);
   PLAN=result.plan;
 
-  // AI alerts
   const ac=document.getElementById('ai-alerts-card'), al=document.getElementById('ai-alerts-list');
   if(result.msgs.length){al.innerHTML=result.msgs.map(m=>`<li>• ${m}</li>`).join('');ac.classList.remove('hidden');}
   else ac.classList.add('hidden');
 
-  // Recovery
   const rc=recoveryReco(), rv=document.getElementById('recovery-card'), rm=document.getElementById('recovery-msg');
   if(rc.show){rm.textContent=rc.msg;rv.style.borderColor=rc.err?'rgba(239,68,68,.3)':'rgba(245,158,11,.3)';rv.style.background=rc.err?'rgba(239,68,68,.07)':'rgba(245,158,11,.07)';rm.style.color=rc.err?'#fca5a5':'#fbbf24';rv.classList.remove('hidden');}
   else rv.classList.add('hidden');
 
-  // Plateau
   const pl=detectPlateau();
   if(pl){document.getElementById('plateau-msg').textContent=pl;document.getElementById('plateau-card').classList.remove('hidden');}
   else document.getElementById('plateau-card').classList.add('hidden');
@@ -993,7 +962,6 @@ function init() {
   document.getElementById('vdot-badge').textContent=`VDOT ~${vdot}`;
   document.getElementById('stat-vdot').textContent=`~${vdot}`;
 
-  // Header greeting
   const hr=new Date().getHours();
   const greet=hr<12?'☀️ Bonjour':hr<18?'🌤 Bon après-midi':'🌙 Bonsoir';
   document.getElementById('header-greeting').textContent=profile.name?`${greet}, ${profile.name} !`:greet+' · Coach IA';
@@ -1006,7 +974,6 @@ function init() {
   renderHistory();
   renderPhase();
 
-  // Phase in header
   const wd=PLAN.find(w=>w.week===currentWeek);
   if(wd)document.getElementById('header-phase').textContent=wd.phase;
 }
@@ -1028,7 +995,7 @@ function renderWeekSelector(){
     b.style.cssText=active
       ?'padding:6px 14px;border-radius:99px;font-size:12px;font-weight:800;white-space:nowrap;background:var(--brand);color:#0a0f05;border:none;cursor:pointer;flex-shrink:0'
       :'padding:6px 14px;border-radius:99px;font-size:12px;font-weight:700;white-space:nowrap;background:var(--surface2);color:var(--text3);border:1px solid var(--border);cursor:pointer;flex-shrink:0';
-    b.textContent=`Sem ${i}`;
+    b.textContent=`Sem i`;
     b.onclick=()=>{ currentWeek=i; save(); renderWeekSelector(); renderSessions(); renderWeekSummary(); renderPhase();
       const wd=PLAN.find(w=>w.week===i); if(wd)document.getElementById('header-phase').textContent=wd.phase; };
     c.appendChild(b);
@@ -1070,21 +1037,23 @@ function renderSessions(){
     card.style.cssText=done?'padding:14px;border-color:rgba(132,204,22,.28)':adapted?'padding:14px;border-color:rgba(139,92,246,.3)':'padding:14px';
     card.onclick=()=>openDetails(s.id);
 
-    // Real pace if logged
     let realPaceHtml='';
-    if(done&&d&&d.distance&&d.duration){
-      const dist=+d.distance;const[pm,ps]=d.duration.split(':');const tot=(+pm)*60+(+ps||0);
-      if(dist>0&&tot>0){
-        const rp=tot/dist, tSec=p2s(s.target);
+    if(done&&d){
+      const tSec=p2s(s.target);
+      const rp = d.intervalPace ? d.intervalPace : (parseFloat(d.distance)>0 ? p2s(d.duration)/parseFloat(d.distance) : 0);
+      if(rp > 0){
         const diff=tSec>0?Math.round(rp-tSec):null;
         const dc=diff===null?'var(--text3)':diff>8?'#fca5a5':diff<-8?'#86efac':'#fbbf24';
-        const ds=diff===null?'':diff>0?`+${diff}s/km`:diff<0?`${diff}s/km`:'✅ Dans la cible';
+        const ds=diff===null?'':diff>0?`+${diff}s/km (lent)`:diff<0?`${diff}s/km (rapide)`:'✅ Cible exacte';
+        
+        const typeLabel = d.intervalPace ? "Allure blocs rapides" : "Allure réelle moyenne";
         realPaceHtml=`<div style="margin-top:8px;padding:6px 10px;border-radius:8px;background:var(--brand-dim);border:1px solid rgba(132,204,22,.2);display:flex;justify-content:space-between;align-items:center">
-          <span style="font-size:10px;color:var(--text3)">Allure réelle</span>
+          <span style="font-size:10px;color:var(--text2)">${typeLabel}</span>
           <span style="font-family:monospace;font-weight:900;color:#fff;font-size:13px">${s2p(rp)} <span style="font-size:10px;font-weight:700;color:${dc}">${ds}</span></span>
         </div>`;
       }
     }
+    
     let statsHtml='';
     if(done&&d){
       statsHtml=`<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:11px;color:var(--text2)">
@@ -1140,18 +1109,15 @@ function renderHistory(){
     const d=logs[key]; if(!d||typeof d!=='object')return;
     totalDist+=+d.distance||0;
     let title='Séance'; PLAN.forEach(w=>{const s=w.sessions.find(ses=>ses.id===key);if(s)title=`S${w.week} · ${s.title}`;});
-    const el=document.createElement('div');
-    el.style.cssText='display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:12px';
-    el.innerHTML=`<div><span style="font-size:10px;color:var(--text3);display:block">${d.date||''}</span><span style="font-weight:700;color:var(--text)">${title}</span></div>
-    <div style="text-align:right"><span style="font-family:monospace;font-weight:900;color:var(--brand)">${d.distance||'0'} km</span><span style="font-size:10px;color:var(--text3);display:block">${d.duration||'–'}</span></div>`;
-    h.appendChild(el);
+    h.innerHTML+=`<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:12px">
+      <div><span style="font-size:10px;color:var(--text3);display:block">${d.date||''}</span><span style="font-weight:700;color:var(--text)">${title}</span></div>
+      <div style="text-align:right"><span style="font-family:monospace;font-weight:900;color:var(--brand)">${d.distance||'0'} km</span><span style="font-size:10px;color:var(--text3);display:block">${d.duration||'–'}</span></div>
+    </div>`;
   });
   document.getElementById('stat-dist').textContent=totalDist.toFixed(1)+' km';
 }
 
-// ══════════════════════════════════════════════
 // CHARTS
-// ══════════════════════════════════════════════
 function renderCharts(){
   const rByW={},pByW={};
   Object.keys(logs).forEach(key=>{
@@ -1161,7 +1127,9 @@ function renderCharts(){
     if(!wn)return;
     if(!rByW[wn])rByW[wn]={sum:0,n:0};
     rByW[wn].sum+=+d.rpe||5; rByW[wn].n++;
-    if(d.distance&&d.duration&&tgt&&tgt.includes(':')){
+    
+    // On exclut le fractionné pur du graphique d'allure moyenne globale pour garder des stats stables
+    if(t!=='VMA' && t!=='Seuil' && d.distance && d.duration && tgt && tgt.includes(':')){
       const dist=+d.distance;const[pm,ps]=d.duration.split(':');const tot=(+pm)*60+(+ps||0);
       if(dist>0&&tot>0){if(!pByW[wn])pByW[wn]={r:[],t:[]};pByW[wn].r.push(tot/dist);pByW[wn].t.push(p2s(tgt));}
     }
@@ -1174,32 +1142,27 @@ function renderCharts(){
 
   const co={responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#64748b',font:{size:10},boxWidth:12}}},scales:{x:{ticks:{color:'#475569',font:{size:9}},grid:{color:'rgba(255,255,255,0.04)'}},y:{ticks:{color:'#475569',font:{size:9}},grid:{color:'rgba(255,255,255,0.04)'}}}};
 
-  const rCtx=document.getElementById('chart-rpe');
-  if(rCtx){if(chartRpe)chartRpe.destroy();
-  chartRpe=new Chart(rCtx,{type:'line',data:{labels:labels.length?labels:['–'],datasets:[{label:'RPE moy',data:rpeVals.length?rpeVals:[null],borderColor:'#84cc16',backgroundColor:'rgba(132,204,22,0.08)',tension:0.4,fill:true,pointBackgroundColor:'#84cc16',pointRadius:4,pointHoverRadius:6}]},options:{...co,scales:{...co.scales,y:{...co.scales.y,min:1,max:10}}}});}
+  const rpeCtx=document.getElementById('chart-rpe');
+  if(rpeCtx){if(chartRpe)chartRpe.destroy();
+  chartRpe=new Chart(rpeCtx,{type:'line',data:{labels:labels.length?labels:['–'],datasets:[{label:'RPE moy',data:rpeVals.length?rpeVals:[null],borderColor:'#84cc16',backgroundColor:'rgba(132,204,22,0.08)',tension:0.4,fill:true,pointBackgroundColor:'#84cc16',pointRadius:4,pointHoverRadius:6}]},options:{...co,scales:{...co.scales,y:{...co.scales.y,min:1,max:10}}}});}
 
-  const pCtx=document.getElementById('chart-pace');
-  if(pCtx){if(chartPace)chartPace.destroy();
-  chartPace=new Chart(pCtx,{type:'bar',data:{labels:labels.length?labels:['–'],datasets:[{label:'Réelle',data:realV.length?realV:[null],backgroundColor:'rgba(132,204,22,0.65)',borderRadius:5},{label:'Cible',data:tgtV.length?tgtV:[null],backgroundColor:'rgba(99,102,241,0.45)',borderRadius:5}]},options:{...co,scales:{...co.scales,y:{...co.scales.y,reverse:true,title:{display:true,text:'min/km',color:'#475569',font:{size:9}}}}}});}
+  const paceCtx=document.getElementById('chart-pace');
+  if(paceCtx){if(chartPace)chartPace.destroy();
+  chartPace=new Chart(paceCtx,{type:'bar',data:{labels:labels.length?labels:['–'],datasets:[{label:'Réelle',data:realV.length?realV:[null],backgroundColor:'rgba(132,204,22,0.65)',borderRadius:5},{label:'Cible',data:tgtV.length?tgtV:[null],backgroundColor:'rgba(99,102,241,0.45)',borderRadius:5}]},options:{...co,scales:{...co.scales,y:{...co.scales.y,reverse:true,title:{display:true,text:'min/km',color:'#475569',font:{size:9}}}}}});}
 }
 
-// ══════════════════════════════════════════════
 // CALENDAR
-// ══════════════════════════════════════════════
 function renderCalendar(){
   const months=['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
   document.getElementById('cal-month-label').textContent=`${months[calMonth.getMonth()]} ${calMonth.getFullYear()}`;
   const grid=document.getElementById('cal-grid'); grid.innerHTML='';
   const first=new Date(calMonth.getFullYear(),calMonth.getMonth(),1);
   const lastDay=new Date(calMonth.getFullYear(),calMonth.getMonth()+1,0).getDate();
-  const startDow=(first.getDay()+6)%7; // Monday=0
+  const startDow=(first.getDay()+6)%7;
   const today=new Date(); today.setHours(0,0,0,0);
 
-  // Build session map: dateStr -> session
   const sessionMap={};
   PLAN.forEach(w=>w.sessions.forEach(s=>{
-    // Map days (Mardi/Mercredi/Jeudi/Dimanche) to actual dates — approximate from programme start
-    // We use week number to offset from raceDate or programme start
     const raceDate=profile.raceDate?new Date(profile.raceDate):null;
     if(!raceDate)return;
     const progStart=new Date(raceDate); progStart.setDate(raceDate.getDate()-(16-w.week)*7-6);
@@ -1239,9 +1202,7 @@ function renderCalendar(){
 function calPrev(){ calMonth.setMonth(calMonth.getMonth()-1); renderCalendar(); }
 function calNext(){ calMonth.setMonth(calMonth.getMonth()+1); renderCalendar(); }
 
-// ══════════════════════════════════════════════
 // DETAILS MODAL
-// ══════════════════════════════════════════════
 function openDetails(id){
   let found=null; PLAN.forEach(w=>{const s=w.sessions.find(ses=>ses.id===id);if(s)found=s;});
   if(!found)return;
@@ -1258,9 +1219,7 @@ function openDetails(id){
 }
 function closeDetails(){ hideModal('details-modal'); }
 
-// ══════════════════════════════════════════════
 // ACTIVE SESSION
-// ══════════════════════════════════════════════
 function launchActiveSession(){
   if(!currentDetailId)return;
   closeDetails();
@@ -1271,13 +1230,10 @@ function launchActiveSession(){
   document.getElementById('active-badge').textContent=found.type;
   document.getElementById('active-day').textContent=found.day;
   document.getElementById('active-title').textContent=found.title;
-  // Reset mood
   currentMood='normal';
   ['tired','normal','great'].forEach(m=>document.getElementById('mood-'+m).classList.toggle('selected',m==='normal'));
   document.getElementById('mood-advice').classList.add('hidden');
-  // Interval buttons
   document.getElementById('interval-btns').classList.toggle('hidden',found.type!=='VMA');
-  // Build steps
   const sc=document.getElementById('active-steps'); sc.innerHTML='';
   const tmp=document.createElement('div'); tmp.innerHTML=found.det||found.desc;
   let steps=[];
@@ -1308,9 +1264,7 @@ function selectMood(m){
   vibrate(15);
 }
 
-// ══════════════════════════════════════════════
 // TIMER
-// ══════════════════════════════════════════════
 function timerStart(){
   if(timerRunning)return;
   timerRunning=true;
@@ -1350,23 +1304,34 @@ function updateTimer(){
   }
 }
 
-// ══════════════════════════════════════════════
 // LOG MODAL
-// ══════════════════════════════════════════════
-let _logStep=1;
 function openLog(id){
   document.getElementById('log-session-id').value=id;
   document.getElementById('log-date').value=new Date().toISOString().split('T')[0];
-  ['log-dist','log-min','log-sec','log-hr','log-notes'].forEach(eid=>{const e=document.getElementById(eid);if(e)e.value='';});
+  ['log-dist','log-min','log-sec','log-hr','log-notes','log-int-min','log-int-sec','log-int-reps'].forEach(eid=>{const e=document.getElementById(eid);if(e)e.value='';});
   ['rpe-resp','rpe-musc','rpe-ment'].forEach(eid=>{const e=document.getElementById(eid);if(e)e.value=5;});
   document.getElementById('pace-box').classList.add('hidden');
-  let title='Activité'; PLAN.forEach(w=>{const s=w.sessions.find(ses=>ses.id===id);if(s)title=s.title;});
-  document.getElementById('log-title').textContent=title;
+  
+  let sRef=null; PLAN.forEach(w=>{const s=w.sessions.find(ses=>ses.id===id);if(s)sRef=s;});
+  document.getElementById('log-title').textContent=sRef ? sRef.title : 'Activité';
+  
+  // Bascule d'affichage dynamique selon le type de séance
+  const isInterval = sRef && (sRef.type === 'VMA' || sRef.type === 'Seuil');
+  if(isInterval) {
+    document.getElementById('log-standard-fields').classList.add('hidden');
+    document.getElementById('log-interval-fields').classList.remove('hidden');
+    document.getElementById('interval-auto-calc-info').innerHTML = `Volume unitaire par bloc prévu : <strong>${sRef.unitVol ? sRef.unitVol * 1000 : '–'} m</strong>.<br/>Le volume total et la durée seront interpolés pour votre algorithme.`;
+  } else {
+    document.getElementById('log-standard-fields').classList.remove('hidden');
+    document.getElementById('log-interval-fields').classList.add('hidden');
+  }
+
   updateRPE();
   logStep(1);
   showModal('log-modal');
   IL();
 }
+
 function logStep(n){
   _logStep=n;
   document.getElementById('log-form-step1').classList.toggle('active',n===1);
@@ -1385,6 +1350,7 @@ function computePace(){
   const box=document.getElementById('pace-box');
   if(dist>0&&tot>0){
     const rp=tot/dist;
+    document.getElementById('pace-box-label').textContent = "⚡ Allure réelle moyenne";
     document.getElementById('pace-val').textContent=s2p(rp);
     const id=document.getElementById('log-session-id').value;
     let tgt=null; PLAN.forEach(w=>{const s=w.sessions.find(ses=>ses.id===id);if(s&&s.target.includes(':'))tgt=p2s(s.target);});
@@ -1393,6 +1359,35 @@ function computePace(){
     else pd.textContent='';
     box.classList.remove('hidden');
   } else box.classList.add('hidden');
+}
+
+// Fonction de traitement et validation de la structure du fractionné
+function computeIntervalStats() {
+  const min = +document.getElementById('log-int-min').value || 0;
+  const sec = +document.getElementById('log-int-sec').value || 0;
+  const reps = +document.getElementById('log-int-reps').value || 0;
+  const id = document.getElementById('log-session-id').value;
+  
+  let sRef = null; PLAN.forEach(w => { const s = w.sessions.find(ses => ses.id === id); if (s) sRef = s; });
+  const box = document.getElementById('pace-box');
+  
+  if (reps > 0 && (min > 0 || sec > 0) && sRef && sRef.unitVol) {
+    const paceSec = min * 60 + sec;
+    document.getElementById('pace-box-label').textContent = "⚡ Allure blocs rapides";
+    document.getElementById('pace-val').textContent = s2p(paceSec);
+    
+    const tgt = p2s(sRef.target);
+    const pd = document.getElementById('pace-diff');
+    if (tgt) {
+      const diff = Math.round(paceSec - tgt);
+      pd.textContent = diff > 0 ? `+${diff}s/km vs cible` : diff < 0 ? `${diff}s/km vs cible` : '✅ Cible exacte';
+      pd.style.color = diff > 8 ? '#fca5a5' : diff < -8 ? '#86efac' : '#fbbf24';
+    } else pd.textContent = '';
+    
+    box.classList.remove('hidden');
+  } else {
+    box.classList.add('hidden');
+  }
 }
 
 const RPE_DESCS={
@@ -1418,13 +1413,51 @@ function updateRPE(){
 function saveLog(){
   const id=document.getElementById('log-session-id').value; if(!id)return;
   const date=document.getElementById('log-date').value;
-  const dist=document.getElementById('log-dist').value||'0';
-  const min=document.getElementById('log-min').value||'00';
-  const sec=document.getElementById('log-sec').value||'00';
   const hr=document.getElementById('log-hr').value||'–';
   const notes=document.getElementById('log-notes').value;
   const rpe=updateRPE();
-  logs[id]={date,rpe,distance:parseFloat(dist).toFixed(2),duration:`${String(min).padStart(2,'0')}:${String(sec).padStart(2,'0')}`,hr,notes};
+  
+  let sRef=null; PLAN.forEach(w=>{const s=w.sessions.find(ses=>ses.id===id);if(s)sRef=s;});
+  const isInterval = sRef && (sRef.type === 'VMA' || sRef.type === 'Seuil');
+  
+  let finalDist = 0;
+  let finalDurationStr = "00:00";
+  let intervalPaceSecs = null;
+  
+  if (isInterval) {
+    const intMin = +document.getElementById('log-int-min').value || 0;
+    const intSec = +document.getElementById('log-int-sec').value || 0;
+    const reps = +document.getElementById('log-int-reps').value || 0;
+    
+    intervalPaceSecs = intMin * 60 + intSec;
+    // Interpolation linéaire du volume total basé sur le bloc rapide + échauffement générique (3km)
+    finalDist = parseFloat((reps * (sRef.unitVol || 0)) + 3.0);
+    
+    // Durée globale extrapolée pour l'algorithme d'historique
+    const runningSecs = (reps * (sRef.unitVol || 0)) * intervalPaceSecs;
+    const totalSecsCalculated = runningSecs + (3.0 * 330); // Échauffement/Récup au trot à 5:30/km
+    
+    const fMin = Math.floor(totalSecsCalculated / 60);
+    const fSec = Math.floor(totalSecsCalculated % 60);
+    finalDurationStr = `${String(fMin).padStart(2,'0')}:${String(fSec).padStart(2,'0')}`;
+  } else {
+    const dist=document.getElementById('log-dist').value||'0';
+    const min=document.getElementById('log-min').value||'00';
+    const sec=document.getElementById('log-sec').value||'00';
+    finalDist = parseFloat(dist);
+    finalDurationStr = `${String(min).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+  }
+  
+  logs[id]={
+    date,
+    rpe,
+    distance: finalDist.toFixed(2),
+    duration: finalDurationStr,
+    intervalPace: intervalPaceSecs, // Stocké spécifiquement pour l'analyse IA
+    hr,
+    notes
+  };
+  
   save();
   const tok=localStorage.getItem('vdot_strava');
   if(tok)uploadStrava(id,logs[id]);
@@ -1440,9 +1473,7 @@ function toggleSession(id){
   else openLog(id);
 }
 
-// ══════════════════════════════════════════════
 // NAVIGATION
-// ══════════════════════════════════════════════
 function switchTab(tab){
   ['programme','stats','calendar','connect'].forEach(t=>{
     document.getElementById('tab-'+t).classList.remove('active');
@@ -1456,9 +1487,7 @@ function switchTab(tab){
   IL();
 }
 
-// ══════════════════════════════════════════════
 // MODALS HELPERS
-// ══════════════════════════════════════════════
 function showModal(id){const m=document.getElementById(id);m.style.display='flex';m.classList.remove('hidden');}
 function hideModal(id){const m=document.getElementById(id);m.style.display='none';m.classList.add('hidden');}
 function openSettings(){
@@ -1482,9 +1511,7 @@ function resetAll(){
   }
 }
 
-// ══════════════════════════════════════════════
 // THEME
-// ══════════════════════════════════════════════
 function toggleTheme(){
   const isLight=document.documentElement.classList.contains('light');
   if(isLight){document.documentElement.classList.replace('light','dark');localStorage.setItem('vdot_theme','dark');document.getElementById('theme-btn').textContent='☀️';}
@@ -1492,9 +1519,7 @@ function toggleTheme(){
 }
 if(localStorage.getItem('vdot_theme')==='light')document.getElementById('theme-btn').textContent='🌙';
 
-// ══════════════════════════════════════════════
 // ONBOARDING
-// ══════════════════════════════════════════════
 let _selectedRace='10K';
 function selectRace(r){
   _selectedRace=r;
@@ -1506,7 +1531,6 @@ function obNext(){
   profile.name=name;profile.vdot=vdot;
   document.getElementById('ob-step1').classList.remove('active');
   document.getElementById('ob-step2').classList.add('active');
-  // Set default race date to 16 weeks from now
   const d=new Date();d.setDate(d.getDate()+112);
   document.getElementById('ob-race-date').value=d.toISOString().split('T')[0];
   selectRace('10K');
@@ -1522,9 +1546,7 @@ function obFinish(){
   toast(`Bienvenue ${profile.name||''} ! Programme prêt 🚀`,'#84cc16');
 }
 
-// ══════════════════════════════════════════════
 // NOTIFICATIONS
-// ══════════════════════════════════════════════
 function requestNotifications(){
   if(!('Notification'in window)){document.getElementById('notif-status').textContent='Non supporté sur ce navigateur.';return;}
   Notification.requestPermission().then(p=>{
@@ -1550,9 +1572,7 @@ function scheduleNotifs(){
 }
 if(Notification.permission==='granted'){setTimeout(()=>{const b=document.getElementById('notif-btn');if(b){b.textContent='✅ Notifications activées';b.style.color='var(--brand)';}},200);}
 
-// ══════════════════════════════════════════════
 // STRAVA
-// ══════════════════════════════════════════════
 function saveToken(){
   const t=document.getElementById('strava-token').value.trim();
   if(t){localStorage.setItem('vdot_strava',t);updateStravaUI();toast('Jeton Strava enregistré.');}
@@ -1573,9 +1593,7 @@ async function uploadStrava(id,d){
   }catch(e){toast('Enregistré localement.');}
 }
 
-// ══════════════════════════════════════════════
 // SWIPE (mobile week change)
-// ══════════════════════════════════════════════
 let swipeX=null;
 document.getElementById('sessions-container').addEventListener('touchstart',e=>{swipeX=e.touches[0].clientX;},{passive:true});
 document.getElementById('sessions-container').addEventListener('touchend',e=>{
@@ -1590,10 +1608,8 @@ document.getElementById('sessions-container').addEventListener('touchend',e=>{
   swipeX=null;
 },{passive:true});
 
-// ══════════════════════════════════════════════
 // BOOT
-// ══════════════════════════════════════════════
-document.addEventListener('DOMContentLoaded',()=>{
+document.addEventListener('DOMContentLoaded',() => {
   const wait=setInterval(()=>{
     if(typeof lucide!=='undefined'&&typeof Chart!=='undefined'){
       clearInterval(wait);
