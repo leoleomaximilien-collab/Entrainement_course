@@ -124,10 +124,6 @@ input[type=range]::-moz-range-thumb { width:22px; height:22px; border-radius:50%
 }
 .input:focus { border-color: var(--brand); box-shadow: 0 0 0 3px var(--brand-dim); }
 
-/* TIMER RING */
-.timer-ring-track { stroke: var(--surface3); }
-.timer-ring-fill { stroke: var(--brand); stroke-dasharray: 283; stroke-dashoffset: 283; stroke-linecap: round; transition: stroke-dashoffset .9s linear; }
-
 .session-done { opacity: .6; }
 .session-done h4 { text-decoration: line-through; color: var(--text3) !important; }
 
@@ -545,7 +541,7 @@ html.light .glass2 { background: rgba(241,245,249,0.95); }
 
 <div id="log-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[120] hidden items-end sm:items-center justify-center p-4 sm:p-0">
   <div class="glass2 rounded-t-2xl sm:rounded-2xl w-full max-w-md flex flex-col shadow-2xl" style="max-height:92vh">
-    <div class="p-4 flex justify-between items-center shrink-0 border-b border-white/5">
+    <div class="p-4 border-b border-white/5 flex justify-between items-center shrink-0">
       <div>
         <p id="log-title" class="font-black text-white text-sm"></p>
         <div class="flex gap-1.5 mt-1">
@@ -588,23 +584,11 @@ html.light .glass2 { background: rgba(241,245,249,0.95); }
 
         <div id="log-interval-fields" class="hidden bg-purple-950/20 border border-purple-500/20 p-4 rounded-xl space-y-3">
           <p class="text-[11px] font-black text-purple-400 uppercase tracking-wide flex items-center gap-1.5">
-            <i data-lucide="zap" class="w-3.5 h-3.5"></i> Saisie Spécifique Fractionné
+            <i data-lucide="zap" class="w-3.5 h-3.5"></i> Saisie Par Blocs Individuels
           </p>
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="text-[10px] font-bold mb-1 block text-slate-400">Allure moyenne des blocs rapides</label>
-              <div class="flex gap-1 items-center">
-                <input id="log-int-min" type="number" placeholder="Min" oninput="computeIntervalStats()" class="input text-sm text-center">
-                <span style="color:var(--text3)">:</span>
-                <input id="log-int-sec" type="number" placeholder="Sec" oninput="computeIntervalStats()" class="input text-sm text-center">
-              </div>
-            </div>
-            <div>
-              <label class="text-[10px] font-bold mb-1 block text-slate-400">Nb de répétitions validées</label>
-              <input id="log-int-reps" type="number" placeholder="Ex: 10" oninput="computeIntervalStats()" class="input text-sm">
-            </div>
-          </div>
-          <p id="interval-auto-calc-info" class="text-[10px] text-slate-500 leading-normal italic"></p>
+          <div id="interval-auto-calc-info" class="text-[10px] text-slate-400 leading-normal italic"></div>
+          
+          <div id="dynamic-blocks-container" class="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto pr-1"></div>
         </div>
 
         <div id="pace-box" class="hidden p-3 rounded-xl flex items-center justify-between" style="background:var(--brand-dim);border:1px solid rgba(132,204,22,0.25)">
@@ -665,7 +649,7 @@ html.light .glass2 { background: rgba(241,245,249,0.95); }
 </div>
 
 <script>
-// VARIABLES D'ÉTAT GLOBALES
+// VARIABLES GLOBALESTATE
 let PLAN = [];
 let currentWeek = 1;
 let logs = {};
@@ -680,7 +664,7 @@ calMonth.setDate(1);
 // Timer state
 let timerRunning = false, timerSeconds = 0, timerTotal = 0, timerCountdown = false, timerInt = null;
 
-// PERSISTENCE LOCALSTORAGE
+// MEMOIRE LOCALSTORAGE
 function save() {
   try {
     localStorage.setItem('vdot_logs', JSON.stringify(logs));
@@ -688,7 +672,6 @@ function save() {
     localStorage.setItem('vdot_profile', JSON.stringify(profile));
   } catch(e) {}
 }
-
 function load() {
   try {
     const w = localStorage.getItem('vdot_week');
@@ -705,12 +688,11 @@ function load() {
   } catch(e) {}
 }
 
-// FORMATTAGE ET UTILS
+// FORMATTAGE TIME & UTILS
 function IL() { if (typeof lucide!=='undefined') lucide.createIcons(); }
 let toastT;
 function toast(msg, color) {
-  const t = document.getElementById('toast');
-  if(!t) return;
+  const t = document.getElementById('toast'); if(!t) return;
   t.textContent = msg;
   t.style.background = color||'var(--surface)';
   t.style.color = color ? '#0a0f05' : 'var(--text)';
@@ -742,7 +724,17 @@ function beep() {
   } catch(e){}
 }
 
-// INJECTION INITIALE DU PLAN D'ENTRAÎNEMENT STRUCTURÉ (64 séances / 4 par semaine)
+// PROGRAMMATION DU PLAN (64 SEANCES)
+const FORCE_HTML = `<div class="space-y-2">
+<div class="step-item"><strong class="text-white text-xs">1. Squat bulgare</strong><p class="text-xs mt-0.5" style="color:var(--text2)">3×8/jambe · Repos 90s · Stabilité du bassin</p></div>
+<div class="step-item"><strong class="text-white text-xs">2. Squat excentrique</strong><p class="text-xs mt-0.5" style="color:var(--text2)">3×8 · Descente 4s · Compense l'absence de dénivelé</p></div>
+<div class="step-item"><strong class="text-white text-xs">3. Nordic Hamstring Curl</strong><p class="text-xs mt-0.5" style="color:var(--text2)">3×5 · Repos 90s</p></div>
+<div class="step-item"><strong class="text-white text-xs">4. Élévations mollets + Pogo Hops</strong><p class="text-xs mt-0.5" style="color:var(--text2)">Raideur tendineuse · Terrain plat</p></div>
+</div>`;
+const EF_OBJ='Sortir de la zone grise (4:07–4:22/km). Développer les fibres de type I et le réseau capillaire.';
+const VMA_OBJ='Économie de course et vitesse pure sans accumulation lactique.';
+const SEUIL_OBJ='Repousser le seuil lactique pour courir plus vite avant l\'acidose.';
+
 function buildPlan() {
   const plan=[];
   for(let w=1;w<=16;w++){
@@ -750,13 +742,13 @@ function buildPlan() {
     if(w<=4){
       phase='Phase 1 · Base & Reconstruction';focus='Aérobie strict + renforcement. Sortir du piège de la zone grise.';
       if(w===4)sessions=[
-        {id:`w${w}_s1`,day:'Mardi',type:'VMA',title:'Qualité - VMA Courte',desc:'6x 30s rapide / 45s lent.',target:'3:36/km',obj:VMA_OBJ,det:'Éch. 15 min EF.<br/>6x 30s à 3:36/km · récup 45s trot.', unitVol: 0.14},
+        {id:`w${w}_s1`,day:'Mardi',type:'VMA',title:'Qualité - VMA Courte',desc:'6x 30s rapide / 45s lent.',target:'3:36/km',obj:VMA_OBJ,det:'Éch. 15 min EF.<br/>6x 30s à 3:36/km · récup 45s trot.', unitVol: 0.14, reps: 6, isShort: true},
         {id:`w${w}_s2`,day:'Mercredi',type:'Force',title:'Mobilité Active',desc:'Auto-massages.',target:'20 min',obj:'Régénération neuromusculaire.',det:'Foam Roller + mobility chevilles.'},
         {id:`w${w}_s3`,day:'Jeudi',type:'EF',title:'Footing Récupération',desc:'30 min EF lente.',target:'5:35/km',obj:EF_OBJ,det:'30 min à 5:35/km strictement.'},
         {id:`w${w}_s4`,day:'Dimanche',type:'Long',title:'Sortie Longue Décharge',desc:'45 min EF.',target:'5:30/km',obj:EF_OBJ,det:'45 min continues à 5:30/km.'}
       ];
       else sessions=[
-        {id:`w${w}_s1`,day:'Mardi',type:'VMA',title:`VMA – ${6+w*2}x 30"-30"`,desc:`${6+w*2}x 30s rapide / 30s lent.`,target:'3:36/km',obj:VMA_OBJ,det:`Éch. 20 min.<br/>${6+w*2}x 30s (3:36/km) · récup 30s.`, unitVol: 0.14},
+        {id:`w${w}_s1`,day:'Mardi',type:'VMA',title:`VMA – ${6+w*2}x 30"-30"`,desc:`${6+w*2}x 30s rapide / 30s lent.`,target:'3:36/km',obj:VMA_OBJ,det:`Éch. 20 min.<br/>${6+w*2}x 30s (3:36/km) · récup 30s.`, unitVol: 0.14, reps: (6+w*2), isShort: true},
         {id:`w${w}_s2`,day:'Mercredi',type:'Force',title:'Routine Force',desc:'Squats, Nordic Curl…',target:'30 min',obj:'Compenser l\'absence de dénivelé.',det:FORCE_HTML},
         {id:`w${w}_s3`,day:'Jeudi',type:'EF',title:'Footing EF',desc:`${25+w*5} min continu.`,target:'5:20/km',obj:EF_OBJ,det:`${25+w*5} min à 5:20/km. Pas d'accélération !`},
         {id:`w${w}_s4`,day:'Dimanche',type:'Long',title:`Sortie Longue – ${45+w*5} min`,desc:'Fin active.',target:'Progressif',obj:'Habituer à la durée.',det:`Terminer par 10 min à 4:30/km.`}
@@ -764,44 +756,44 @@ function buildPlan() {
     } else if(w<=8){
       phase='Phase 2 · VMA & Seuil';focus='Élévation du seuil lactique + vitesse neuromusculaire.';
       if(w===8)sessions=[
-        {id:`w${w}_s1`,day:'Mardi',type:'VMA',title:'Rappel Vitesse – 6x 200m',desc:'6x 200m récup complète.',target:'3:28/km',obj:'Maintien stimulation nerveuse.',det:'6x 200m à 3:28/km · marche 1 min.', unitVol: 0.20},
+        {id:`w${w}_s1`,day:'Mardi',type:'VMA',title:'Rappel Vitesse – 6x 200m',desc:'6x 200m récup complète.',target:'3:28/km',obj:'Maintien stimulation nerveuse.',det:'6x 200m à 3:28/km · marche 1 min.', unitVol: 0.20, reps: 6, isShort: true},
         {id:`w${w}_s2`,day:'Mercredi',type:'Force',title:'Mobilité',desc:'Auto-massages.',target:'25 min',obj:'Décharge.',det:'Focus récupération.'},
         {id:`w${w}_s3`,day:'Jeudi',type:'EF',title:'Footing Récupération',desc:'35 min très facile.',target:'5:35/km',obj:EF_OBJ,det:'35 min à 5:35/km.'},
         {id:`w${w}_s4`,day:'Dimanche',type:'Long',title:'Sortie Longue Décharge',desc:'60 min EF.',target:'5:30/km',obj:'Assimilation.',det:'60 min à 5:30/km.'}
       ];
       else sessions=[
-        {id:`w${w}_s1`,day:'Mardi',type:'VMA',title:`Vitesse – ${6+(w-4)*2}x 200m`,desc:`${6+(w-4)*2}x 200m.`,target:'3:28/km',obj:VMA_OBJ,det:`Éch. 20 min.<br/>${6+(w-4)*2}x 200m (3:28/km).`, unitVol: 0.20},
+        {id:`w${w}_s1`,day:'Mardi',type:'VMA',title:`Vitesse – ${6+(w-4)*2}x 200m`,desc:`${6+(w-4)*2}x 200m.`,target:'3:28/km',obj:VMA_OBJ,det:`Éch. 20 min.<br/>${6+(w-4)*2}x 200m (3:28/km).`, unitVol: 0.20, reps: (6+(w-4)*2), isShort: true},
         {id:`w${w}_s2`,day:'Mercredi',type:'Force',title:'Routine Force',desc:'Terrain plat.',target:'30 min',obj:'Contrôle rotulien.',det:FORCE_HTML},
-        {id:`w${w}_s3`,day:'Jeudi',type:'Seuil',title:`Seuil – ${w-3}x 1500m`,desc:'Allure seuil.',target:'4:11/km',obj:SEUIL_OBJ,det:`${w-3}x 1500m à 4:11/km.`, unitVol: 1.50},
+        {id:`w${w}_s3`,day:'Jeudi',type:'Seuil',title:`Seuil – ${w-3}x 1500m`,desc:'Allure seuil.',target:'4:11/km',obj:SEUIL_OBJ,det:`${w-3}x 1500m à 4:11/km.`, unitVol: 1.50, reps: (w-3), isShort: false},
         {id:`w${w}_s4`,day:'Dimanche',type:'Long',title:`Sortie Longue – ${65+(w-4)*5} min`,desc:'Allure semi intégrée.',target:'Progressif',obj:'Posture sous fatigue.',det:'15 min à 4:15/km.'}
       ];
     } else if(w<=12){
       phase='Phase 3 · Spécifique VDOT 56';focus='Soutien à allure cible AS5/AS10.';
       if(w===12)sessions=[
-        {id:`w${w}_s1`,day:'Mardi',type:'VMA',title:'Rappel 5K – 3x 1000m',desc:'3x 1000m.',target:'3:35/km',obj:'Stimulation VO2max.',det:'3x 1000m à 3:35/km.', unitVol: 1.00},
+        {id:`w${w}_s1`,day:'Mardi',type:'VMA',title:'Rappel 5K – 3x 1000m',desc:'3x 1000m.',target:'3:35/km',obj:'Stimulation VO2max.',det:'3x 1000m à 3:35/km.', unitVol: 1.00, reps: 3, isShort: false},
         {id:`w${w}_s2`,day:'Mercredi',type:'Force',title:'Mobilité / Yoga',desc:'Yoga.',target:'25 min',obj:'Relâchement.',det:'Yoga hanches et psoas.'},
         {id:`w${w}_s3`,day:'Jeudi',type:'EF',title:'Footing Récupération',desc:'40 min EF.',target:'5:35/km',obj:EF_OBJ,det:'40 min à 5:35/km.'},
         {id:`w${w}_s4`,day:'Dimanche',type:'Long',title:'Sortie Longue Décharge',desc:'70 min EF.',target:'5:30/km',obj:'Maintien aérobie.',det:'70 min EF.'}
       ];
       else sessions=[
-        {id:`w${w}_s1`,day:'Mardi',type:'VMA',title:`VO2max – ${w-6}x 1000m`,desc:'5K pace.',target:'3:35/km',obj:'Solliciter le VO2max.',det:`${w-6}x 1000m à 3:35/km.`, unitVol: 1.00},
+        {id:`w${w}_s1`,day:'Mardi',type:'VMA',title:`VO2max – ${w-6}x 1000m`,desc:'5K pace.',target:'3:35/km',obj:'Solliciter le VO2max.',det:`${w-6}x 1000m à 3:35/km.`, unitVol: 1.00, reps: (w-6), isShort: false},
         {id:`w${w}_s2`,day:'Mercredi',type:'Force',title:'Routine Spéc.',desc:'Excentrique.',target:'30 min',obj:'Soutien mécanique.',det:FORCE_HTML},
-        {id:`w${w}_s3`,day:'Jeudi',type:'Seuil',title:`AS10 – ${w-7}x 2000m`,desc:'10K pace.',target:'3:52/km',obj:SEUIL_OBJ,det:`${w-7}x 2000m à 3:52/km.`, unitVol: 2.00},
+        {id:`w${w}_s3`,day:'Jeudi',type:'Seuil',title:`AS10 – ${w-7}x 2000m`,desc:'10K pace.',target:'3:52/km',obj:SEUIL_OBJ,det:`${w-7}x 2000m à 3:52/km.`, unitVol: 2.00, reps: (w-7), isShort: false},
         {id:`w${w}_s4`,day:'Dimanche',type:'Long',title:`Sortie Longue – ${80+(w-8)*5} min`,desc:'Blocs semi.',target:'Progressif',obj:'Spécificité.',det:'2x 15 min à 4:15/km.'}
       ];
     } else {
       phase='Phase 4 · Affûtage & Course';focus='Dissipation fatigue + surcompensation finale.';
       const sc=16-w;
       if(w===16)sessions=[
-        {id:`w${w}_s1`,day:'Mardi',type:'VMA',title:'Veille Course – 6x 200m',desc:'3:18/km.',target:'3:18/km',obj:'Déblocage nerveux.',det:'6x 200m à 3:18/km.', unitVol: 0.20},
+        {id:`w${w}_s1`,day:'Mardi',type:'VMA',title:'Veille Course – 6x 200m',desc:'3:18/km.',target:'3:18/km',obj:'Déblocage nerveux.',det:'6x 200m à 3:18/km.', unitVol: 0.20, reps: 6, isShort: true},
         {id:`w${w}_s2`,day:'Mercredi',type:'Force',title:'Gainage Léger',desc:'Statique.',target:'10 min',obj:'Tonicité.',det:'Planche front/lat.'},
         {id:`w${w}_s3`,day:'Jeudi',type:'EF',title:'Réveil Musculaire',desc:'25 min + lignes.',target:'5:35/km',obj:'Activer les jambes.',det:'25 min à 5:35/km.'},
         {id:`w${w}_s4`,day:'Dimanche',type:'Course',title:'🏆 JOUR DE COURSE – VDOT 56',desc:'Course objectif.',target:'Course',obj:'Valider VDOT 56.',det:'Stratégie métronomique. Bonne course !'}
       ];
       else sessions=[
-        {id:`w${w}_s1`,day:'Mardi',type:'VMA',title:`VMA Affûtage – ${6+sc*2}x 200m`,desc:'R-Pace.',target:'3:18/km',obj:'Maintien intensité.',det:`${6+sc*2}x 200m à 3:18/km.`, unitVol: 0.20},
+        {id:`w${w}_s1`,day:'Mardi',type:'VMA',title:`VMA Affûtage – ${6+sc*2}x 200m`,desc:'R-Pace.',target:'3:18/km',obj:'Maintien intensité.',det:`${6+sc*2}x 200m à 3:18/km.`, unitVol: 0.20, reps: (6+sc*2), isShort: true},
         {id:`w${w}_s2`,day:'Mercredi',type:'Force',title:'Gainage',desc:'Charges réduites.',target:'15 min',obj:'Surcompensation.',det:'Proprioception.'},
-        {id:`w${w}_s3`,day:'Jeudi',type:'Seuil',title:'Seuil Court – 2x 1000m',desc:'Allure seuil.',target:'3:52/km',obj:'Mémorisation allure.',det:'2x 1000m à 3:52/km.', unitVol: 1.00},
+        {id:`w${w}_s3`,day:'Jeudi',type:'Seuil',title:'Seuil Court – 2x 1000m',desc:'Allure seuil.',target:'3:52/km',obj:'Mémorisation allure.',det:'2x 1000m à 3:52/km.', unitVol: 1.00, reps: 2, isShort: false},
         {id:`w${w}_s4`,day:'Dimanche',type:'Long',title:`Sortie Réduite – ${50+sc*5} min`,desc:'EF.',target:'5:30/km',obj:'Endurance.',det:`${50+sc*5} min à 5:30/km.`}
       ];
     }
@@ -810,7 +802,98 @@ function buildPlan() {
   return plan;
 }
 
-// INITIALISATION ET SURVEILLANCE DES ADAPTATIONS IA
+function adaptPlan(plan,logs) {
+  const msgs=[]; let paces={VMA:216,Seuil:251}; let gv=0,exhaust=false;
+  plan.forEach(w=>{
+    let rpeSum=0,cnt=0;
+    w.sessions.forEach(s=>{
+      const l=logs[s.id];
+      if(l&&typeof l==='object'){
+        cnt++; const rpe=+l.rpe||0; rpeSum+=rpe;
+        const dist=parseFloat(l.distance)||0;
+        const [pm,ps]=(l.duration||'00:00').split(':');
+        const totalS=(parseInt(pm)||0)*60+(parseInt(ps)||0);
+        const pace=l.intervalPace ? l.intervalPace : (dist>0?totalS/dist:0);
+        
+        if(s.type==='EF' && pace>0 && pace<310) gv++;
+        const tSec=p2s(s.target);
+        if((s.type==='VMA'||s.type==='Seuil')&&tSec>0&&pace>0&&pace<=tSec+3&&rpe<=6){
+          paces.VMA-=2;paces.Seuil-=2;
+          msgs.push(`🔥 ${s.title.slice(0,25)}… faite sur cible → Allures ajustées.`);
+        }
+      } else {
+        if(gv>0&&(s.type==='VMA'||s.type==='Seuil')){
+          s.type='EF';s.title='⚠️ Récupération (Zone Grise)';s.desc='Transformée en récup.';s.target='5:35/km';gv--;
+          if(!msgs.some(m=>m.includes('Zone Grise')))msgs.push("⚠️ Zone Grise → intervalle converti en récup.");
+        } else if(exhaust&&s.type==='Long'){
+          if(!msgs.some(m=>m.includes('Fatigue')))msgs.push("📉 Fatigue → sorties longues –15%.");
+          s.desc='🔋 VOL. –15%. '+s.desc;
+        } else {
+          if(s.type==='VMA'&&s.target.includes(':'))s.target=s2p(paces.VMA);
+          if(s.type==='Seuil'&&s.target.includes(':'))s.target=s2p(paces.Seuil);
+        }
+      }
+    });
+    if(cnt>0)exhaust=(rpeSum/cnt)>7.5;
+  });
+  return {plan,msgs:[...new Set(msgs)]};
+}
+
+// ADAPTATION ET ANALYSE DYNAMIQUE VDOT
+function predictVDOT() {
+  const tbl=[{v:46,s:272},{v:47,s:267},{v:48,s:263},{v:49,s:259},{v:50,s:255},{v:51,s:251},{v:52,s:247},{v:53,s:243},{v:54,s:240},{v:55,s:236},{v:56,s:233},{v:57,s:229},{v:58,s:226},{v:59,s:223},{v:60,s:220}];
+  let best=profile.vdot||51;
+  Object.keys(logs).forEach(key=>{
+    const d=logs[key]; if(!d||!d.distance||!d.duration)return;
+    let t=null; PLAN.forEach(w=>{const s=w.sessions.find(ses=>ses.id===key);if(s)t=s.type;});
+    
+    const pace = d.intervalPace ? d.intervalPace : (parseFloat(d.distance)>0 ? (p2s(d.duration)/parseFloat(d.distance)) : 0);
+    if(t!=='Seuil' && t!=='VMA')return;
+    if(pace<=0)return;
+    
+    for(let i=0;i<tbl.length-1;i++){
+      if(pace>=tbl[i+1].s&&pace<=tbl[i].s){
+        const r=(tbl[i].s-pace)/(tbl[i].s-tbl[i+1].s);
+        const v=Math.round(tbl[i].v+r);
+        if(v>best)best=v;
+      }
+    }
+  });
+  return best;
+}
+function weeklyLoad() {
+  let load=0;
+  const now=new Date(), ws=new Date(now);
+  ws.setDate(now.getDate()-((now.getDay()+6)%7)); ws.setHours(0,0,0,0);
+  Object.values(logs).forEach(d=>{
+    if(!d||!d.date)return;
+    if(new Date(d.date)>=ws) load+=(+d.distance||0)*(+d.rpe||5);
+  });
+  return Math.round(load);
+}
+function recoveryReco() {
+  const l=weeklyLoad();
+  if(l>200)return{msg:`⚠️ Charge élevée (${l} UA) — priorisez le sommeil et réduisez l'intensité.`,show:true,err:true};
+  if(l>120)return{msg:`⚡ Charge modérée (${l} UA) — vous êtes dans la zone productive.`,show:true,err:false};
+  return{show:false};
+}
+function detectPlateau() {
+  const byW={};
+  Object.keys(logs).forEach(key=>{
+    const d=logs[key]; if(!d)return;
+    let wn=null,t=null;
+    PLAN.forEach(w=>{const s=w.sessions.find(ses=>ses.id===key);if(s){wn=w.week;t=s.type;}});
+    if((t==='VMA'||t==='Seuil')&&wn){if(!byW[wn])byW[wn]={sum:0,n:0};byW[wn].sum+=+d.rpe||5;byW[wn].n++;}
+  });
+  const wks=Object.keys(byW).map(Number).sort((a,b)=>a-b);
+  if(wks.length<3)return null;
+  const last=wks.slice(-3).map(w=>byW[w].sum/byW[w].n);
+  if(last.every(a=>a>=6.5)&&Math.max(...last)-Math.min(...last)<1)
+    return`RPE moyen sur 3 semaines : ${last.map(a=>a.toFixed(1)).join(', ')} → Aucune amélioration. Envisager une semaine de décharge.`;
+  return null;
+}
+
+// MANAGEMENT DU RENDU UI
 function init() {
   load();
   const base=buildPlan();
@@ -865,7 +948,6 @@ function renderProgress(){
   if(document.getElementById('stat-done')) document.getElementById('stat-done').textContent=done;
 }
 
-// CORRECTION CRITIQUE ICI : Remplacement de "Sem i" par la chaîne interpolée correcte
 function renderWeekSelector(){
   const c=document.getElementById('week-selector'); if(!c)return;
   c.innerHTML='';
@@ -907,11 +989,6 @@ function renderWeekSummary(){
   if(document.getElementById('summary-dist')) document.getElementById('summary-dist').textContent=dists>0?`${dists.toFixed(1)} km`:'0 km';
   if(document.getElementById('summary-rpe')) document.getElementById('summary-rpe').textContent=avgRpe>0?`RPE moy ${avgRpe}/10`:'RPE –';
 }
-
-const BADGE_MAP={
-  VMA:'badge badge-vma',Seuil:'badge badge-seuil',EF:'badge badge-ef',
-  Force:'badge badge-force',Long:'badge badge-long',Course:'badge badge-course'
-};
 
 function renderSessions(){
   const wd=PLAN.find(w=>w.week===currentWeek); if(!wd)return;
@@ -1007,7 +1084,6 @@ function renderHistory(){
   if(document.getElementById('stat-dist')) document.getElementById('stat-dist').textContent=totalDist.toFixed(1)+' km';
 }
 
-// CHARTS RECONSTRUIRES SANS DOUBLE EFFET
 function renderCharts(){
   const rByW={},pByW={};
   Object.keys(logs).forEach(key=>{
@@ -1040,7 +1116,7 @@ function renderCharts(){
   chartPace=new Chart(paceCtx,{type:'bar',data:{labels:labels.length?labels:['–'],datasets:[{label:'Réelle',data:realV.length?realV:[null],backgroundColor:'rgba(132,204,22,0.65)',borderRadius:5},{label:'Cible',data:tgtV.length?tgtV:[null],backgroundColor:'rgba(99,102,241,0.45)',borderRadius:5}]},options:{...co,scales:{...co.scales,y:{...co.scales.y,reverse:true,title:{display:true,text:'min/km',color:'#475569',font:{size:9}}}}}});}
 }
 
-// CALENDAR
+// CALENDAR LOGIC
 function renderCalendar(){
   const months=['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
   if(document.getElementById('cal-month-label')) document.getElementById('cal-month-label').textContent=`${months[calMonth.getMonth()]} ${calMonth.getFullYear()}`;
@@ -1093,7 +1169,7 @@ function renderCalendar(){
 function calPrev(){ calMonth.setMonth(calMonth.getMonth()-1); renderCalendar(); }
 function calNext(){ calMonth.setMonth(calMonth.getMonth()+1); renderCalendar(); }
 
-// DETAILS MODAL
+// MODAL DÉTAILS
 function openDetails(id){
   let found=null; PLAN.forEach(w=>{const s=w.sessions.find(ses=>ses.id===id);if(s)found=s;});
   if(!found)return;
@@ -1110,7 +1186,7 @@ function openDetails(id){
 }
 function closeDetails(){ hideModal('details-modal'); }
 
-// ACTIVE SESSION
+// INTERFACE SÉANCE COURANTE ACTIVE
 function launchActiveSession(){
   if(!currentDetailId)return;
   closeDetails();
@@ -1195,11 +1271,11 @@ function updateTimer(){
   }
 }
 
-// FORMULAIRE INTELLIGENT DE LOG DE SÉANCE
+// MODAL LOG AVEC CHIPS DE FRACTIONNÉ INDIVIDUELLES (INTELLIGENT)
 function openLog(id){
   document.getElementById('log-session-id').value=id;
   document.getElementById('log-date').value=new Date().toISOString().split('T')[0];
-  ['log-dist','log-min','log-sec','log-hr','log-notes','log-int-min','log-int-sec','log-int-reps'].forEach(eid=>{const e=document.getElementById(eid);if(e)e.value='';});
+  ['log-dist','log-min','log-sec','log-hr','log-notes'].forEach(eid=>{const e=document.getElementById(eid);if(e)e.value='';});
   ['rpe-resp','rpe-musc','rpe-ment'].forEach(eid=>{const e=document.getElementById(eid);if(e)e.value=5;});
   document.getElementById('pace-box').classList.add('hidden');
   
@@ -1210,7 +1286,39 @@ function openLog(id){
   if(isInterval) {
     document.getElementById('log-standard-fields').classList.add('hidden');
     document.getElementById('log-interval-fields').classList.remove('hidden');
-    document.getElementById('interval-auto-calc-info').innerHTML = `Volume unitaire par bloc prévu : <strong>${sRef.unitVol ? sRef.unitVol * 1000 : '–'} m</strong>.<br/>Le volume total et la durée seront interpolés pour votre algorithme.`;
+    
+    // Génération dynamique des inputs par bloc individuel
+    const container = document.getElementById('dynamic-blocks-container');
+    container.innerHTML = '';
+    
+    const repsCount = sRef.reps || 8; // par défaut
+    const unitLabel = sRef.isShort ? "Temps en secondes" : "Temps (min:sec)";
+    
+    document.getElementById('interval-auto-calc-info').innerHTML = `Séance prévue : <strong>${repsCount} blocs</strong> de <strong>${sRef.unitVol * 1000}m</strong>.<br/>Renseignez le chrono réalisé sur chaque bloc :`;
+    
+    for (let i = 1; i <= repsCount; i++) {
+      const div = document.createElement('div');
+      div.className = "flex flex-col bg-slate-900 p-2 rounded border border-white/5";
+      
+      if (sRef.isShort) {
+        // VMA courte (ex: 30"-30" -> saisie directe en secondes)
+        div.innerHTML = `
+          <label class="text-[9px] font-bold text-slate-500 block mb-1">Bloc ${i} (en sec)</label>
+          <input type="number" placeholder="Ex: 29" class="input-block-val bg-slate-950 text-white text-xs p-1 rounded border border-white/10 text-center w-full outline-none focus:border-brand" oninput="computeIntervalStats()">
+        `;
+      } else {
+        // Fractionné long (ex: 1000m -> saisie en min:sec)
+        div.innerHTML = `
+          <label class="text-[9px] font-bold text-slate-500 block mb-1">Bloc ${i} (min:sec)</label>
+          <div class="flex gap-1 items-center">
+            <input type="number" placeholder="Min" class="input-block-min bg-slate-950 text-white text-xs p-1 rounded border border-white/10 text-center w-1/2 outline-none" oninput="computeIntervalStats()">
+            <span class="text-slate-600 text-xs">:</span>
+            <input type="number" placeholder="Sec" class="input-block-sec bg-slate-950 text-white text-xs p-1 rounded border border-white/10 text-center w-1/2 outline-none" oninput="computeIntervalStats()">
+          </div>
+        `;
+      }
+      container.appendChild(div);
+    }
   } else {
     document.getElementById('log-standard-fields').classList.remove('hidden');
     document.getElementById('log-interval-fields').classList.add('hidden');
@@ -1251,24 +1359,51 @@ function computePace(){
   } else box.classList.add('hidden');
 }
 
+// CALCUL DES STATS DU FRACTIONNE SUR LE TOTAL DES BLOCS INJECTES
 function computeIntervalStats() {
-  const min = parseInt(document.getElementById('log-int-min').value)||0;
-  const sec = parseInt(document.getElementById('log-int-sec').value)||0;
-  const reps = parseInt(document.getElementById('log-int-reps').value)||0;
   const id = document.getElementById('log-session-id').value;
-  
   let sRef = null; PLAN.forEach(w => { const s = w.sessions.find(ses => ses.id === id); if (s) sRef = s; });
+  if (!sRef || !sRef.unitVol) return;
+
   const box = document.getElementById('pace-box');
-  
-  if (reps > 0 && (min > 0 || sec > 0) && sRef && sRef.unitVol) {
-    const paceSec = min * 60 + sec;
-    document.getElementById('pace-box-label').textContent = "⚡ Allure blocs rapides";
-    document.getElementById('pace-val').textContent = s2p(paceSec);
+  let totalPaceSeconds = 0;
+  let filledCount = 0;
+
+  if (sRef.isShort) {
+    // Lecture VMA courte (en secondes pour la distance unitaire)
+    const inputs = document.querySelectorAll('.input-block-val');
+    inputs.forEach(input => {
+      const val = parseInt(input.value) || 0;
+      if (val > 0) {
+        // Vitesse convertie en allure (secondes au km) : temps_du_bloc / distance_du_bloc
+        totalPaceSeconds += (val / sRef.unitVol);
+        filledCount++;
+      }
+    });
+  } else {
+    // Lecture Fractionné long (min:sec pour la distance unitaire)
+    const mins = document.querySelectorAll('.input-block-min');
+    const secs = document.querySelectorAll('.input-block-sec');
+    for (let i = 0; i < mins.length; i++) {
+      const m = parseInt(mins[i].value) || 0;
+      const s = parseInt(secs[i].value) || 0;
+      const tot = m * 60 + s;
+      if (tot > 0) {
+        totalPaceSeconds += (tot / sRef.unitVol);
+        filledCount++;
+      }
+    }
+  }
+
+  if (filledCount > 0) {
+    const avgPace = totalPaceSeconds / filledCount;
+    document.getElementById('pace-box-label').textContent = `⚡ Moyenne des blocs (${filledCount} validés)`;
+    document.getElementById('pace-val').textContent = s2p(avgPace);
     
     const tgt = p2s(sRef.target);
     const pd = document.getElementById('pace-diff');
     if (tgt) {
-      const diff = Math.round(paceSec - tgt);
+      const diff = Math.round(avgPace - tgt);
       pd.textContent = diff > 0 ? `+${diff}s/km vs cible` : diff < 0 ? `${diff}s/km vs cible` : '✅ Cible exacte';
       pd.style.color = diff > 8 ? '#fca5a5' : diff < -8 ? '#86efac' : '#fbbf24';
     } else pd.textContent = '';
@@ -1279,6 +1414,11 @@ function computeIntervalStats() {
   }
 }
 
+const RPE_DESCS={
+  resp:{1:'Aucune gêne',2:'Aucune gêne',3:'Aucune gêne',4:'Phrases rythmées',5:'Phrases rythmées',6:'Phrases rythmées',7:'Souffle court',8:'Souffle court',9:'Haletant',10:'Impossible de parler'},
+  musc:{1:'Jambes légères',2:'Jambes légères',3:'Jambes légères',4:'Légère chaleur',5:'Légère chaleur',6:'Légère chaleur',7:'Cuisses lourdes',8:'Cuisses lourdes',9:'Il faut forcer',10:'Jambes de bois'},
+  ment:{1:'Esprit libre',2:'Esprit libre',3:'Esprit libre',4:'Concentré',5:'Concentré',6:'Concentré',7:'Combat mental',8:'Combat mental',9:'Souffrance',10:"Envie d'abandonner"}
+};
 function updateRPE(){
   const r=+document.getElementById('rpe-resp').value||5;
   const mu=+document.getElementById('rpe-musc').value||5;
@@ -1309,19 +1449,41 @@ function saveLog(){
   let intervalPaceSecs = null;
   
   if (isInterval) {
-    const intMin = parseInt(document.getElementById('log-int-min').value)||0;
-    const intSec = parseInt(document.getElementById('log-int-sec').value)||0;
-    const reps = parseInt(document.getElementById('log-int-reps').value)||0;
-    
-    intervalPaceSecs = intMin * 60 + intSec;
-    finalDist = parseFloat((reps * (sRef.unitVol || 0)) + 3.0);
-    
-    const runningSecs = (reps * (sRef.unitVol || 0)) * intervalPaceSecs;
-    const totalSecsCalculated = runningSecs + (3.0 * 330); 
-    
-    const fMin = Math.floor(totalSecsCalculated / 60);
-    const fSec = Math.floor(totalSecsCalculated % 60);
-    finalDurationStr = `${String(fMin).padStart(2,'0')}:${String(fSec).padStart(2,'0')}`;
+    let totalPaceSeconds = 0;
+    let filledCount = 0;
+
+    if (sRef.isShort) {
+      const inputs = document.querySelectorAll('.input-block-val');
+      inputs.forEach(input => {
+        const val = parseInt(input.value) || 0;
+        if (val > 0) { totalPaceSeconds += (val / sRef.unitVol); filledCount++; }
+      });
+    } else {
+      const mins = document.querySelectorAll('.input-block-min');
+      const secs = document.querySelectorAll('.input-block-sec');
+      for (let i = 0; i < mins.length; i++) {
+        const m = parseInt(mins[i].value) || 0;
+        const s = parseInt(secs[i].value) || 0;
+        const tot = m * 60 + s;
+        if (tot > 0) { totalPaceSeconds += (tot / sRef.unitVol); filledCount++; }
+      }
+    }
+
+    if (filledCount > 0) {
+      intervalPaceSecs = totalPaceSeconds / filledCount;
+      // Interpolation : distance des fractions validées + 3km forfaitaires (échauffement/récup)
+      finalDist = parseFloat((filledCount * sRef.unitVol) + 3.0);
+      
+      const totalSecsCalculated = (filledCount * sRef.unitVol * intervalPaceSecs) + (3.0 * 330);
+      const fMin = Math.floor(totalSecsCalculated / 60);
+      const fSec = Math.floor(totalSecsCalculated % 60);
+      finalDurationStr = `${String(fMin).padStart(2,'0')}:${String(fSec).padStart(2,'0')}`;
+    } else {
+      // Sécurité si formulaire vide
+      finalDist = 3.0;
+      finalDurationStr = "16:30";
+      intervalPaceSecs = p2s(sRef.target);
+    }
   } else {
     const dist=document.getElementById('log-dist').value||'0';
     const min=document.getElementById('log-min').value||'00';
@@ -1355,12 +1517,11 @@ function toggleSession(id) {
   else openLog(id);
 }
 
-// NAVIGATION
+// MANAGEMENT NAVIGATION TABS
 function switchTab(tab){
   ['programme','stats','calendar','connect'].forEach(t=>{
     if(document.getElementById('tab-'+t)) document.getElementById('tab-'+t).classList.remove('active');
-    const n=document.getElementById('nav-'+t);
-    if(n) n.style.color='var(--text3)';
+    const n=document.getElementById('nav-'+t); if(n) n.style.color='var(--text3)';
   });
   if(document.getElementById('tab-'+tab)) document.getElementById('tab-'+tab).classList.add('active');
   if(document.getElementById('nav-'+tab)) document.getElementById('nav-'+tab).style.color='var(--brand)';
@@ -1369,7 +1530,7 @@ function switchTab(tab){
   IL();
 }
 
-// MODALS HELPERS
+// PARAMÈTRES ET RESET
 function openSettings(){
   document.getElementById('set-name').value=profile.name||'';
   document.getElementById('set-vdot').value=profile.vdot||51;
@@ -1391,15 +1552,7 @@ function resetAll(){
   }
 }
 
-// GESTION DU THEME GLOBAL
-function toggleTheme(){
-  const isLight=document.documentElement.classList.contains('light');
-  if(isLight){document.documentElement.classList.replace('light','dark');localStorage.setItem('vdot_theme','dark');document.getElementById('theme-btn').textContent='☀️';}
-  else{document.documentElement.classList.replace('dark','light');localStorage.setItem('vdot_theme','light');document.getElementById('theme-btn').textContent='🌙';}
-}
-if(localStorage.getItem('vdot_theme')==='light')document.getElementById('theme-btn').textContent='🌙';
-
-// WELCOME SYSTEM (ONBOARDING)
+// ONBOARDING
 let _selectedRace='10K';
 function selectRace(r){
   _selectedRace=r;
@@ -1426,7 +1579,7 @@ function obFinish(){
   toast(`Bienvenue ${profile.name||''} ! Programme prêt 🚀`,'#84cc16');
 }
 
-// SYNC NOTIFICATIONS INTERNES
+// NOTIFICATIONS PUSH
 function requestNotifications(){
   if(!('Notification'in window)){document.getElementById('notif-status').textContent='Non supporté sur ce navigateur.';return;}
   Notification.requestPermission().then(p=>{
@@ -1452,7 +1605,7 @@ function scheduleNotifs(){
 }
 if(Notification.permission==='granted'){setTimeout(()=>{const b=document.getElementById('notif-btn');if(b){b.textContent='✅ Notifications activées';b.style.color='var(--brand)';}},200);}
 
-// PARTAGE API STRAVA
+// STRAVA TELEVERSEMENT
 function saveToken(){
   const t=document.getElementById('strava-token').value.trim();
   if(t){localStorage.setItem('vdot_strava',t);updateStravaUI();toast('Jeton Strava enregistré.');}
@@ -1473,7 +1626,7 @@ async function uploadStrava(id,d){
   }catch(e){toast('Enregistré localement.');}
 }
 
-// CONTROLE DES SWIPES MOBILE DROITE / GAUCHE
+// SWIPE EVENTS
 let swipeX=null;
 document.getElementById('sessions-container').addEventListener('touchstart',e=>{swipeX=e.touches[0].clientX;},{passive:true});
 document.getElementById('sessions-container').addEventListener('touchend',e=>{
@@ -1488,8 +1641,8 @@ document.getElementById('sessions-container').addEventListener('touchend',e=>{
   swipeX=null;
 },{passive:true});
 
-// BOOTSTRAP DE L'APPLICATION
-document.addEventListener('DOMContentLoaded',()=>{
+// ENGINE DE BOOT
+document.addEventListener('DOMContentLoaded',() => {
   const wait=setInterval(()=>{
     if(typeof lucide!=='undefined'&&typeof Chart!=='undefined'){
       clearInterval(wait);
