@@ -197,7 +197,7 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
   border:1px solid var(--gr4);
   display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px
 }
-.frac-sum-item{text-align:center}
+.frac-summary-box{text-align:center}
 .frac-sum-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--tx3);margin-bottom:3px}
 .frac-sum-val{font-family:var(--fm);font-size:14px;font-weight:700;color:var(--tx)}
 .frac-sum-val.accent{color:var(--gr)}
@@ -220,7 +220,6 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
 </head>
 <body>
 
-<!-- ══════════ ONBOARDING ══════════ -->
 <div id="onboarding" style="display:none">
   <div style="width:100%;max-width:360px;display:flex;flex-direction:column;gap:24px">
     <div style="text-align:center">
@@ -261,10 +260,8 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
   </div>
 </div>
 
-<!-- ══════════ TOAST ══════════ -->
 <div id="toast" style="position:fixed;top:24px;left:50%;transform:translate(-50%,-12px);z-index:300;padding:9px 18px;border-radius:99px;font-size:12px;font-weight:700;opacity:0;transition:opacity .25s,transform .25s;pointer-events:none;white-space:nowrap;border:1px solid var(--br);background:var(--s1);color:var(--tx);font-family:var(--ff)"></div>
 
-<!-- ══════════ HEADER ══════════ -->
 <header class="glass" style="position:sticky;top:0;z-index:50;padding:max(16px,var(--safe-t)) 16px 14px">
   <div style="max-width:480px;margin:0 auto">
     <div style="display:flex;justify-content:space-between;align-items:center">
@@ -290,10 +287,8 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
   </div>
 </header>
 
-<!-- ══════════ MAIN ══════════ -->
 <main style="max-width:480px;margin:0 auto;padding:12px 14px 0;display:flex;flex-direction:column;gap:10px">
 
-  <!-- ── PROGRAMME ── -->
   <div id="tab-prog" class="tab on" style="display:flex;flex-direction:column;gap:9px">
     <div id="ia-card" style="display:none;padding:11px 13px;border-radius:var(--r);background:var(--violet);border:1px solid var(--violet-b)">
       <p style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--violet-t);margin-bottom:5px;display:flex;align-items:center;gap:5px"><i data-lucide="cpu" style="width:11px;height:11px"></i> IA · Adaptations</p>
@@ -306,7 +301,6 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
       <p style="font-size:10px;font-weight:800;color:var(--amber-t);margin-bottom:3px">⚠️ Plateau détecté</p>
       <p id="plateau-msg" style="font-size:11px;color:#fcd34d;line-height:1.5"></p>
     </div>
-    <!-- Week summary -->
     <div class="card" style="padding:13px">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:11px">
         <div>
@@ -323,7 +317,6 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
         <div id="wpills" style="display:flex;gap:5px;width:max-content"></div>
       </div>
     </div>
-    <!-- Phase info -->
     <div class="card" style="padding:11px 13px;display:flex;align-items:flex-start;gap:11px">
       <div style="width:32px;height:32px;border-radius:8px;background:var(--gr3);border:1px solid var(--gr4);display:flex;align-items:center;justify-content:center;flex-shrink:0">
         <i data-lucide="award" style="width:15px;height:15px;color:var(--gr)"></i>
@@ -333,11 +326,9 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
         <p id="phase-f" style="font-size:11px;color:var(--tx3);line-height:1.5"></p>
       </div>
     </div>
-    <p id="swipe-hint" style="display:none;text-align:center;font-size:10px;color:var(--tx4);animation:up .3s ease">← Glissez pour changer de semaine →</p>
     <div id="sessions" style="display:flex;flex-direction:column;gap:7px"></div>
   </div>
 
-  <!-- ── STATS ── -->
   <div id="tab-stats" class="tab" style="display:flex;flex-direction:column;gap:9px">
     <h2 style="font-size:15px;font-weight:900;color:var(--tx)">Statistiques & Analyse</h2>
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px">
@@ -354,7 +345,6 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
         <p id="st-vdot" style="font-size:18px;font-weight:900;color:var(--gr);font-family:var(--fm)">~51</p>
       </div>
     </div>
-    <!-- Charge -->
     <div class="card" style="padding:13px">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
         <p style="font-size:12px;font-weight:800;color:var(--tx);display:flex;align-items:center;gap:6px"><i data-lucide="zap" style="width:13px;height:13px;color:var(--gr)"></i>Charge hebdo</p>
@@ -382,18 +372,8 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
       <p style="font-size:12px;font-weight:800;color:var(--tx);margin-bottom:10px;display:flex;align-items:center;gap:6px"><i data-lucide="history" style="width:13px;height:13px;color:var(--gr)"></i>Historique</p>
       <div id="hist" style="max-height:220px;overflow-y:auto;display:flex;flex-direction:column;gap:0"></div>
     </div>
-    <!-- Reference paces -->
-    <div class="card" style="padding:13px">
-      <p style="font-size:12px;font-weight:800;color:var(--tx);margin-bottom:10px">Allures de référence</p>
-      <div style="display:flex;flex-direction:column;gap:0">
-        <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--br)"><span style="font-size:12px;color:var(--tx2)">EF lente</span><span style="font-family:var(--fm);font-weight:700;color:var(--gr);font-size:12px">5:10–5:40/km</span></div>
-        <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--br)"><span style="font-size:12px;color:var(--tx2)">Seuil VDOT51</span><span style="font-family:var(--fm);color:var(--tx);font-size:12px">4:11/km</span></div>
-        <div style="display:flex;justify-content:space-between;padding:7px 0"><span style="font-size:12px;color:var(--tx2)">VMA VDOT51</span><span style="font-family:var(--fm);color:var(--tx);font-size:12px">3:36/km</span></div>
-      </div>
-    </div>
   </div>
 
-  <!-- ── CALENDRIER ── -->
   <div id="tab-cal" class="tab" style="display:flex;flex-direction:column;gap:9px">
     <h2 style="font-size:15px;font-weight:900;color:var(--tx)">Calendrier</h2>
     <div class="card" style="padding:13px">
@@ -410,7 +390,6 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
     <div id="cal-prev" style="display:none"></div>
   </div>
 
-  <!-- ── CONNEXION ── -->
   <div id="tab-conn" class="tab" style="display:flex;flex-direction:column;gap:9px">
     <h2 style="font-size:15px;font-weight:900;color:var(--tx)">Connexion & Options</h2>
     <div class="card" style="padding:13px;display:flex;flex-direction:column;gap:11px">
@@ -436,15 +415,13 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
 
 </main>
 
-<!-- ══════════ BOTTOM NAV ══════════ -->
 <nav style="position:fixed;bottom:0;left:0;right:0;z-index:50;background:rgba(7,9,15,.94);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);border-top:1px solid var(--br);display:flex;justify-content:space-around;align-items:center;padding:8px 8px max(8px,var(--safe-b))">
-  <button onclick="goTab('prog')"  id="nav-prog"  style="display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px 14px;border-radius:9px;border:none;background:none;cursor:pointer;color:var(--gr)"><i data-lucide="calendar-days" style="width:19px;height:19px"></i><span style="font-size:9px;font-weight:700;font-family:var(--ff)">Programme</span></button>
-  <button onclick="goTab('stats')" id="nav-stats" style="display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px 14px;border-radius:9px;border:none;background:none;cursor:pointer;color:var(--tx3)"><i data-lucide="bar-chart-2" style="width:19px;height:19px"></i><span style="font-size:9px;font-weight:700;font-family:var(--ff)">Stats</span></button>
-  <button onclick="goTab('cal')"   id="nav-cal"   style="display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px 14px;border-radius:9px;border:none;background:none;cursor:pointer;color:var(--tx3)"><i data-lucide="calendar" style="width:19px;height:19px"></i><span style="font-size:9px;font-weight:700;font-family:var(--ff)">Calendrier</span></button>
-  <button onclick="goTab('conn')"  id="nav-conn"  style="display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px 14px;border-radius:9px;border:none;background:none;cursor:pointer;color:var(--tx3)"><i data-lucide="link" style="width:19px;height:19px"></i><span style="font-size:9px;font-weight:700;font-family:var(--ff)">Connexion</span></button>
+  <button onclick="goTab('prog')" id="nav-prog"  style="display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px 14px;border-radius:9px;border:none;background:none;cursor:pointer;color:var(--gr)"><i data-lucide="calendar-days" style="width:19px;height:19px"></i><span style="font-size:9px;font-weight:700;font-family:var(--ff)">Programme</span></button>
+  <button onclick="goTab('stats')" id="nav-stats" style="display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px 14px;border-radius:99px;border:none;background:none;cursor:pointer;color:var(--tx3)"><i data-lucide="bar-chart-2" style="width:19px;height:19px"></i><span style="font-size:9px;font-weight:700;font-family:var(--ff)">Stats</span></button>
+  <button onclick="goTab('cal')"   id="nav-cal"   style="display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px 14px;border-radius:99px;border:none;background:none;cursor:pointer;color:var(--tx3)"><i data-lucide="calendar" style="width:19px;height:19px"></i><span style="font-size:9px;font-weight:700;font-family:var(--ff)">Calendrier</span></button>
+  <button onclick="goTab('conn')" id="nav-conn" style="display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px 14px;border-radius:99px;border:none;background:none;cursor:pointer;color:var(--tx3)"><i data-lucide="link" style="width:19px;height:19px"></i><span style="font-size:9px;font-weight:700;font-family:var(--ff)">Connexion</span></button>
 </nav>
 
-<!-- ══════════ MODAL: SETTINGS ══════════ -->
 <div id="m-settings" class="modal-overlay">
   <div class="modal-box" style="max-width:380px">
     <div class="mh"><h3 style="font-size:14px;font-weight:900;color:var(--tx)">Paramètres</h3><button onclick="closeM('m-settings')" class="btn btn-ghost" style="width:28px;height:28px;padding:0"><i data-lucide="x" style="width:13px;height:13px"></i></button></div>
@@ -458,7 +435,6 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
   </div>
 </div>
 
-<!-- ══════════ MODAL: DETAILS SESSION ══════════ -->
 <div id="m-details" class="modal-overlay">
   <div class="modal-box" style="max-height:88svh">
     <div class="mh">
@@ -486,7 +462,6 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
   </div>
 </div>
 
-<!-- ══════════ SÉANCE ACTIVE ══════════ -->
 <div id="active-screen">
   <div class="glass" style="padding:max(14px,var(--safe-t)) 16px 11px;flex-shrink:0">
     <div style="max-width:480px;margin:0 auto;display:flex;justify-content:space-between;align-items:center">
@@ -544,7 +519,6 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
   </div>
 </div>
 
-<!-- ══════════ MODAL: LOG (sheet) ══════════ -->
 <div id="m-log" class="modal-sheet">
   <div class="modal-sheet-box">
     <div class="mh">
@@ -561,16 +535,13 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
     <div class="mscroll" style="padding:14px">
       <input type="hidden" id="log-sid">
 
-      <!-- ══════ STEP 1 ══════ -->
       <div id="ls1" class="fstep on" style="display:flex;flex-direction:column;gap:12px">
 
-        <!-- Date + FC -->
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px">
           <div><label style="font-size:10px;font-weight:700;color:var(--tx2);display:block;margin-bottom:4px">Date</label><input id="log-date" type="date" class="inp" style="font-size:12px"></div>
           <div><label style="font-size:10px;font-weight:700;color:var(--tx2);display:block;margin-bottom:4px">FC moy (bpm)</label><input id="log-hr" type="number" placeholder="145" class="inp" style="font-size:12px"></div>
         </div>
 
-        <!-- ── SECTION SÉANCE CONTINUE (EF / Long / Force / Course) ── -->
         <div id="section-continuous">
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:9px">
             <div><label style="font-size:10px;font-weight:700;color:var(--tx2);display:block;margin-bottom:4px">Distance totale (km)</label><input id="log-km" type="number" step="0.01" placeholder="8.5" oninput="calcPace()" class="inp" style="font-size:12px"></div>
@@ -589,13 +560,8 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
           </div>
         </div>
 
-        <!-- ══════════════════════════════════════════════
-             ── SECTION FRACTIONNÉE (VMA / Seuil) ──
-             Refonte complète : tableau par répétition
-             ══════════════════════════════════════════════ -->
         <div id="section-frac" style="display:none;flex-direction:column;gap:11px">
 
-          <!-- En-tête info séance -->
           <div id="frac-session-info" style="padding:9px 12px;border-radius:var(--r-sm);background:var(--s2);border:1px solid var(--br);display:flex;justify-content:space-between;align-items:center">
             <div>
               <p style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--tx3);margin-bottom:2px">Séance</p>
@@ -607,7 +573,6 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
             </div>
           </div>
 
-          <!-- Tableau répétitions -->
           <div>
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
               <p style="font-size:11px;font-weight:800;color:var(--tx);display:flex;align-items:center;gap:5px">
@@ -618,19 +583,17 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
               <button onclick="addRepRow()" class="btn-sm-green"><i data-lucide="plus" style="width:10px;height:10px"></i> Rép.</button>
             </div>
 
-            <!-- Entêtes colonnes -->
-            <div style="display:grid;grid-template-columns:28px 1fr 1fr 64px 28px;gap:5px;padding:0 4px;margin-bottom:4px">
+            <div style="display:grid;grid-template-columns:28px 1.2fr 1fr 1fr 28px;gap:5px;padding:0 4px;margin-bottom:4px">
               <span style="font-size:9px;font-weight:800;text-transform:uppercase;color:var(--tx3);text-align:center;letter-spacing:.04em">#</span>
+              <span style="font-size:9px;font-weight:800;text-transform:uppercase;color:var(--tx3);text-align:center;letter-spacing:.04em">Allure (m:s)</span>
               <span style="font-size:9px;font-weight:800;text-transform:uppercase;color:var(--tx3);text-align:center;letter-spacing:.04em">Dist (km)</span>
-              <span style="font-size:9px;font-weight:800;text-transform:uppercase;color:var(--tx3);text-align:center;letter-spacing:.04em">Temps m:s</span>
-              <span style="font-size:9px;font-weight:800;text-transform:uppercase;color:var(--tx3);text-align:center;letter-spacing:.04em">Allure</span>
+              <span style="font-size:9px;font-weight:800;text-transform:uppercase;color:var(--tx3);text-align:center;letter-spacing:.04em">Temps</span>
               <span></span>
             </div>
 
             <div id="rep-rows" style="display:flex;flex-direction:column;gap:4px"></div>
           </div>
 
-          <!-- Résumé des répétitions -->
           <div id="frac-summary-box" style="display:none">
             <div class="frac-summary">
               <div class="frac-sum-item">
@@ -649,7 +612,6 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
             </div>
           </div>
 
-          <!-- Échauffement / récupération (accordéon) -->
           <div>
             <div class="warmup-toggle" id="warmup-toggle" onclick="toggleWarmup()">
               <span style="font-size:11px;font-weight:700;color:var(--tx);display:flex;align-items:center;gap:6px">
@@ -663,7 +625,7 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
             </div>
             <div class="warmup-body" id="warmup-body">
               <div style="padding:10px 12px;background:var(--s2);border:1px solid var(--br);border-top:none;border-radius:0 0 var(--r-sm) var(--r-sm);display:flex;flex-direction:column;gap:8px">
-                <p style="font-size:10px;color:var(--tx3);line-height:1.5">Distance échauffement + récupération. Sera comptabilisée dans la distance totale mais <strong style="color:var(--tx2)">exclue du calcul d'allure</strong>.</p>
+                <p style="font-size:10px;color:var(--tx3);line-height:1.5">Distance échauffement + récupération. Sera comptabilisée dans la distance totale mais <strong style="color:var(--tx2)">exclue du calcul d'allure moyenne</strong>.</p>
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px">
                   <div>
                     <label style="font-size:10px;font-weight:700;color:var(--tx2);display:block;margin-bottom:4px">Distance (km)</label>
@@ -678,15 +640,11 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
             </div>
           </div>
 
-          <!-- Distance totale calculée -->
           <div id="frac-total-box" style="display:none;padding:9px 12px;border-radius:var(--r-sm);background:var(--s2);border:1px solid var(--br);display:flex;justify-content:space-between;align-items:center">
             <span style="font-size:11px;color:var(--tx2)">Distance totale (rép. + éch.)</span>
             <span id="frac-total-dist" style="font-family:var(--fm);font-weight:900;color:var(--tx);font-size:13px">–</span>
           </div>
         </div>
-        <!-- FIN SECTION FRACTIONNÉE -->
-
-        <!-- Notes (communes) -->
         <div>
           <label style="font-size:10px;font-weight:700;color:var(--tx2);display:block;margin-bottom:4px">Notes</label>
           <textarea id="log-notes" class="inp" rows="2" placeholder="Sensations, météo, terrain…" style="font-size:12px"></textarea>
@@ -695,7 +653,6 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
         <button onclick="lStep(2)" class="btn btn-brand" style="padding:12px;font-size:13px">Continuer → Ressenti</button>
       </div>
 
-      <!-- ══════ STEP 2 : RPE ══════ -->
       <div id="ls2" class="fstep" style="display:flex;flex-direction:column;gap:15px">
         <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 12px;border-radius:var(--r-sm);background:var(--s2)">
           <span style="font-size:12px;font-weight:800;color:var(--tx);display:flex;align-items:center;gap:6px"><i data-lucide="activity" style="width:12px;height:12px;color:var(--gr)"></i>RPE global</span>
@@ -715,7 +672,6 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
   </div>
 </div>
 
-<!-- ══════════ JAVASCRIPT ══════════ -->
 <script>
 /* ═══════════════════════════════════
    GLOBALS
@@ -724,7 +680,8 @@ let PLAN=[], W=1, LOGS={}, PROF={name:'',vdot:51,raceDate:'',race:'10K'};
 let cRpe=null, cPace=null, _detId=null, _actId=null, _mood='normal';
 let tRun=false, tSec=0, tTot=0, tDown=false, tInt=null;
 let calMonth=new Date(); calMonth.setDate(1);
-let _repCount=0;   // compteur de répétitions dans le modal log
+let _repCount=0;
+let CURRENT_FRAC_SPECS = { type: 'distance', distKm: 0, durationSec: 0, targetPaceSec: 0, nbReps: 0 };
 
 /* ═══════════════════════════════════
    PERSISTENCE
@@ -766,12 +723,10 @@ function toast(msg,bg){
   clearTimeout(_tt);
   _tt=setTimeout(()=>{t.style.opacity='0';t.style.transform='translate(-50%,-10px)';},3200);
 }
-/** sec/km → string "m:ss/km", ou "–" si invalide */
 function s2p(s){
   if(!s||s<=0||!isFinite(s)) return '–';
   return `${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}/km`;
 }
-/** "m:ss/km" ou "m:ss" → secondes totales */
 function p2s(p){
   if(!p||!p.includes(':')) return 0;
   const clean=p.replace('/km','').trim();
@@ -823,7 +778,7 @@ function buildPlan(){
       if(w===4){
         ss=[
           {id:`w4_s1`,day:'Mardi',type:'VMA',title:'VMA Courte – 6×30"',desc:'6×30s/45s.',target:'3:36/km',obj:VO,det:'Éch. 15 min EF.<br/>6×30s à 3:36/km · récup 45s trot.'},
-          {id:`w4_s2`,day:'Mercredi',type:'Force',title:'Mobilité Active',desc:'Auto-massages + étirements.',target:'20 min',obj:'Régénération neuromusculaire.',det:'Foam Roller + mobilité chevilles.'},
+          {id:`w4_s2`,day:'Mercredi',type:'Force',title:'Mobilité Active',desc:'Auto-massages + étirements.',target:'20 min',obj:'Régénération neuromusculaire.',det:'Foam Roller + mobility chevilles.'},
           {id:`w4_s3`,day:'Jeudi',type:'EF',title:'Footing Récupération',desc:'30 min EF lente.',target:'5:35/km',obj:EO,det:'30 min strictement à 5:35/km.'},
           {id:`w4_s4`,day:'Dimanche',type:'Long',title:'Sortie Longue Décharge',desc:'45 min EF.',target:'5:30/km',obj:EO,det:'45 min continues à 5:30/km.'}
         ];
@@ -907,7 +862,6 @@ function adaptPlan(P,L){
       if(l && typeof l==='object'){
         n++;
         const rpe=+l.rpe||0; rs+=rpe;
-        // Pour la détection de zone grise, on utilise repPaceAvg pour frac, allure globale sinon
         const pace = getEffectivePace(l, s);
         if(s.type==='EF' && pace>0 && pace<310) gv++;
         const tSec=p2s(s.target);
@@ -934,14 +888,8 @@ function adaptPlan(P,L){
   return {P, msgs:[...new Set(msgs)]};
 }
 
-/**
- * Retourne l'allure effective d'un log en sec/km :
- * - Pour les séances fractionnées : moyenne pondérée des répétitions (sans éch.)
- * - Pour les séances continues : distance totale / durée totale
- */
 function getEffectivePace(log, session){
   if(!log) return 0;
-  // Séance fractionnée avec répétitions individuelles
   if(log.isFrac && log.reps && log.reps.length>0){
     let td=0, tt=0;
     log.reps.forEach(r=>{
@@ -949,7 +897,6 @@ function getEffectivePace(log, session){
     });
     return td>0 ? tt/td : 0;
   }
-  // Séance continue
   const dist=+log.distance||0;
   if(!dist || !log.duration) return 0;
   const [pm,ps]=(log.duration||'0:0').split(':');
@@ -1037,13 +984,11 @@ function init(){
   const base=buildPlan();
   const r=adaptPlan(base,LOGS);
   PLAN=r.P;
-  // IA banners
   const ia=document.getElementById('ia-card'), il=document.getElementById('ia-list');
   if(r.msgs.length){
     il.innerHTML=r.msgs.map(m=>`<li style="display:flex;align-items:flex-start;gap:5px"><span>•</span><span>${m}</span></li>`).join('');
     ia.style.display='block';
   }else ia.style.display='none';
-  // Recovery
   const rv=reco(), rc=document.getElementById('reco-card');
   if(rv){
     rc.style.background=rv.bg; rc.style.border=`1px solid ${rv.bc}`;
@@ -1051,7 +996,6 @@ function init(){
     document.getElementById('reco-msg').textContent=rv.msg;
     rc.style.display='block';
   }else rc.style.display='none';
-  // Plateau
   const pl=plateau();
   if(pl){
     document.getElementById('plateau-msg').textContent=pl;
@@ -1062,17 +1006,14 @@ function init(){
     document.getElementById('plateau-card').style.display='none';
     document.getElementById('st-plateau').style.display='none';
   }
-  // VDOT
   const v=vdotEst();
   document.getElementById('vdot-pill').textContent=`VDOT ~${v}`;
   document.getElementById('st-vdot').textContent=`~${v}`;
-  // Header greeting
   const hr=new Date().getHours();
   const gr=hr<12?'☀️ Bonjour':hr<18?'🌤 Bon après-midi':'🌙 Bonsoir';
   document.getElementById('h-greet').textContent=PROF.name?`${gr}, ${PROF.name} !`:`${gr} · Coach IA`;
   const wd=PLAN.find(w=>w.week===W);
   if(wd) document.getElementById('h-phase').textContent=wd.phase;
-  // Race countdown
   const cd=raceCd(), rcel=document.getElementById('race-cd');
   if(cd){ document.getElementById('race-cd-txt').innerHTML=cd; rcel.style.display='block'; }
   else rcel.style.display='none';
@@ -1147,12 +1088,10 @@ function renderHist(){
     PLAN.forEach(w=>{ const s=w.sessions.find(s=>s.id===k); if(s) title=`S${w.week} · ${s.title}`; });
     const el=document.createElement('div');
     el.style.cssText='display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--br)';
-    // Allure affichée dans l'historique
     let session=null;
     PLAN.forEach(w=>{ const s=w.sessions.find(s=>s.id===k); if(s) session=s; });
     const pace=getEffectivePace(d,session);
     const paceStr=pace>0?`<span style="font-size:10px;color:var(--tx3);font-family:var(--fm)">${s2p(pace)}</span>`:'';
-    // Badge frac
     const fracBadge=d.isFrac?`<span style="font-size:9px;padding:1px 5px;border-radius:99px;background:var(--gr3);color:var(--gr);border:1px solid var(--gr4);margin-left:4px">frac</span>`:'';
     el.innerHTML=`<div><span style="font-size:10px;color:var(--tx3);font-family:var(--fm)">${d.date||''}</span><p style="font-size:12px;font-weight:700;color:var(--tx);margin-top:1px">${title}${fracBadge}</p></div><div style="text-align:right"><span style="font-family:var(--fm);font-weight:900;color:var(--gr);font-size:13px">${d.distance||'0'} km</span><p style="font-size:10px;color:var(--tx3);margin-top:1px;font-family:var(--fm)">${d.duration||'–'}</p>${paceStr}</div>`;
     h.appendChild(el);
@@ -1169,7 +1108,6 @@ function renderSessions(){
     card.className='card card-i';
     card.style.cssText=`padding:12px;cursor:pointer;${done?'border-color:rgba(127,255,106,.28);':''}${adapted?'border-color:var(--violet-b);':''}`;
     card.onclick=()=>openDet(s.id);
-    // Affichage allure effective
     let rpH='';
     if(done && d){
       const pace=getEffectivePace(d,s);
@@ -1183,7 +1121,6 @@ function renderSessions(){
           <span style="font-size:10px;color:var(--tx2)">${lbl}</span>
           <span style="font-family:var(--fm);font-weight:700;color:var(--tx);font-size:12px">${s2p(pace)} <span style="font-size:9px;color:${dc}">${ds}</span></span>
         </div>`;
-        // Affichage des répétitions individuelles si disponible
         if(d.isFrac && d.reps && d.reps.length>0){
           const tgtS=p2s(s.target);
           const bestRep=d.reps.reduce((b,r)=>r.dist>0&&r.timeSec>0&&r.timeSec/r.dist<b?r.timeSec/r.dist:b, Infinity);
@@ -1306,7 +1243,7 @@ function renderCal(){
   document.getElementById('cal-lbl').textContent=`${MN[calMonth.getMonth()]} ${calMonth.getFullYear()}`;
   const grid=document.getElementById('cal-grid'); grid.innerHTML='';
   const first=new Date(calMonth.getFullYear(),calMonth.getMonth(),1);
-  const last=new Date(calMonth.getFullYear(),calMonth.getMonth()+1,0).getDate();
+  const last=new Date(calMonth.getFullYear(),calMonth.getMonth+1,0).getDate();
   const startDow=(first.getDay()+6)%7;
   const today=new Date(); today.setHours(0,0,0,0);
   const SM={};
@@ -1379,7 +1316,6 @@ function launchSession(){
   document.getElementById('mood-adv').style.display='none';
   const ib=document.getElementById('int-btns');
   ib.style.display=(f.type==='VMA')?'flex':'none';
-  // Steps
   const sc=document.getElementById('as-steps'); sc.innerHTML='';
   const tmp=document.createElement('div'); tmp.innerHTML=f.det||f.desc;
   const items=[...tmp.querySelectorAll('.step-li')];
@@ -1450,33 +1386,81 @@ function tDisp(){
 }
 
 /* ═══════════════════════════════════
-   LOG MODAL — OPEN
+   LOG MODAL & DECODING SPECS
 ═══════════════════════════════════ */
+function parseSessionSpecs(session) {
+  const txt = (session.title + " " + session.desc + " " + (session.det || "")).toLowerCase();
+  let nbReps = 4;
+  const matchReps = txt.match(/(\d+)\s*[×x*]/);
+  if (matchReps) nbReps = Math.min(parseInt(matchReps[1]), 30);
+
+  let type = 'distance';
+  let distKm = 0;
+  let durationSec = 0;
+
+  const matchMeters = txt.match(/(\d+)\s*m(?!in)/);
+  const matchSeconds = txt.match(/(\d+)\s*(s|")/);
+  const shortTxt = (session.title + " " + session.desc).toLowerCase();
+
+  if (shortTxt.includes('m') && !shortTxt.includes('min') && !shortTxt.match(/\d+\s*s/)) {
+    type = 'distance';
+  } else if (shortTxt.match(/\d+\s*(s|")/)) {
+    type = 'time';
+  } else if (matchSeconds) {
+    type = 'time';
+  } else {
+    type = 'distance';
+  }
+
+  if (type === 'distance' && matchMeters) {
+    distKm = parseInt(matchMeters[1]) / 1000;
+  } else if (type === 'time' && matchSeconds) {
+    durationSec = parseInt(matchSeconds[1]);
+  } else {
+    if (matchMeters) { distKm = parseInt(matchMeters[1]) / 1000; type = 'distance'; }
+    else if (matchSeconds) { durationSec = parseInt(matchSeconds[1]); type = 'time'; }
+    else { distKm = 0.400; type = 'distance'; }
+  }
+  return { nbReps, type, distKm, durationSec };
+}
+
 function openLog(id){
   let found=null;
   PLAN.forEach(w=>{ const s=w.sessions.find(s=>s.id===id); if(s) found=s; });
   const isFrac=found && (found.type==='VMA' || found.type==='Seuil');
   document.getElementById('log-sid').value=id;
   document.getElementById('log-date').value=new Date().toISOString().split('T')[0];
-  // Réinitialiser tous les champs
+  
   ['log-km','log-mn','log-sc','log-hr','log-notes','warmup-km','warmup-min'].forEach(eid=>{
     const e=document.getElementById(eid); if(e) e.value='';
   });
   ['rr','rm','rn'].forEach(eid=>{ const e=document.getElementById(eid); if(e) e.value=5; });
   document.getElementById('pace-box').style.display='none';
   document.getElementById('log-ttl').textContent=found?found.title:'Activité';
-  // Sections
+  
   const secCont=document.getElementById('section-continuous');
   const secFrac=document.getElementById('section-frac');
   if(isFrac){
     secCont.style.display='none';
     secFrac.style.display='flex';
-    // Info de la séance
+    
+    const specs = parseSessionSpecs(found);
+    let tgtPaceSec = p2s(found.target);
+    if(tgtPaceSec === 0) tgtPaceSec = found.type === 'VMA' ? 216 : 251;
+    
+    CURRENT_FRAC_SPECS = {
+      type: specs.type,
+      distKm: specs.distKm,
+      durationSec: specs.durationSec,
+      targetPaceSec: tgtPaceSec,
+      nbReps: specs.nbReps
+    };
+
     document.getElementById('frac-session-desc').textContent=found.desc;
     document.getElementById('frac-target-display').textContent=found.target;
-    // Réinitialiser les répétitions
+    
     initRepRows(found);
-    // Fermer accordion warmup
+    
     const wb=document.getElementById('warmup-body'); wb.classList.remove('open');
     document.getElementById('warmup-icon').setAttribute('data-lucide','chevron-down');
     document.getElementById('warmup-preview').textContent='';
@@ -1488,9 +1472,6 @@ function openLog(id){
   upRPE(); lStep(1); openM('m-log'); IL();
 }
 
-/* ═══════════════════════════════════
-   LOG MODAL — STEPS
-═══════════════════════════════════ */
 let _ls=1;
 function lStep(n){
   _ls=n;
@@ -1502,9 +1483,6 @@ function lStep(n){
   b2.style.background=n===2?'var(--gr)':'var(--s3)'; b2.style.color=n===2?'#03140a':'var(--tx3)';
 }
 
-/* ═══════════════════════════════════
-   LOG MODAL — ALLURE SÉANCE CONTINUE
-═══════════════════════════════════ */
 function calcPace(){
   const dist=+document.getElementById('log-km').value||0;
   const mn=+document.getElementById('log-mn').value||0;
@@ -1528,76 +1506,45 @@ function calcPace(){
 }
 
 /* ═══════════════════════════════════
-   LOG MODAL — RÉPÉTITIONS (FRACTIONNÉ)
-   ─────────────────────────────────────
-   Structure du log sauvegardé :
-   {
-     isFrac: true,
-     reps: [ {dist, timeSec}, ... ],   // données brutes de chaque répétition
-     distance: float,                   // dist rép. + échauffement
-     duration: "mm:ss",                 // durée rép. + échauffement (estimé)
-     repPaceAvg: float (sec/km),        // allure moyenne répétitions (sans éch.)
-     repDist: float,                    // distance totale répétitions
-     ...
-   }
+   LOG MODAL — RÉPÉTITIONS RE-IMAGINÉES
 ═══════════════════════════════════ */
-
-/**
- * Initialise le tableau des répétitions selon la description de la séance.
- * Parse "N×distm" ou "N×temps" dans la description.
- */
 function initRepRows(session){
   _repCount=0;
   document.getElementById('rep-rows').innerHTML='';
   document.getElementById('frac-summary-box').style.display='none';
   document.getElementById('frac-total-box').style.display='none';
-  // Nombre de répétitions depuis la description (ex: "8×30s", "6×200m", "3×1000m")
-  const matchReps=session.desc.match(/(\d+)\s*[×x]/i);
-  const nbReps=matchReps?Math.min(parseInt(matchReps[1]),20):3;
-  // Distance par répétition en km (ex: "200m" → 0.2)
-  const matchDist=session.desc.match(/[×x]\s*(\d+)\s*m(?!in)/i) || session.desc.match(/(\d+)\s*m(?!in)/i);
-  const repDistKm=matchDist ? parseInt(matchDist[1])/1000 : 0;
-  // Durée cible par répétition (ex: "30s" → 30, depuis target type "3:36/km" + distance)
-  const tgtPaceSec=p2s(session.target);
-  const prefillSec=(repDistKm>0 && tgtPaceSec>0) ? Math.round(tgtPaceSec*repDistKm) : 0;
-  for(let i=0;i<nbReps;i++) addRepRow(repDistKm||null, prefillSec||null);
+  
+  for(let i=0; i<CURRENT_FRAC_SPECS.nbReps; i++) {
+    addRepRow();
+  }
 }
 
-/**
- * Ajoute une ligne de répétition au tableau.
- * @param {number|null} prefillDist - distance pré-remplie en km
- * @param {number|null} prefillSec  - temps cible pré-rempli en secondes
- */
-function addRepRow(prefillDist, prefillSec){
+function addRepRow(){
   _repCount++;
   const n=_repCount;
   const container=document.getElementById('rep-rows');
   const row=document.createElement('div');
   row.id=`rep-row-${n}`;
-  row.style.cssText='display:grid;grid-template-columns:28px 1fr 1fr 64px 28px;gap:5px;align-items:center;background:var(--s2);border:1px solid var(--br);border-radius:8px;padding:6px 6px 6px 8px;transition:border-color .15s';
-  const pDist=prefillDist ? prefillDist.toFixed(3) : '';
-  const pMin=prefillSec ? String(Math.floor(prefillSec/60)) : '';
-  const pSec=prefillSec ? String(prefillSec%60).padStart(2,'0') : '';
+  row.style.cssText='display:grid;grid-template-columns:28px 1.2fr 1fr 1fr 28px;gap:5px;align-items:center;background:var(--s2);border:1px solid var(--br);border-radius:8px;padding:6px 6px 6px 8px;transition:border-color .15s';
+  
+  const tgtPace = CURRENT_FRAC_SPECS.targetPaceSec || 216;
+  const pMinPace = Math.floor(tgtPace / 60);
+  const pSecPace = String(tgtPace % 60).padStart(2, '0');
+  
   row.innerHTML=`
     <div class="rep-num" id="rep-num-${n}">${n}</div>
-    <input type="number" step="0.001" min="0" placeholder="0.200"
-      value="${pDist}" class="frac-inp" id="rep-km-${n}"
-      oninput="updateRepRow(${n})">
     <div style="display:flex;gap:3px;align-items:center">
-      <input type="number" min="0" max="99" placeholder="m"
-        value="${pMin}" class="frac-inp" id="rep-mn-${n}"
-        oninput="updateRepRow(${n})" style="width:50%">
+      <input type="number" min="1" max="15" placeholder="min" value="${pMinPace}" class="frac-inp" id="rep-pmin-${n}" oninput="updateRepRow(${n})" style="width:50%">
       <span style="color:var(--tx3);font-size:10px;font-family:var(--fm);flex-shrink:0">:</span>
-      <input type="number" min="0" max="59" placeholder="ss"
-        value="${pSec}" class="frac-inp" id="rep-sc-${n}"
-        oninput="updateRepRow(${n})" style="width:50%">
+      <input type="number" min="0" max="59" placeholder="sec" value="${pSecPace}" class="frac-inp" id="rep-psec-${n}" oninput="updateRepRow(${n})" style="width:50%">
     </div>
-    <span class="rep-pace-display" id="rep-pace-${n}">–</span>
-    <button onclick="removeRepRow(${n})" style="width:22px;height:22px;border-radius:50%;background:none;border:1px solid var(--br);color:var(--tx3);font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0" title="Supprimer">×</button>`;
+    <span style="font-family:var(--fm);font-size:12px;text-align:center;color:var(--tx2)" id="rep-dist-disp-${n}">–</span>
+    <span style="font-family:var(--fm);font-size:12px;text-align:center;color:var(--tx2)" id="rep-time-disp-${n}">–</span>
+    <button onclick="removeRepRow(${n})" style="width:22px;height:22px;border-radius:50%;background:none;border:1px solid var(--br);color:var(--tx3);font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0" title="Supprimer">×</button>
+  `;
   container.appendChild(row);
   updateFracCountBadge();
-  // Recalcul immédiat si pré-rempli
-  if(prefillDist && prefillSec) updateRepRow(n);
+  updateRepRow(n);
 }
 
 function removeRepRow(n){
@@ -1607,126 +1554,135 @@ function removeRepRow(n){
   updateFracSummary();
 }
 
-/**
- * Recalcule l'allure d'une répétition et met à jour le résumé.
- */
 function updateRepRow(n){
-  const dist=+document.getElementById(`rep-km-${n}`)?.value||0;
-  const mn=+document.getElementById(`rep-mn-${n}`)?.value||0;
-  const sc=+document.getElementById(`rep-sc-${n}`)?.value||0;
-  const timeSec=mn*60+sc;
-  const paceEl=document.getElementById(`rep-pace-${n}`);
-  const rowEl=document.getElementById(`rep-row-${n}`);
-  if(paceEl){
-    if(dist>0 && timeSec>0){
-      const rp=timeSec/dist;
-      paceEl.textContent=s2p(rp);
-      // Couleur par rapport à la cible
-      const id=document.getElementById('log-sid').value;
-      let tgt=0;
-      PLAN.forEach(w=>{ const s=w.sessions.find(s=>s.id===id); if(s&&s.target.includes(':')) tgt=p2s(s.target); });
-      if(tgt>0){
-        const diff=rp-tgt;
-        if(diff<-8){ paceEl.className='rep-pace-display fast'; }
-        else if(diff>8){ paceEl.className='rep-pace-display slow'; }
-        else{ paceEl.className='rep-pace-display good'; }
-      }else{ paceEl.className='rep-pace-display good'; }
-    }else{
-      paceEl.textContent='–';
-      paceEl.className='rep-pace-display';
+  const pMin = +document.getElementById(`rep-pmin-${n}`)?.value || 0;
+  const pSec = +document.getElementById(`rep-psec-${n}`)?.value || 0;
+  const paceSec = pMin * 60 + pSec;
+  
+  const distDisp = document.getElementById(`rep-dist-disp-${n}`);
+  const timeDisp = document.getElementById(`rep-time-disp-${n}`);
+  
+  if(pMin > 0 || pSec > 0){
+    let distKm = 0;
+    let timeSec = 0;
+    
+    if (CURRENT_FRAC_SPECS.type === 'distance') {
+      distKm = CURRENT_FRAC_SPECS.distKm;
+      timeSec = Math.round(distKm * paceSec);
+    } else {
+      timeSec = CURRENT_FRAC_SPECS.durationSec;
+      distKm = paceSec > 0 ? timeSec / paceSec : 0;
     }
+    
+    if(distDisp) distDisp.textContent = distKm > 0 ? distKm.toFixed(3) : '–';
+    if(timeDisp) {
+      if (timeSec > 0) {
+        const m = Math.floor(timeSec / 60);
+        const s = Math.round(timeSec % 60);
+        timeDisp.textContent = `${m}:${String(s).padStart(2,'0')}`;
+      } else {
+        timeDisp.textContent = '–';
+      }
+    }
+  } else {
+    if(distDisp) distDisp.textContent = '–';
+    if(timeDisp) timeDisp.textContent = '–';
   }
   updateFracSummary();
 }
 
-/**
- * Récupère toutes les répétitions valides du tableau.
- */
 function getRepRows(){
-  const rows=document.querySelectorAll('#rep-rows > div[id^="rep-row-"]');
-  const result=[];
-  rows.forEach(row=>{
-    const n=row.id.replace('rep-row-','');
-    const dist=+document.getElementById(`rep-km-${n}`)?.value||0;
-    const mn=+document.getElementById(`rep-mn-${n}`)?.value||0;
-    const sc=+document.getElementById(`rep-sc-${n}`)?.value||0;
-    const timeSec=mn*60+sc;
-    result.push({n:+n, dist, timeSec, valid: dist>0 && timeSec>0});
+  const rows = document.querySelectorAll('#rep-rows > div[id^="rep-row-"]');
+  const result = [];
+  rows.forEach(row => {
+    const n = row.id.replace('rep-row-', '');
+    const pMin = +document.getElementById(`rep-pmin-${n}`)?.value || 0;
+    const pSec = +document.getElementById(`rep-psec-${n}`)?.value || 0;
+    const paceSec = pMin * 60 + pSec;
+    
+    let dist = 0;
+    let timeSec = 0;
+    
+    if (paceSec > 0) {
+      if (CURRENT_FRAC_SPECS.type === 'distance') {
+        dist = CURRENT_FRAC_SPECS.distKm;
+        timeSec = Math.round(dist * paceSec);
+      } else {
+        timeSec = CURRENT_FRAC_SPECS.durationSec;
+        dist = timeSec / paceSec;
+      }
+    }
+    result.push({ n: +n, dist, timeSec, valid: dist > 0 && timeSec > 0, paceSec });
   });
   return result;
 }
 
-/**
- * Met à jour le résumé des répétitions (allure moy, meilleure, distance totale).
- */
 function updateFracSummary(){
-  const reps=getRepRows().filter(r=>r.valid);
-  const summaryBox=document.getElementById('frac-summary-box');
-  const totalBox=document.getElementById('frac-total-box');
+  const reps = getRepRows().filter(r => r.valid);
+  const summaryBox = document.getElementById('frac-summary-box');
+  const totalBox = document.getElementById('frac-total-box');
   updateFracCountBadge();
-  if(reps.length===0){
-    summaryBox.style.display='none';
-    totalBox.style.display='none';
-    // Highlight meilleure répétition
-    document.querySelectorAll('#rep-rows > div[id^="rep-row-"]').forEach(r=>{
-      r.style.borderColor='var(--br)';
-    });
+  
+  if (reps.length === 0) {
+    summaryBox.style.display = 'none';
+    totalBox.style.display = 'none';
     return;
   }
-  // Calculs
-  const totalRepDist=reps.reduce((a,r)=>a+r.dist, 0);
-  const totalRepTime=reps.reduce((a,r)=>a+r.timeSec, 0);
-  const avgPace=totalRepTime/totalRepDist;
-  const paces=reps.map(r=>r.timeSec/r.dist);
-  const bestPace=Math.min(...paces);
-  const bestRepN=reps[paces.indexOf(bestPace)].n;
-  // Mise en évidence de la meilleure répétition
-  document.querySelectorAll('#rep-rows > div[id^="rep-row-"]').forEach(r=>{
-    const n=+r.id.replace('rep-row-','');
-    r.style.borderColor=n===bestRepN?'var(--gr4)':'var(--br)';
+  
+  const totalRepDist = reps.reduce((a, r) => a + r.dist, 0);
+  const totalRepTime = reps.reduce((a, r) => a + r.timeSec, 0);
+  const avgPace = totalRepDist > 0 ? totalRepTime / totalRepDist : 0;
+  
+  const paces = reps.map(r => r.paceSec);
+  const bestPace = Math.min(...paces);
+  const bestRepN = reps[paces.indexOf(bestPace)].n;
+  
+  document.querySelectorAll('#rep-rows > div[id^="rep-row-"]').forEach(r => {
+    const n = +r.id.replace('rep-row-', '');
+    r.style.borderColor = n === bestRepN ? 'var(--gr4)' : 'var(--br)';
   });
-  document.querySelectorAll('.rep-num').forEach(el=>{
-    const n=+el.id.replace('rep-num-','');
-    el.style.background=n===bestRepN?'var(--gr3)':'var(--s3)';
-    el.style.borderColor=n===bestRepN?'var(--gr4)':'var(--br2)';
+  document.querySelectorAll('.rep-num').forEach(el => {
+    const n = +el.id.replace('rep-num-', '');
+    el.style.background = n === bestRepN ? 'var(--gr3)' : 'var(--s3)';
+    el.style.borderColor = n === bestRepN ? 'var(--gr4)' : 'var(--br2)';
   });
-  // Allure moyenne
-  document.getElementById('frac-avg-val').textContent=s2p(avgPace);
-  // Diff vs cible
-  const id=document.getElementById('log-sid').value;
-  let tgt=0;
-  PLAN.forEach(w=>{ const s=w.sessions.find(s=>s.id===id); if(s&&s.target.includes(':')) tgt=p2s(s.target); });
-  const diffEl=document.getElementById('frac-avg-diff');
-  if(tgt>0){
-    const diff=Math.round(avgPace-tgt);
-    diffEl.textContent=diff>0?`+${diff}s/km vs cible`:diff<0?`${diff}s/km vs cible`:'✅ Dans la cible';
-    diffEl.style.color=diff>8?'var(--red-t)':diff<-8?'#86efac':'var(--amber-t)';
-  }else diffEl.textContent='';
-  // Meilleure répétition
-  document.getElementById('frac-best-val').textContent=s2p(bestPace);
-  // Distance répétitions
-  document.getElementById('frac-repdist-val').textContent=`${totalRepDist.toFixed(2)} km`;
-  summaryBox.style.display='block';
-  // Distance totale (répétitions + échauffement)
-  const warmupKm=+document.getElementById('warmup-km')?.value||0;
-  const totalDist=totalRepDist+warmupKm;
-  if(totalDist>0){
-    document.getElementById('frac-total-dist').textContent=`${totalDist.toFixed(2)} km`;
-    totalBox.style.display='flex';
-  }else totalBox.style.display='none';
+  
+  document.getElementById('frac-avg-val').textContent = s2p(avgPace);
+  
+  const tgt = CURRENT_FRAC_SPECS.targetPaceSec;
+  const diffEl = document.getElementById('frac-avg-diff');
+  if (tgt > 0) {
+    const diff = Math.round(avgPace - tgt);
+    diffEl.textContent = diff > 0 ? `+${diff}s/km vs cible` : diff < 0 ? `${diff}s/km vs cible` : '✅ Dans la cible';
+    diffEl.style.color = diff > 8 ? 'var(--red-t)' : diff < -8 ? '#86efac' : 'var(--amber-t)';
+  } else {
+    diffEl.textContent = '';
+  }
+  
+  document.getElementById('frac-best-val').textContent = s2p(bestPace);
+  document.getElementById('frac-repdist-val').textContent = `${totalRepDist.toFixed(2)} km`;
+  summaryBox.style.display = 'block';
+  
+  const warmupKm = +document.getElementById('warmup-km')?.value || 0;
+  const totalDist = totalRepDist + warmupKm;
+  if (totalDist > 0) {
+    document.getElementById('frac-total-dist').textContent = `${totalDist.toFixed(2)} km`;
+    totalBox.style.display = 'flex';
+  } else {
+    totalBox.style.display = 'none';
+  }
 }
 
 function updateFracCountBadge(){
-  const reps=getRepRows();
-  const valid=reps.filter(r=>r.valid).length;
-  const total=reps.length;
-  document.getElementById('frac-count-badge').textContent=`${valid}/${total} rép.`;
+  const reps = getRepRows();
+  const valid = reps.filter(r => r.valid).length;
+  const total = reps.length;
+  document.getElementById('frac-count-badge').textContent = `${valid}/${total} rép.`;
 }
 
-/* ── Accordéon échauffement ── */
 function toggleWarmup(){
-  const body=document.getElementById('warmup-body');
-  const icon=document.getElementById('warmup-icon');
+  const body = document.getElementById('warmup-body');
+  const icon = document.getElementById('warmup-icon');
   body.classList.toggle('open');
   icon.setAttribute('data-lucide', body.classList.contains('open')?'chevron-up':'chevron-down');
   IL();
@@ -1774,16 +1730,16 @@ function saveLog(){
   PLAN.forEach(w=>{ const s=w.sessions.find(s=>s.id===id); if(s) found=s; });
   const isFrac=found && (found.type==='VMA' || found.type==='Seuil');
   let distance, duration, reps=null, repPaceAvg=null, repDist=0;
+  
   if(isFrac){
     const repData=getRepRows().filter(r=>r.valid);
     reps=repData.map(r=>({dist:r.dist, timeSec:r.timeSec}));
     repDist=reps.reduce((a,r)=>a+r.dist, 0);
     const repTime=reps.reduce((a,r)=>a+r.timeSec, 0);
-    repPaceAvg=repDist>0 ? repTime/repDist : 0;  // sec/km, sans échauffement
+    repPaceAvg=repDist>0 ? repTime/repDist : 0;
     const warmupKm=+document.getElementById('warmup-km')?.value||0;
     const warmupMin=+document.getElementById('warmup-min')?.value||0;
     distance=(repDist+warmupKm).toFixed(2);
-    // Durée = temps rép + échauffement (durée saisie en minutes)
     const totalTimeSec=repTime + warmupMin*60;
     duration=`${String(Math.floor(totalTimeSec/60)).padStart(2,'0')}:${String(Math.round(totalTimeSec%60)).padStart(2,'0')}`;
   }else{
@@ -1800,9 +1756,9 @@ function saveLog(){
     hr:document.getElementById('log-hr').value||'–',
     notes:document.getElementById('log-notes').value,
     isFrac,
-    reps,           // [{dist, timeSec}] pour chaque répétition
-    repPaceAvg,     // sec/km — allure moyenne répétitions (sans éch.)
-    repDist         // km — distance totale répétitions
+    reps,
+    repPaceAvg,
+    repDist
   };
   save();
   const tok=localStorage.getItem('V_strava'); if(tok) uploadStrava(id,LOGS[id]);
@@ -1984,15 +1940,6 @@ document.addEventListener('DOMContentLoaded',()=>{
     }
   },40);
 });
-
-/* ═══════════════════════════════════
-   SWIPE HINT
-═══════════════════════════════════ */
-const _sh=document.getElementById('swipe-hint');
-if(!localStorage.getItem('V_swipe_seen')){
-  _sh.style.display='block';
-  setTimeout(()=>{ _sh.style.display='none'; localStorage.setItem('V_swipe_seen','1'); },4000);
-}
 </script>
 </body>
 </html>
