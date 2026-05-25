@@ -587,7 +587,6 @@ html.light .glass2 { background: rgba(241,245,249,0.95); }
             <i data-lucide="zap" class="w-3.5 h-3.5"></i> Saisie Par Blocs Individuels
           </p>
           <div id="interval-auto-calc-info" class="text-[10px] text-slate-400 leading-normal italic"></div>
-          
           <div id="dynamic-blocks-container" class="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto pr-1"></div>
         </div>
 
@@ -649,7 +648,7 @@ html.light .glass2 { background: rgba(241,245,249,0.95); }
 </div>
 
 <script>
-// VARIABLES GLOBALESTATE
+// VARIABLES D'ÉTAT GLOBALES
 let PLAN = [];
 let currentWeek = 1;
 let logs = {};
@@ -664,7 +663,7 @@ calMonth.setDate(1);
 // Timer state
 let timerRunning = false, timerSeconds = 0, timerTotal = 0, timerCountdown = false, timerInt = null;
 
-// MEMOIRE LOCALSTORAGE
+// PERSISTENCE LOCALSTORAGE
 function save() {
   try {
     localStorage.setItem('vdot_logs', JSON.stringify(logs));
@@ -765,7 +764,7 @@ function buildPlan() {
         {id:`w${w}_s1`,day:'Mardi',type:'VMA',title:`Vitesse – ${6+(w-4)*2}x 200m`,desc:`${6+(w-4)*2}x 200m.`,target:'3:28/km',obj:VMA_OBJ,det:`Éch. 20 min.<br/>${6+(w-4)*2}x 200m (3:28/km).`, unitVol: 0.20, reps: (6+(w-4)*2), isShort: true},
         {id:`w${w}_s2`,day:'Mercredi',type:'Force',title:'Routine Force',desc:'Terrain plat.',target:'30 min',obj:'Contrôle rotulien.',det:FORCE_HTML},
         {id:`w${w}_s3`,day:'Jeudi',type:'Seuil',title:`Seuil – ${w-3}x 1500m`,desc:'Allure seuil.',target:'4:11/km',obj:SEUIL_OBJ,det:`${w-3}x 1500m à 4:11/km.`, unitVol: 1.50, reps: (w-3), isShort: false},
-        {id:`w${w}_s4`,day:'Dimanche',type:'Long',title:`Sortie Longue – ${65+(w-4)*5} min`,desc:'Allure semi intégrée.',target:'Progressif',obj:'Posture sous fatigue.',det:'15 min à 4:15/km.'}
+        {id:`w${w}_s4$,day:'Dimanche',type:'Long',title:`Sortie Longue – ${65+(w-4)*5} min`,desc:'Allure semi intégrée.',target:'Progressif',obj:'Posture sous fatigue.',det:'15 min à 4:15/km.'}
       ];
     } else if(w<=12){
       phase='Phase 3 · Spécifique VDOT 56';focus='Soutien à allure cible AS5/AS10.';
@@ -817,7 +816,8 @@ function adaptPlan(plan,logs) {
         
         if(s.type==='EF' && pace>0 && pace<310) gv++;
         const tSec=p2s(s.target);
-        if((s.type==='VMA'||s.type==='Seuil')&&tSec>0&&pace>0&&pace<=tSec+3&&rpe<=6){
+        // CORRECTION DE SYNTAXE ICI (Suppression de 'Barra')
+        if((s.type ==='VMA'||s.type==='Seuil')&&tSec>0&&pace>0&&pace<=tSec+3&&rpe<=6){
           paces.VMA-=2;paces.Seuil-=2;
           msgs.push(`🔥 ${s.title.slice(0,25)}… faite sur cible → Allures ajustées.`);
         }
@@ -852,7 +852,7 @@ function predictVDOT() {
     if(pace<=0)return;
     
     for(let i=0;i<tbl.length-1;i++){
-      if(pace>=tbl[i+1].s&&pace<=tbl[i].s){
+      if(pace>200 && pace>=tbl[i+1].s&&pace<=tbl[i].s){
         const r=(tbl[i].s-pace)/(tbl[i].s-tbl[i+1].s);
         const v=Math.round(tbl[i].v+r);
         if(v>best)best=v;
@@ -948,6 +948,7 @@ function renderProgress(){
   if(document.getElementById('stat-done')) document.getElementById('stat-done').textContent=done;
 }
 
+// CORRECTION LITTÉRALE SEMAINE INTERPOLÉE ICI
 function renderWeekSelector(){
   const c=document.getElementById('week-selector'); if(!c)return;
   c.innerHTML='';
@@ -989,6 +990,11 @@ function renderWeekSummary(){
   if(document.getElementById('summary-dist')) document.getElementById('summary-dist').textContent=dists>0?`${dists.toFixed(1)} km`:'0 km';
   if(document.getElementById('summary-rpe')) document.getElementById('summary-rpe').textContent=avgRpe>0?`RPE moy ${avgRpe}/10`:'RPE –';
 }
+
+const BADGE_MAP={
+  VMA:'badge badge-vma',Seuil:'badge badge-seuil',EF:'badge badge-ef',
+  Force:'badge badge-force',Long:'badge badge-long',Course:'badge badge-course'
+};
 
 function renderSessions(){
   const wd=PLAN.find(w=>w.week===currentWeek); if(!wd)return;
@@ -1186,7 +1192,7 @@ function openDetails(id){
 }
 function closeDetails(){ hideModal('details-modal'); }
 
-// INTERFACE SÉANCE COURANTE ACTIVE
+// SÉANCE ACTIVE
 function launchActiveSession(){
   if(!currentDetailId)return;
   closeDetails();
@@ -1271,7 +1277,7 @@ function updateTimer(){
   }
 }
 
-// MODAL LOG AVEC CHIPS DE FRACTIONNÉ INDIVIDUELLES (INTELLIGENT)
+// GENERATION DYNAMIQUE DES INSCRIPTION PAR BLOC
 function openLog(id){
   document.getElementById('log-session-id').value=id;
   document.getElementById('log-date').value=new Date().toISOString().split('T')[0];
@@ -1287,12 +1293,10 @@ function openLog(id){
     document.getElementById('log-standard-fields').classList.add('hidden');
     document.getElementById('log-interval-fields').classList.remove('hidden');
     
-    // Génération dynamique des inputs par bloc individuel
     const container = document.getElementById('dynamic-blocks-container');
     container.innerHTML = '';
     
-    const repsCount = sRef.reps || 8; // par défaut
-    const unitLabel = sRef.isShort ? "Temps en secondes" : "Temps (min:sec)";
+    const repsCount = sRef.reps || 8;
     
     document.getElementById('interval-auto-calc-info').innerHTML = `Séance prévue : <strong>${repsCount} blocs</strong> de <strong>${sRef.unitVol * 1000}m</strong>.<br/>Renseignez le chrono réalisé sur chaque bloc :`;
     
@@ -1301,13 +1305,11 @@ function openLog(id){
       div.className = "flex flex-col bg-slate-900 p-2 rounded border border-white/5";
       
       if (sRef.isShort) {
-        // VMA courte (ex: 30"-30" -> saisie directe en secondes)
         div.innerHTML = `
           <label class="text-[9px] font-bold text-slate-500 block mb-1">Bloc ${i} (en sec)</label>
           <input type="number" placeholder="Ex: 29" class="input-block-val bg-slate-950 text-white text-xs p-1 rounded border border-white/10 text-center w-full outline-none focus:border-brand" oninput="computeIntervalStats()">
         `;
       } else {
-        // Fractionné long (ex: 1000m -> saisie en min:sec)
         div.innerHTML = `
           <label class="text-[9px] font-bold text-slate-500 block mb-1">Bloc ${i} (min:sec)</label>
           <div class="flex gap-1 items-center">
@@ -1330,16 +1332,6 @@ function openLog(id){
   IL();
 }
 
-function logStep(n){
-  _logStep=n;
-  document.getElementById('log-form-step1').classList.toggle('active',n===1);
-  document.getElementById('log-form-step2').classList.toggle('active',n===2);
-  const b1=document.getElementById('log-step-btn1'),b2=document.getElementById('log-step-btn2');
-  b1.style.background=n===1?'var(--brand)':'var(--surface3)';b1.style.color=n===1?'#0a0f05':'var(--text3)';
-  b2.style.background=n===2?'var(--brand)':'var(--surface3)';b2.style.color=n===2?'#0a0f05':'var(--text3)';
-}
-function closeLog(){ hideModal('log-modal'); }
-
 function computePace(){
   const dist=parseFloat(document.getElementById('log-dist').value)||0;
   const min=parseInt(document.getElementById('log-min').value)||0;
@@ -1359,7 +1351,6 @@ function computePace(){
   } else box.classList.add('hidden');
 }
 
-// CALCUL DES STATS DU FRACTIONNE SUR LE TOTAL DES BLOCS INJECTES
 function computeIntervalStats() {
   const id = document.getElementById('log-session-id').value;
   let sRef = null; PLAN.forEach(w => { const s = w.sessions.find(ses => ses.id === id); if (s) sRef = s; });
@@ -1370,18 +1361,15 @@ function computeIntervalStats() {
   let filledCount = 0;
 
   if (sRef.isShort) {
-    // Lecture VMA courte (en secondes pour la distance unitaire)
     const inputs = document.querySelectorAll('.input-block-val');
     inputs.forEach(input => {
       const val = parseInt(input.value) || 0;
       if (val > 0) {
-        // Vitesse convertie en allure (secondes au km) : temps_du_bloc / distance_du_bloc
         totalPaceSeconds += (val / sRef.unitVol);
         filledCount++;
       }
     });
   } else {
-    // Lecture Fractionné long (min:sec pour la distance unitaire)
     const mins = document.querySelectorAll('.input-block-min');
     const secs = document.querySelectorAll('.input-block-sec');
     for (let i = 0; i < mins.length; i++) {
@@ -1414,11 +1402,6 @@ function computeIntervalStats() {
   }
 }
 
-const RPE_DESCS={
-  resp:{1:'Aucune gêne',2:'Aucune gêne',3:'Aucune gêne',4:'Phrases rythmées',5:'Phrases rythmées',6:'Phrases rythmées',7:'Souffle court',8:'Souffle court',9:'Haletant',10:'Impossible de parler'},
-  musc:{1:'Jambes légères',2:'Jambes légères',3:'Jambes légères',4:'Légère chaleur',5:'Légère chaleur',6:'Légère chaleur',7:'Cuisses lourdes',8:'Cuisses lourdes',9:'Il faut forcer',10:'Jambes de bois'},
-  ment:{1:'Esprit libre',2:'Esprit libre',3:'Esprit libre',4:'Concentré',5:'Concentré',6:'Concentré',7:'Combat mental',8:'Combat mental',9:'Souffrance',10:"Envie d'abandonner"}
-};
 function updateRPE(){
   const r=+document.getElementById('rpe-resp').value||5;
   const mu=+document.getElementById('rpe-musc').value||5;
@@ -1471,7 +1454,6 @@ function saveLog(){
 
     if (filledCount > 0) {
       intervalPaceSecs = totalPaceSeconds / filledCount;
-      // Interpolation : distance des fractions validées + 3km forfaitaires (échauffement/récup)
       finalDist = parseFloat((filledCount * sRef.unitVol) + 3.0);
       
       const totalSecsCalculated = (filledCount * sRef.unitVol * intervalPaceSecs) + (3.0 * 330);
@@ -1479,7 +1461,6 @@ function saveLog(){
       const fSec = Math.floor(totalSecsCalculated % 60);
       finalDurationStr = `${String(fMin).padStart(2,'0')}:${String(fSec).padStart(2,'0')}`;
     } else {
-      // Sécurité si formulaire vide
       finalDist = 3.0;
       finalDurationStr = "16:30";
       intervalPaceSecs = p2s(sRef.target);
@@ -1552,7 +1533,15 @@ function resetAll(){
   }
 }
 
-// ONBOARDING
+// THEME INTERRUPTEUR
+function toggleTheme(){
+  const isLight=document.documentElement.classList.contains('light');
+  if(isLight){document.documentElement.classList.replace('light','dark');localStorage.setItem('vdot_theme','dark');document.getElementById('theme-btn').textContent='☀️';}
+  else{document.documentElement.classList.replace('dark','light');localStorage.setItem('vdot_theme','light');document.getElementById('theme-btn').textContent='🌙';}
+}
+if(localStorage.getItem('vdot_theme')==='light')document.getElementById('theme-btn').textContent='🌙';
+
+// WELCOME ONBOARDING
 let _selectedRace='10K';
 function selectRace(r){
   _selectedRace=r;
@@ -1579,7 +1568,7 @@ function obFinish(){
   toast(`Bienvenue ${profile.name||''} ! Programme prêt 🚀`,'#84cc16');
 }
 
-// NOTIFICATIONS PUSH
+// SYSTEME DE NOTIFICATIONS PUSH DE PROXIMITÉ
 function requestNotifications(){
   if(!('Notification'in window)){document.getElementById('notif-status').textContent='Non supporté sur ce navigateur.';return;}
   Notification.requestPermission().then(p=>{
@@ -1605,7 +1594,7 @@ function scheduleNotifs(){
 }
 if(Notification.permission==='granted'){setTimeout(()=>{const b=document.getElementById('notif-btn');if(b){b.textContent='✅ Notifications activées';b.style.color='var(--brand)';}},200);}
 
-// STRAVA TELEVERSEMENT
+// PARTAGE API STRAVA
 function saveToken(){
   const t=document.getElementById('strava-token').value.trim();
   if(t){localStorage.setItem('vdot_strava',t);updateStravaUI();toast('Jeton Strava enregistré.');}
@@ -1626,7 +1615,7 @@ async function uploadStrava(id,d){
   }catch(e){toast('Enregistré localement.');}
 }
 
-// SWIPE EVENTS
+// CAPTEUR DE BALAYAGE (MOBILE NAVIGATION SWIPES)
 let swipeX=null;
 document.getElementById('sessions-container').addEventListener('touchstart',e=>{swipeX=e.touches[0].clientX;},{passive:true});
 document.getElementById('sessions-container').addEventListener('touchend',e=>{
@@ -1641,7 +1630,7 @@ document.getElementById('sessions-container').addEventListener('touchend',e=>{
   swipeX=null;
 },{passive:true});
 
-// ENGINE DE BOOT
+// BOOTSTRAP DE CONTEXTE APPLICATIF
 document.addEventListener('DOMContentLoaded',() => {
   const wait=setInterval(()=>{
     if(typeof lucide!=='undefined'&&typeof Chart!=='undefined'){
