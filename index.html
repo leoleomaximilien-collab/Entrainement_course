@@ -150,10 +150,11 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bac
 #onboarding{position:fixed;inset:0;z-index:200;background:var(--bg);flex-direction:column;align-items:center;justify-content:center;padding:24px}
 
 /* ─ INTERVAL INPUT ROWS ─ */
-.int-row{display:grid;grid-template-columns:32px 1fr 1fr auto;gap:7px;align-items:center;padding:8px 10px;background:var(--s2);border:1px solid var(--br);border-radius:var(--r-sm)}
+.int-row{display:grid;grid-template-columns:28px 1fr 1fr 28px;gap:6px;align-items:center;padding:8px 10px;background:var(--s2);border:1px solid var(--br);border-radius:var(--r-sm);transition:border-color .15s}
+.int-row.valid{border-color:var(--gr4)}
 .int-row .int-label{font-size:11px;font-weight:800;color:var(--gr);text-align:center}
-.int-row .inp{padding:7px 9px;font-size:12px}
-.int-result{font-size:10px;font-weight:700;color:var(--tx3);text-align:center;font-family:monospace}
+.int-row .inp{padding:7px 9px;font-size:13px;text-align:center;font-family:monospace;font-weight:700}
+.int-diff{font-size:10px;font-weight:700;text-align:center;min-width:44px;font-family:monospace}
 #frac-section{display:none;flex-direction:column;gap:10px}
 #frac-section.visible{display:flex}
 .frac-header{display:flex;justify-content:space-between;align-items:center}
@@ -547,36 +548,41 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bac
 
         <!-- Section intervalles — visible seulement si VMA/Seuil -->
         <div id="frac-section">
+          <!-- Header -->
           <div class="frac-header">
-            <p style="font-size:11px;font-weight:800;color:var(--tx);display:flex;align-items:center;gap:6px">
-              <span style="color:var(--gr)">⚡</span> Répétitions effectuées
-              <span id="frac-type-label" style="font-size:10px;font-weight:700;color:var(--tx3)"></span>
-            </p>
-            <button onclick="addInterval()" style="padding:5px 10px;border-radius:99px;font-size:11px;font-weight:700;background:var(--gr3);color:var(--gr);border:1px solid var(--gr4);cursor:pointer">+ Ajouter</button>
+            <div>
+              <p style="font-size:11px;font-weight:800;color:var(--tx);display:flex;align-items:center;gap:5px">
+                <span style="color:var(--gr)">⚡</span> Répétitions
+                <span id="frac-type-label" style="font-size:10px;font-weight:700;color:var(--tx3)"></span>
+              </p>
+              <p style="font-size:10px;color:var(--tx3);margin-top:2px" id="frac-sub-label"></p>
+            </div>
+            <button onclick="addInterval()" style="padding:5px 10px;border-radius:99px;font-size:11px;font-weight:700;background:var(--gr3);color:var(--gr);border:1px solid var(--gr4);cursor:pointer">+ Rep</button>
           </div>
-          <!-- Entêtes colonnes -->
-          <div style="display:grid;grid-template-columns:32px 1fr 1fr auto;gap:7px;padding:0 10px">
+          <!-- Column headers -->
+          <div style="display:grid;grid-template-columns:28px 1fr 1fr 28px;gap:6px;padding:0 10px;margin-bottom:2px">
             <span style="font-size:9px;font-weight:700;color:var(--tx3);text-align:center">#</span>
             <span style="font-size:9px;font-weight:700;color:var(--tx3);text-align:center">Dist (km)</span>
-            <span style="font-size:9px;font-weight:700;color:var(--tx3);text-align:center">Temps (m:s)</span>
-            <span style="font-size:9px;font-weight:700;color:var(--tx3);text-align:center">Allure</span>
+            <span style="font-size:9px;font-weight:700;color:var(--tx3);text-align:center">Allure (min:sec)</span>
+            <span style="font-size:9px;font-weight:700;color:var(--tx3);text-align:center">±</span>
           </div>
-          <div id="interval-rows" style="display:flex;flex-direction:column;gap:6px"></div>
-          <!-- Résumé intervalles -->
+          <div id="interval-rows" style="display:flex;flex-direction:column;gap:5px"></div>
+          <!-- Summary -->
           <div id="frac-avg-box" class="frac-avg-box" style="display:none">
             <div>
-              <p style="font-size:10px;font-weight:700;color:var(--gr)">Allure moy. répétitions</p>
+              <p style="font-size:10px;font-weight:700;color:var(--gr)">Allure moy. des répétitions</p>
               <p style="font-size:9px;color:var(--tx3);margin-top:1px">Échauffement exclu du calcul</p>
             </div>
             <div style="text-align:right">
               <span id="frac-avg-pace" style="font-family:monospace;font-weight:900;color:var(--tx);font-size:15px"></span>
-              <span id="frac-avg-diff" style="font-size:10px;font-weight:700;display:block;margin-top:1px"></span>
+              <span id="frac-avg-diff" style="font-size:10px;font-weight:700;display:block;margin-top:2px"></span>
             </div>
           </div>
-          <!-- Distance échauffement -->
+          <!-- Warmup distance -->
           <div style="padding:8px 10px;background:var(--s2);border:1px solid var(--br);border-radius:var(--r-sm)">
             <label style="font-size:10px;font-weight:700;color:var(--tx2);display:block;margin-bottom:5px">
-              Distance échauffement + récup (km) <span style="font-weight:400;color:var(--tx3)">— comptabilisée dans le total mais exclue de l'allure</span>
+              Distance échauffement + récup (km)
+              <span style="font-weight:400;color:var(--tx3)"> — exclue du calcul d'allure</span>
             </label>
             <input id="log-warmup" type="number" step="0.01" placeholder="Ex: 4.0" oninput="updateFracSummary()" class="inp" style="font-size:12px">
           </div>
@@ -1117,31 +1123,30 @@ function resetIntervalRows(session){
   for(let i=0;i<nbReps;i++) addInterval(repDist>0?repDist:null, repTimeSec>0?repTimeSec:null);
 }
 
-function addInterval(prefillDist, prefillSec){
+function addInterval(prefillDistKm, prefillPaceSec){
   _intervalCount++;
   const n=_intervalCount;
   const container=document.getElementById('interval-rows');
   const row=document.createElement('div');
   row.className='int-row';
   row.id='int-row-'+n;
-  const pDist=prefillDist?prefillDist.toFixed(3):'';
-  const pMin=prefillSec?Math.floor(prefillSec/60):'';
-  const pSec=prefillSec?prefillSec%60:'';
+  // Distance: pre-filled from plan (read-only if provided), editable if not
+  const distVal=prefillDistKm?prefillDistKm.toFixed(3):'';
+  const distReadonly=prefillDistKm?'readonly style="opacity:.65;pointer-events:none;padding:7px;font-size:13px;text-align:center;font-family:monospace;font-weight:700"':'style="padding:7px;font-size:13px;text-align:center;font-family:monospace;font-weight:700"';
+  // Pace: split into min:sec
+  const pMin=prefillPaceSec?Math.floor(prefillPaceSec/60):'';
+  const pSec=prefillPaceSec?String(prefillPaceSec%60).padStart(2,'0'):'';
   row.innerHTML=`
     <span class="int-label">${n}</span>
-    <input type="number" step="0.001" placeholder="0.200" value="${pDist}" class="inp" id="int-km-${n}" oninput="updateIntRow(${n})" style="padding:7px;font-size:12px">
+    <input type="number" step="0.001" placeholder="km" value="${distVal}" class="inp" id="int-km-${n}" oninput="updateIntRow(${n})" ${distReadonly}>
     <div style="display:flex;gap:3px;align-items:center">
-      <input type="number" placeholder="m" value="${pMin}" class="inp" id="int-mn-${n}" oninput="updateIntRow(${n})" style="padding:7px;font-size:12px;text-align:center;width:50%">
-      <span style="color:var(--tx3);font-size:11px">:</span>
-      <input type="number" placeholder="ss" value="${pSec}" class="inp" id="int-sc-${n}" oninput="updateIntRow(${n})" style="padding:7px;font-size:12px;text-align:center;width:50%">
+      <input type="number" min="0" max="59" placeholder="m" value="${pMin}" class="inp" id="int-pm-${n}" oninput="updateIntRow(${n})" style="padding:7px;font-size:13px;text-align:center;font-family:monospace;font-weight:700;width:50%">
+      <span style="color:var(--tx3);font-size:12px;font-weight:700">:</span>
+      <input type="number" min="0" max="59" placeholder="ss" value="${pSec}" class="inp" id="int-ps-${n}" oninput="updateIntRow(${n})" style="padding:7px;font-size:13px;text-align:center;font-family:monospace;font-weight:700;width:50%">
     </div>
-    <div style="display:flex;flex-direction:column;align-items:center;gap:3px">
-      <span class="int-result" id="int-pace-${n}">–</span>
-      <button onclick="removeInterval(${n})" style="font-size:9px;color:var(--tx3);background:none;border:none;cursor:pointer;padding:2px">✕</button>
-    </div>`;
+    <button onclick="removeInterval(${n})" style="font-size:11px;color:var(--tx3);background:none;border:none;cursor:pointer;padding:4px;text-align:center">✕</button>`;
   container.appendChild(row);
-  // Calculate immediately if pre-filled
-  if(prefillDist&&prefillSec) updateIntRow(n);
+  if(prefillDistKm&&prefillPaceSec) updateIntRow(n);
   updateFracSummary();
 }
 
@@ -1152,31 +1157,36 @@ function removeInterval(n){
 }
 
 function updateIntRow(n){
+  // Row is now: dist (km) + pace (min:sec/km) → derive rep time
   const dist=+document.getElementById('int-km-'+n)?.value||0;
-  const mn=+document.getElementById('int-mn-'+n)?.value||0;
-  const sc=+document.getElementById('int-sc-'+n)?.value||0;
-  const tot=mn*60+sc;
-  const el=document.getElementById('int-pace-'+n);
-  if(el) el.textContent=dist>0&&tot>0?s2p(tot/dist):'–';
+  const pm=+document.getElementById('int-pm-'+n)?.value||0;
+  const ps=+document.getElementById('int-ps-'+n)?.value||0;
+  const paceSec=pm*60+ps; // sec/km
+  const row=document.getElementById('int-row-'+n);
+  if(row) row.classList.toggle('valid', dist>0&&paceSec>0);
   updateFracSummary();
 }
 
 function updateFracSummary(){
   const rows=document.querySelectorAll('#interval-rows .int-row');
-  let totalDist=0, totalTime=0, validRows=0;
+  // Weighted average pace = total_time / total_dist  (time derived from dist × pace)
+  let totalRepDist=0, totalRepTime=0, validRows=0;
   rows.forEach(row=>{
     const n=row.id.replace('int-row-','');
     const dist=+document.getElementById('int-km-'+n)?.value||0;
-    const mn=+document.getElementById('int-mn-'+n)?.value||0;
-    const sc=+document.getElementById('int-sc-'+n)?.value||0;
-    const tot=mn*60+sc;
-    if(dist>0&&tot>0){totalDist+=dist;totalTime+=tot;validRows++;}
+    const pm=+document.getElementById('int-pm-'+n)?.value||0;
+    const ps=+document.getElementById('int-ps-'+n)?.value||0;
+    const paceSec=pm*60+ps;
+    if(dist>0&&paceSec>0){
+      totalRepDist+=dist;
+      totalRepTime+=dist*paceSec; // time = dist(km) × pace(s/km)
+      validRows++;
+    }
   });
   const box=document.getElementById('frac-avg-box');
   if(validRows>0){
-    const avgPace=totalTime/totalDist;
+    const avgPace=totalRepTime/totalRepDist;
     document.getElementById('frac-avg-pace').textContent=s2p(avgPace);
-    // Compare to target
     const id=document.getElementById('log-sid').value;let tgt=null;
     PLAN.forEach(w=>{const s=w.sessions.find(s=>s.id===id);if(s&&s.target.includes(':'))tgt=p2s(s.target);});
     const diffEl=document.getElementById('frac-avg-diff');
@@ -1192,21 +1202,20 @@ function updateFracSummary(){
 }
 
 function getFracData(){
-  // Returns {repPace, totalDist, totalTime} from interval rows + warmup
+  // Dist × pace (s/km) = time per rep → sum for totals
   const rows=document.querySelectorAll('#interval-rows .int-row');
-  let repDist=0,repTime=0;
+  let repDist=0, repTime=0;
   rows.forEach(row=>{
     const n=row.id.replace('int-row-','');
     const dist=+document.getElementById('int-km-'+n)?.value||0;
-    const mn=+document.getElementById('int-mn-'+n)?.value||0;
-    const sc=+document.getElementById('int-sc-'+n)?.value||0;
-    const tot=mn*60+sc;
-    if(dist>0&&tot>0){repDist+=dist;repTime+=tot;}
+    const pm=+document.getElementById('int-pm-'+n)?.value||0;
+    const ps=+document.getElementById('int-ps-'+n)?.value||0;
+    const paceSec=pm*60+ps;
+    if(dist>0&&paceSec>0){ repDist+=dist; repTime+=dist*paceSec; }
   });
   const warmup=+document.getElementById('log-warmup')?.value||0;
+  const warmupTime=warmup*360; // ~6min/km for warmup estimate
   const totalDist=repDist+warmup;
-  // For total duration: we store rep time + ~warmup time (estimated at 6min/km)
-  const warmupTime=warmup*360;
   const totalTime=repTime+warmupTime;
   const repPace=repDist>0&&repTime>0?repTime/repDist:0;
   return{repDist,repTime,warmup,totalDist,totalTime,repPace};
