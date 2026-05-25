@@ -89,7 +89,7 @@ body {
 .btn-ghost:hover { background: #27334a; }
 .btn-ghost:active { transform: scale(0.96); }
 
-/* TABS CONTENT — slide transition */
+/* TABS CONTENT */
 .tab-content { display: none; animation: fadeSlide .25s ease; }
 .tab-content.active { display: block; }
 @keyframes fadeSlide { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
@@ -128,46 +128,19 @@ input[type=range]::-moz-range-thumb { width:22px; height:22px; border-radius:50%
 .timer-ring-track { stroke: var(--surface3); }
 .timer-ring-fill { stroke: var(--brand); stroke-dasharray: 283; stroke-dashoffset: 283; stroke-linecap: round; transition: stroke-dashoffset .9s linear; }
 
-/* SESSION CARD completed */
 .session-done { opacity: .6; }
 .session-done h4 { text-decoration: line-through; color: var(--text3) !important; }
 
-/* STEP ACTIVE */
 .step-item { border:1px solid var(--border); border-radius:10px; padding:12px; transition:all .2s; cursor:pointer; }
 .step-item.active { border-color:var(--brand); background:var(--brand-dim); }
-.step-item.done { opacity:.5; }
 
-/* ONBOARDING */
-#onboarding { animation: fadeSlide .3s ease; }
-
-/* SWIPE HINT */
-.week-scroll { scroll-snap-type: x mandatory; }
-.week-scroll > button { scroll-snap-align: center; }
-
-/* CALENDAR */
-.cal-day { aspect-ratio:1; display:flex; flex-direction:column; align-items:center; justify-content:center; border-radius:8px; font-size:11px; font-weight:600; cursor:pointer; transition:all .15s; border:1px solid transparent; }
-.cal-day.has-session { border-color:rgba(132,204,22,.3); background:rgba(132,204,22,.06); }
-.cal-day.has-session.done { background:rgba(132,204,22,.18); border-color:rgba(132,204,22,.5); }
-.cal-day.today { border-color:rgba(132,204,22,.8); box-shadow:var(--brand-glow); }
-.cal-day.rest { color:var(--text3); }
-
-/* FORM STEPS */
 .form-step { display:none; animation: fadeSlide .2s ease; }
 .form-step.active { display:block; }
 
-/* TOAST */
-#toast { transition: opacity .3s, transform .3s; }
-#toast.show { opacity:1; transform:translate(-50%,0); }
-#toast.hide { opacity:0; transform:translate(-50%,-8px); }
-
-/* WEEK SUMMARY PILL */
 .summary-pill { background:var(--surface2); border:1px solid var(--border); border-radius:99px; padding:6px 14px; font-size:11px; font-weight:700; }
-
-/* MOOD BUTTONS */
 .mood-btn { flex:1; padding:10px; border-radius:10px; border:1px solid var(--border); background:var(--surface2); text-align:center; cursor:pointer; transition:all .2s; }
 .mood-btn.selected { border-color:var(--brand); background:var(--brand-dim); }
 
-/* LIGHT MODE */
 html.light {
   --surface: #ffffff;
   --surface2: #f1f5f9;
@@ -271,7 +244,7 @@ html.light .glass2 { background: rgba(241,245,249,0.95); }
           <span class="summary-pill" id="summary-rpe" style="color:var(--brand)">RPE –</span>
         </div>
       </div>
-      <div class="overflow-x-auto no-scroll -mx-1 px-1" style="scrollbar-width:none">
+      <div class="overflow-x-auto no-scrollbar -mx-1 px-1" style="scrollbar-width:none">
         <div id="week-selector" class="flex gap-1.5 week-scroll pb-1" style="width:max-content"></div>
       </div>
     </div>
@@ -337,7 +310,7 @@ html.light .glass2 { background: rgba(241,245,249,0.95); }
       <div style="height:160px"><canvas id="chart-rpe"></canvas></div>
     </div>
     <div class="card p-4">
-      <p class="text-xs font-black text-white mb-3">Allure réelle vs cible (fractionné exclus de la moyenne)</p>
+      <p class="text-xs font-black text-white mb-3">Allure réelle vs cible (fractionné exclu de la moyenne)</p>
       <div style="height:160px"><canvas id="chart-pace"></canvas></div>
     </div>
 
@@ -422,7 +395,7 @@ html.light .glass2 { background: rgba(241,245,249,0.95); }
 </main>
 
 <nav class="glass fixed bottom-0 left-0 right-0 z-50 flex justify-around items-center px-2" style="padding-top:10px;padding-bottom:max(10px,var(--safe-bottom))">
-  <button onclick="switchTab('programme')" id="nav-programme" class="nav-btn active-nav flex flex-col items-center gap-0.5 px-4 py-1 rounded-xl transition" style="color:var(--brand)">
+  <button onclick="switchTab('programme')" id="nav-programme" class="nav-btn flex flex-col items-center gap-0.5 px-4 py-1 rounded-xl transition" style="color:var(--brand)">
     <i data-lucide="calendar-days" class="w-5 h-5"></i>
     <span class="text-[9px] font-bold">Programme</span>
   </button>
@@ -440,7 +413,7 @@ html.light .glass2 { background: rgba(241,245,249,0.95); }
   </button>
 </nav>
 
-<div id="settings-modal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4" style="background:rgba(0,0,0,0.7);backdrop-filter:blur(8px)">
+<div id="settings-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] hidden items-center justify-center p-4">
   <div class="glass2 rounded-2xl w-full max-w-sm p-5 space-y-4">
     <div class="flex justify-between items-center">
       <h3 class="font-black text-white">Paramètres</h3>
@@ -465,7 +438,7 @@ html.light .glass2 { background: rgba(241,245,249,0.95); }
   </div>
 </div>
 
-<div id="details-modal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4" style="background:rgba(0,0,0,0.75);backdrop-filter:blur(10px)">
+<div id="details-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] hidden items-center justify-center p-4">
   <div class="glass2 rounded-2xl w-full max-w-md p-5 space-y-4 shadow-2xl" style="max-height:88vh; overflow-y:auto">
     <div class="flex justify-between items-center shrink-0 border-b border-white/5 pb-3">
       <div class="flex items-center gap-2">
@@ -571,7 +544,7 @@ html.light .glass2 { background: rgba(241,245,249,0.95); }
 </div>
 
 <div id="log-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[120] hidden items-end sm:items-center justify-center p-4 sm:p-0">
-  <div class="glass2 rounded-2xl w-full max-w-md shadow-2xl flex flex-col max-h-[92vh]">
+  <div class="glass2 rounded-t-2xl sm:rounded-2xl w-full max-w-md flex flex-col shadow-2xl" style="max-height:92vh">
     <div class="p-4 flex justify-between items-center shrink-0 border-b border-white/5">
       <div>
         <p id="log-title" class="font-black text-white text-sm"></p>
@@ -619,7 +592,7 @@ html.light .glass2 { background: rgba(241,245,249,0.95); }
           </p>
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="text-[10px] font-bold mb-1 block text-slate-400">Allure moy. des blocs rapides</label>
+              <label class="text-[10px] font-bold mb-1 block text-slate-400">Allure moyenne des blocs rapides</label>
               <div class="flex gap-1 items-center">
                 <input id="log-int-min" type="number" placeholder="Min" oninput="computeIntervalStats()" class="input text-sm text-center">
                 <span style="color:var(--text3)">:</span>
@@ -644,7 +617,7 @@ html.light .glass2 { background: rgba(241,245,249,0.95); }
 
         <div>
           <label class="text-[11px] font-bold mb-1.5 block" style="color:var(--text2)">Notes</label>
-          <textarea id="log-notes" rows="2" placeholder="Sensation sur les blocs, conditions de récupération..." class="input text-sm resize-none"></textarea>
+          <textarea id="log-notes" rows="2" placeholder="Sensations, météo..." class="input text-sm resize-none"></textarea>
         </div>
         <button onclick="logStep(2)" class="btn-brand w-full py-3 text-sm">Continuer → Ressenti</button>
       </div>
@@ -683,7 +656,7 @@ html.light .glass2 { background: rgba(241,245,249,0.95); }
         <div class="flex gap-2">
           <button onclick="logStep(1)" class="btn-ghost px-4 py-3 text-sm font-bold">← Retour</button>
           <button onclick="saveLog()" class="btn-brand flex-1 py-3 text-sm flex items-center justify-center gap-2">
-            <i data-lucide="save" class="w-4 h-4"></i> Enregistrer la performance
+            <i data-lucide="save" class="w-4 h-4"></i> Enregistrer
           </button>
         </div>
       </div>
@@ -692,7 +665,7 @@ html.light .glass2 { background: rgba(241,245,249,0.95); }
 </div>
 
 <script>
-// STATE
+// VARIABLES D'ÉTAT GLOBALES
 let PLAN = [];
 let currentWeek = 1;
 let logs = {};
@@ -707,7 +680,7 @@ calMonth.setDate(1);
 // Timer state
 let timerRunning = false, timerSeconds = 0, timerTotal = 0, timerCountdown = false, timerInt = null;
 
-// PERSISTENCE
+// PERSISTENCE LOCALSTORAGE
 function save() {
   try {
     localStorage.setItem('vdot_logs', JSON.stringify(logs));
@@ -715,6 +688,7 @@ function save() {
     localStorage.setItem('vdot_profile', JSON.stringify(profile));
   } catch(e) {}
 }
+
 function load() {
   try {
     const w = localStorage.getItem('vdot_week');
@@ -728,15 +702,15 @@ function load() {
         for (let k in parsed) if (parsed[k] && typeof parsed[k]==='object') logs[k] = parsed[k];
       }
     }
-    if (localStorage.getItem('vdot_theme') === 'light') document.documentElement.classList.replace('dark','light');
   } catch(e) {}
 }
 
-// HELPERS
+// FORMATTAGE ET UTILS
 function IL() { if (typeof lucide!=='undefined') lucide.createIcons(); }
 let toastT;
 function toast(msg, color) {
   const t = document.getElementById('toast');
+  if(!t) return;
   t.textContent = msg;
   t.style.background = color||'var(--surface)';
   t.style.color = color ? '#0a0f05' : 'var(--text)';
@@ -768,17 +742,7 @@ function beep() {
   } catch(e){}
 }
 
-// PLAN DATA
-const FORCE_HTML = `<div class="space-y-2">
-<div class="step-item"><strong class="text-white text-xs">1. Squat bulgare</strong><p class="text-xs mt-0.5" style="color:var(--text2)">3×8/jambe · Repos 90s · Stabilité du bassin</p></div>
-<div class="step-item"><strong class="text-white text-xs">2. Squat excentrique</strong><p class="text-xs mt-0.5" style="color:var(--text2)">3×8 · Descente 4s · Compense l'absence de dénivelé</p></div>
-<div class="step-item"><strong class="text-white text-xs">3. Nordic Hamstring Curl</strong><p class="text-xs mt-0.5" style="color:var(--text2)">3×5 · Repos 90s</p></div>
-<div class="step-item"><strong class="text-white text-xs">4. Élévations mollets + Pogo Hops</strong><p class="text-xs mt-0.5" style="color:var(--text2)">Raideur tendineuse · Terrain plat</p></div>
-</div>`;
-const EF_OBJ='Sortir de la zone grise (4:07–4:22/km). Développer les fibres de type I et le réseau capillaire.';
-const VMA_OBJ='Économie de course et vitesse pure sans accumulation lactique.';
-const SEUIL_OBJ='Repousser le seuil lactique pour courir plus vite avant l\'acidose.';
-
+// INJECTION INITIALE DU PLAN D'ENTRAÎNEMENT STRUCTURÉ (64 séances / 4 par semaine)
 function buildPlan() {
   const plan=[];
   for(let w=1;w<=16;w++){
@@ -786,13 +750,13 @@ function buildPlan() {
     if(w<=4){
       phase='Phase 1 · Base & Reconstruction';focus='Aérobie strict + renforcement. Sortir du piège de la zone grise.';
       if(w===4)sessions=[
-        {id:`w${w}_s1`,day:'Mardi',type:'VMA',title:'VMA Courte – 6×30"',desc:'6×30s/45s.',target:'3:36/km',obj:VMA_OBJ,det:'Éch. 15 min EF.<br/>6×30s à 3:36/km · récup 45s trot.', unitVol: 0.14}, // ~140m par 30s
-        {id:`w${w}_s2`,day:'Mercredi',type:'Force',title:'Mobilité Active',desc:'Auto-massages.',target:'20 min',obj:'Régénération neuromusculaire.',det:'Foam Roller + mobilité chevilles.'},
-        {id:`w${w}_s3`,day:'Jeudi',type:'EF',title:'Footing Récupération',desc:'30 min EF lente.',target:'5:35/km',obj:EF_OBJ,det:'30 min à 5:35/km strictly.'},
+        {id:`w${w}_s1`,day:'Mardi',type:'VMA',title:'Qualité - VMA Courte',desc:'6x 30s rapide / 45s lent.',target:'3:36/km',obj:VMA_OBJ,det:'Éch. 15 min EF.<br/>6x 30s à 3:36/km · récup 45s trot.', unitVol: 0.14},
+        {id:`w${w}_s2`,day:'Mercredi',type:'Force',title:'Mobilité Active',desc:'Auto-massages.',target:'20 min',obj:'Régénération neuromusculaire.',det:'Foam Roller + mobility chevilles.'},
+        {id:`w${w}_s3`,day:'Jeudi',type:'EF',title:'Footing Récupération',desc:'30 min EF lente.',target:'5:35/km',obj:EF_OBJ,det:'30 min à 5:35/km strictement.'},
         {id:`w${w}_s4`,day:'Dimanche',type:'Long',title:'Sortie Longue Décharge',desc:'45 min EF.',target:'5:30/km',obj:EF_OBJ,det:'45 min continues à 5:30/km.'}
       ];
       else sessions=[
-        {id:`w${w}_s1`,day:'Mardi',type:'VMA',title:`VMA – ${6+w*2}×30"`,desc:`${6+w*2}×30s/30s.`,target:'3:36/km',obj:VMA_OBJ,det:`Éch. 20 min.<br/>${6+w*2}×30s (3:36/km) · récup 30s.`, unitVol: 0.14},
+        {id:`w${w}_s1`,day:'Mardi',type:'VMA',title:`VMA – ${6+w*2}x 30"-30"`,desc:`${6+w*2}x 30s rapide / 30s lent.`,target:'3:36/km',obj:VMA_OBJ,det:`Éch. 20 min.<br/>${6+w*2}x 30s (3:36/km) · récup 30s.`, unitVol: 0.14},
         {id:`w${w}_s2`,day:'Mercredi',type:'Force',title:'Routine Force',desc:'Squats, Nordic Curl…',target:'30 min',obj:'Compenser l\'absence de dénivelé.',det:FORCE_HTML},
         {id:`w${w}_s3`,day:'Jeudi',type:'EF',title:'Footing EF',desc:`${25+w*5} min continu.`,target:'5:20/km',obj:EF_OBJ,det:`${25+w*5} min à 5:20/km. Pas d'accélération !`},
         {id:`w${w}_s4`,day:'Dimanche',type:'Long',title:`Sortie Longue – ${45+w*5} min`,desc:'Fin active.',target:'Progressif',obj:'Habituer à la durée.',det:`Terminer par 10 min à 4:30/km.`}
@@ -800,44 +764,44 @@ function buildPlan() {
     } else if(w<=8){
       phase='Phase 2 · VMA & Seuil';focus='Élévation du seuil lactique + vitesse neuromusculaire.';
       if(w===8)sessions=[
-        {id:`w${w}_s1`,day:'Mardi',type:'VMA',title:'Rappel Vitesse – 6×200m',desc:'6×200m récup complète.',target:'3:28/km',obj:'Maintien stimulation nerveuse.',det:'6×200m à 3:28/km · marche 1 min.', unitVol: 0.20},
+        {id:`w${w}_s1`,day:'Mardi',type:'VMA',title:'Rappel Vitesse – 6x 200m',desc:'6x 200m récup complète.',target:'3:28/km',obj:'Maintien stimulation nerveuse.',det:'6x 200m à 3:28/km · marche 1 min.', unitVol: 0.20},
         {id:`w${w}_s2`,day:'Mercredi',type:'Force',title:'Mobilité',desc:'Auto-massages.',target:'25 min',obj:'Décharge.',det:'Focus récupération.'},
         {id:`w${w}_s3`,day:'Jeudi',type:'EF',title:'Footing Récupération',desc:'35 min très facile.',target:'5:35/km',obj:EF_OBJ,det:'35 min à 5:35/km.'},
         {id:`w${w}_s4`,day:'Dimanche',type:'Long',title:'Sortie Longue Décharge',desc:'60 min EF.',target:'5:30/km',obj:'Assimilation.',det:'60 min à 5:30/km.'}
       ];
       else sessions=[
-        {id:`w${w}_s1`,day:'Mardi',type:'VMA',title:`Vitesse – ${6+(w-4)*2}×200m`,desc:`${6+(w-4)*2}×200m.`,target:'3:28/km',obj:VMA_OBJ,det:`Éch. 20 min.<br/>${6+(w-4)*2}×200m (3:28/km).`, unitVol: 0.20},
+        {id:`w${w}_s1`,day:'Mardi',type:'VMA',title:`Vitesse – ${6+(w-4)*2}x 200m`,desc:`${6+(w-4)*2}x 200m.`,target:'3:28/km',obj:VMA_OBJ,det:`Éch. 20 min.<br/>${6+(w-4)*2}x 200m (3:28/km).`, unitVol: 0.20},
         {id:`w${w}_s2`,day:'Mercredi',type:'Force',title:'Routine Force',desc:'Terrain plat.',target:'30 min',obj:'Contrôle rotulien.',det:FORCE_HTML},
-        {id:`w${w}_s3`,day:'Jeudi',type:'Seuil',title:`Seuil – ${w-3}×1500m`,desc:'Allure seuil.',target:'4:11/km',obj:SEUIL_OBJ,det:`${w-3}×1500m à 4:11/km.`, unitVol: 1.50},
+        {id:`w${w}_s3`,day:'Jeudi',type:'Seuil',title:`Seuil – ${w-3}x 1500m`,desc:'Allure seuil.',target:'4:11/km',obj:SEUIL_OBJ,det:`${w-3}x 1500m à 4:11/km.`, unitVol: 1.50},
         {id:`w${w}_s4`,day:'Dimanche',type:'Long',title:`Sortie Longue – ${65+(w-4)*5} min`,desc:'Allure semi intégrée.',target:'Progressif',obj:'Posture sous fatigue.',det:'15 min à 4:15/km.'}
       ];
     } else if(w<=12){
       phase='Phase 3 · Spécifique VDOT 56';focus='Soutien à allure cible AS5/AS10.';
       if(w===12)sessions=[
-        {id:`w${w}_s1`,day:'Mardi',type:'VMA',title:'Rappel 5K – 3×1000m',desc:'3×1000m.',target:'3:35/km',obj:'Stimulation VO2max.',det:'3×1000m à 3:35/km.', unitVol: 1.00},
+        {id:`w${w}_s1`,day:'Mardi',type:'VMA',title:'Rappel 5K – 3x 1000m',desc:'3x 1000m.',target:'3:35/km',obj:'Stimulation VO2max.',det:'3x 1000m à 3:35/km.', unitVol: 1.00},
         {id:`w${w}_s2`,day:'Mercredi',type:'Force',title:'Mobilité / Yoga',desc:'Yoga.',target:'25 min',obj:'Relâchement.',det:'Yoga hanches et psoas.'},
         {id:`w${w}_s3`,day:'Jeudi',type:'EF',title:'Footing Récupération',desc:'40 min EF.',target:'5:35/km',obj:EF_OBJ,det:'40 min à 5:35/km.'},
         {id:`w${w}_s4`,day:'Dimanche',type:'Long',title:'Sortie Longue Décharge',desc:'70 min EF.',target:'5:30/km',obj:'Maintien aérobie.',det:'70 min EF.'}
       ];
       else sessions=[
-        {id:`w${w}_s1`,day:'Mardi',type:'VMA',title:`VO2max – ${w-6}×1000m`,desc:'5K pace.',target:'3:35/km',obj:'Solliciter le VO2max.',det:`${w-6}×1000m à 3:35/km.`, unitVol: 1.00},
+        {id:`w${w}_s1`,day:'Mardi',type:'VMA',title:`VO2max – ${w-6}x 1000m`,desc:'5K pace.',target:'3:35/km',obj:'Solliciter le VO2max.',det:`${w-6}x 1000m à 3:35/km.`, unitVol: 1.00},
         {id:`w${w}_s2`,day:'Mercredi',type:'Force',title:'Routine Spéc.',desc:'Excentrique.',target:'30 min',obj:'Soutien mécanique.',det:FORCE_HTML},
-        {id:`w${w}_s3`,day:'Jeudi',type:'Seuil',title:`AS10 – ${w-7}×2000m`,desc:'10K pace.',target:'3:52/km',obj:SEUIL_OBJ,det:`${w-7}×2000m à 3:52/km.`, unitVol: 2.00},
-        {id:`w${w}_s4`,day:'Dimanche',type:'Long',title:`Sortie Longue – ${80+(w-8)*5} min`,desc:'Blocs semi.',target:'Progressif',obj:'Spécificité.',det:'2×15 min à 4:15/km.'}
+        {id:`w${w}_s3`,day:'Jeudi',type:'Seuil',title:`AS10 – ${w-7}x 2000m`,desc:'10K pace.',target:'3:52/km',obj:SEUIL_OBJ,det:`${w-7}x 2000m à 3:52/km.`, unitVol: 2.00},
+        {id:`w${w}_s4`,day:'Dimanche',type:'Long',title:`Sortie Longue – ${80+(w-8)*5} min`,desc:'Blocs semi.',target:'Progressif',obj:'Spécificité.',det:'2x 15 min à 4:15/km.'}
       ];
     } else {
       phase='Phase 4 · Affûtage & Course';focus='Dissipation fatigue + surcompensation finale.';
       const sc=16-w;
       if(w===16)sessions=[
-        {id:`w${w}_s1`,day:'Mardi',type:'VMA',title:'Veille Course – 6×200m',desc:'3:18/km.',target:'3:18/km',obj:'Déblocage nerveux.',det:'6×200m à 3:18/km.', unitVol: 0.20},
+        {id:`w${w}_s1`,day:'Mardi',type:'VMA',title:'Veille Course – 6x 200m',desc:'3:18/km.',target:'3:18/km',obj:'Déblocage nerveux.',det:'6x 200m à 3:18/km.', unitVol: 0.20},
         {id:`w${w}_s2`,day:'Mercredi',type:'Force',title:'Gainage Léger',desc:'Statique.',target:'10 min',obj:'Tonicité.',det:'Planche front/lat.'},
         {id:`w${w}_s3`,day:'Jeudi',type:'EF',title:'Réveil Musculaire',desc:'25 min + lignes.',target:'5:35/km',obj:'Activer les jambes.',det:'25 min à 5:35/km.'},
         {id:`w${w}_s4`,day:'Dimanche',type:'Course',title:'🏆 JOUR DE COURSE – VDOT 56',desc:'Course objectif.',target:'Course',obj:'Valider VDOT 56.',det:'Stratégie métronomique. Bonne course !'}
       ];
       else sessions=[
-        {id:`w${w}_s1`,day:'Mardi',type:'VMA',title:`VMA Affûtage – ${6+sc*2}×200m`,desc:'R-Pace.',target:'3:18/km',obj:'Maintien intensité.',det:`${6+sc*2}×200m à 3:18/km.`, unitVol: 0.20},
+        {id:`w${w}_s1`,day:'Mardi',type:'VMA',title:`VMA Affûtage – ${6+sc*2}x 200m`,desc:'R-Pace.',target:'3:18/km',obj:'Maintien intensité.',det:`${6+sc*2}x 200m à 3:18/km.`, unitVol: 0.20},
         {id:`w${w}_s2`,day:'Mercredi',type:'Force',title:'Gainage',desc:'Charges réduites.',target:'15 min',obj:'Surcompensation.',det:'Proprioception.'},
-        {id:`w${w}_s3`,day:'Jeudi',type:'Seuil',title:'Seuil Court – 2×1000m',desc:'Allure seuil.',target:'3:52/km',obj:'Mémorisation allure.',det:'2×1000m à 3:52/km.', unitVol: 1.00},
+        {id:`w${w}_s3`,day:'Jeudi',type:'Seuil',title:'Seuil Court – 2x 1000m',desc:'Allure seuil.',target:'3:52/km',obj:'Mémorisation allure.',det:'2x 1000m à 3:52/km.', unitVol: 1.00},
         {id:`w${w}_s4`,day:'Dimanche',type:'Long',title:`Sortie Réduite – ${50+sc*5} min`,desc:'EF.',target:'5:30/km',obj:'Endurance.',det:`${50+sc*5} min à 5:30/km.`}
       ];
     }
@@ -846,125 +810,40 @@ function buildPlan() {
   return plan;
 }
 
-function adaptPlan(plan,logs) {
-  const msgs=[]; let paces={VMA:216,Seuil:251}; let gv=0,exhaust=false;
-  plan.forEach(w=>{
-    let rpeSum=0,cnt=0;
-    w.sessions.forEach(s=>{
-      const l=logs[s.id];
-      if(l&&typeof l==='object'){
-        cnt++; const rpe=+l.rpe||0; rpeSum+=rpe;
-        const dist=+l.distance||0;
-        const [pm,ps]=(l.duration||'00:00').split(':');
-        const totalS=(+pm)*60+(+ps||0);
-        
-        // On récupère l'allure enregistrée (qu'elle vienne du fractionné ou du global)
-        const pace=l.intervalPace ? l.intervalPace : (dist>0?totalS/dist:0);
-        
-        if(s.type==='EF'&&pace>0&&pace<310)gv++;
-        const tSec=p2s(s.target);
-        if((s.type Barra ==='VMA'||s.type==='Seuil')&&tSec>0&&pace>0&&pace<=tSec+3&&rpe <=6){
-          paces.VMA-=2;paces.Seuil-=2;
-          msgs.push(`🔥 ${s.title.slice(0,25)}… faite sur cible → Allures ajustées.`);
-        }
-      } else {
-        if(gv>0&&(s.type==='VMA'||s.type==='Seuil')){
-          s.type='EF';s.title='⚠️ Récupération (Zone Grise)';s.desc='Transformée en récup.';s.target='5:35/km';gv--;
-          if(!msgs.some(m=>m.includes('Zone Grise')))msgs.push("⚠️ Zone Grise → intervalle converti en récup.");
-        } else if(exhaust&&s.type==='Long'){
-          if(!msgs.some(m=>m.includes('Fatigue')))msgs.push("📉 Fatigue → sorties longues –15%.");
-          s.desc='🔋 VOL. –15%. '+s.desc;
-        } else {
-          if(s.type==='VMA'&&s.target.includes(':'))s.target=s2p(paces.VMA);
-          if(s.type==='Seuil'&&s.target.includes(':'))s.target=s2p(paces.Seuil);
-        }
-      }
-    });
-    if(cnt>0)exhaust=(rpeSum/cnt)>7.5;
-  });
-  return {plan,msgs:[...new Set(msgs)]};
-}
-
-// ANALYTICS
-function predictVDOT() {
-  const tbl=[{v:46,s:272},{v:47,s:267},{v:48,s:263},{v:49,s:259},{v:50,s:255},{v:51,s:251},{v:52,s:247},{v:53,s:243},{v:54,s:240},{v:55,s:236},{v:56,s:233},{v:57,s:229},{v:58,s:226},{v:59,s:223},{v:60,s:220}];
-  let best=profile.vdot||51;
-  Object.keys(logs).forEach(key=>{
-    const d=logs[key]; if(!d||!d.distance||!d.duration)return;
-    let t=null; PLAN.forEach(w=>{const s=w.sessions.find(ses=>ses.id===key);if(s)t=s.type;});
-    
-    // On analyse préférentiellement l'allure cible stabilisée du fractionné ou du seuil
-    const pace = d.intervalPace ? d.intervalPace : (parseFloat(d.distance)>0 ? (p2s(d.duration)/parseFloat(d.distance)) : 0);
-    if(t!=='Seuil' && t!=='VMA')return;
-    if(pace<=0)return;
-    
-    for(let i=0;i<tbl.length-1;i++){
-      if(pace>200 && pace>=tbl[i+1].s&&pace<=tbl[i].s){
-        const r=(tbl[i].s-pace)/(tbl[i].s-tbl[i+1].s);
-        const v=Math.round(tbl[i].v+r);
-        if(v>best)best=v;
-      }
-    }
-  });
-  return best;
-}
-function weeklyLoad() {
-  let load=0;
-  const now=new Date(), ws=new Date(now);
-  ws.setDate(now.getDate()-((now.getDay()+6)%7)); ws.setHours(0,0,0,0);
-  Object.values(logs).forEach(d=>{
-    if(!d||!d.date)return;
-    if(new Date(d.date)>=ws) load+=(+d.distance||0)*(+d.rpe||5);
-  });
-  return Math.round(load);
-}
-function recoveryReco() {
-  const l=weeklyLoad();
-  if(l>200)return{msg:`⚠️ Charge élevée (${l} UA) — priorisez le sommeil et réduisez l'intensité.`,show:true,err:true};
-  if(l>120)return{msg:`⚡ Charge modérée (${l} UA) — vous êtes dans la zone productive.`,show:true,err:false};
-  return{show:false};
-}
-function detectPlateau() {
-  const byW={};
-  Object.keys(logs).forEach(key=>{
-    const d=logs[key]; if(!d)return;
-    let wn=null,t=null;
-    PLAN.forEach(w=>{const s=w.sessions.find(ses=>ses.id===key);if(s){wn=w.week;t=s.type;}});
-    if((t==='VMA'||t==='Seuil')&&wn){if(!byW[wn])byW[wn]={sum:0,n:0};byW[wn].sum+=+d.rpe||5;byW[wn].n++;}
-  });
-  const wks=Object.keys(byW).map(Number).sort((a,b)=>a-b);
-  if(wks.length<3)return null;
-  const last=wks.slice(-3).map(w=>byW[w].sum/byW[w].n);
-  if(last.every(a=>a>=6.5)&&Math.max(...last)-Math.min(...last)<1)
-    return`RPE moyen sur 3 semaines : ${last.map(a=>a.toFixed(1)).join(', ')} → Aucune amélioration. Envisager une semaine de décharge.`;
-  return null;
-}
-
-// RENDER
+// INITIALISATION ET SURVEILLANCE DES ADAPTATIONS IA
 function init() {
+  load();
   const base=buildPlan();
   const result=adaptPlan(base,logs);
   PLAN=result.plan;
 
   const ac=document.getElementById('ai-alerts-card'), al=document.getElementById('ai-alerts-list');
-  if(result.msgs.length){al.innerHTML=result.msgs.map(m=>`<li>• ${m}</li>`).join('');ac.classList.remove('hidden');}
-  else ac.classList.add('hidden');
+  if(ac && al) {
+    if(result.msgs.length){al.innerHTML=result.msgs.map(m=>`<li>• ${m}</li>`).join('');ac.classList.remove('hidden');}
+    else ac.classList.add('hidden');
+  }
 
   const rc=recoveryReco(), rv=document.getElementById('recovery-card'), rm=document.getElementById('recovery-msg');
-  if(rc.show){rm.textContent=rc.msg;rv.style.borderColor=rc.err?'rgba(239,68,68,.3)':'rgba(245,158,11,.3)';rv.style.background=rc.err?'rgba(239,68,68,.07)':'rgba(245,158,11,.07)';rm.style.color=rc.err?'#fca5a5':'#fbbf24';rv.classList.remove('hidden');}
-  else rv.classList.add('hidden');
+  if(rv && rm) {
+    if(rc.show){rm.textContent=rc.msg;rv.style.borderColor=rc.err?'rgba(239,68,68,.3)':'rgba(245,158,11,.3)';rv.style.background=rc.err?'rgba(239,68,68,.07)':'rgba(245,158,11,.07)';rm.style.color=rc.err?'#fca5a5':'#fbbf24';rv.classList.remove('hidden');}
+    else rv.classList.add('hidden');
+  }
 
   const pl=detectPlateau();
-  if(pl){document.getElementById('plateau-msg').textContent=pl;document.getElementById('plateau-card').classList.remove('hidden');}
-  else document.getElementById('plateau-card').classList.add('hidden');
+  if(document.getElementById('plateau-card') && document.getElementById('plateau-msg')) {
+    if(pl){document.getElementById('plateau-msg').textContent=pl;document.getElementById('plateau-card').classList.remove('hidden');}
+    else document.getElementById('plateau-card').classList.add('hidden');
+  }
 
   const vdot=predictVDOT();
-  document.getElementById('vdot-badge').textContent=`VDOT ~${vdot}`;
-  document.getElementById('stat-vdot').textContent=`~${vdot}`;
+  if(document.getElementById('vdot-badge')) document.getElementById('vdot-badge').textContent=`VDOT ~${vdot}`;
+  if(document.getElementById('stat-vdot')) document.getElementById('stat-vdot').textContent=`~${vdot}`;
 
   const hr=new Date().getHours();
   const greet=hr<12?'☀️ Bonjour':hr<18?'🌤 Bon après-midi':'🌙 Bonsoir';
-  document.getElementById('header-greeting').textContent=profile.name?`${greet}, ${profile.name} !`:greet+' · Coach IA';
+  if(document.getElementById('header-greeting')) {
+    document.getElementById('header-greeting').textContent=profile.name?`${greet}, ${profile.name} !`:greet+' · Coach IA';
+  }
 
   renderWeekSelector();
   renderSessions();
@@ -975,17 +854,18 @@ function init() {
   renderPhase();
 
   const wd=PLAN.find(w=>w.week===currentWeek);
-  if(wd)document.getElementById('header-phase').textContent=wd.phase;
+  if(wd && document.getElementById('header-phase')) document.getElementById('header-phase').textContent=wd.phase;
 }
 
 function renderProgress(){
   const total=64,done=Object.keys(logs).length,pct=Math.round((done/total)*100)||0;
-  document.getElementById('progress-label').textContent=`${done}/${total} séances`;
-  document.getElementById('progress-pct').textContent=`${pct}%`;
-  document.getElementById('progress-bar').style.width=pct+'%';
-  document.getElementById('stat-done').textContent=done;
+  if(document.getElementById('progress-label')) document.getElementById('progress-label').textContent=`${done}/${total} séances`;
+  if(document.getElementById('progress-pct')) document.getElementById('progress-pct').textContent=`${pct}%`;
+  if(document.getElementById('progress-bar')) document.getElementById('progress-bar').style.width=pct+'%';
+  if(document.getElementById('stat-done')) document.getElementById('stat-done').textContent=done;
 }
 
+// CORRECTION CRITIQUE ICI : Remplacement de "Sem i" par la chaîne interpolée correcte
 function renderWeekSelector(){
   const c=document.getElementById('week-selector'); if(!c)return;
   c.innerHTML='';
@@ -995,29 +875,37 @@ function renderWeekSelector(){
     b.style.cssText=active
       ?'padding:6px 14px;border-radius:99px;font-size:12px;font-weight:800;white-space:nowrap;background:var(--brand);color:#0a0f05;border:none;cursor:pointer;flex-shrink:0'
       :'padding:6px 14px;border-radius:99px;font-size:12px;font-weight:700;white-space:nowrap;background:var(--surface2);color:var(--text3);border:1px solid var(--border);cursor:pointer;flex-shrink:0';
-    b.textContent=`Sem i`;
-    b.onclick=()=>{ currentWeek=i; save(); renderWeekSelector(); renderSessions(); renderWeekSummary(); renderPhase();
-      const wd=PLAN.find(w=>w.week===i); if(wd)document.getElementById('header-phase').textContent=wd.phase; };
+    b.textContent=`Sem ${i}`;
+    b.onclick=()=>{ 
+      currentWeek=i; 
+      save(); 
+      renderWeekSelector(); 
+      renderSessions(); 
+      renderWeekSummary(); 
+      renderPhase();
+      const wd=PLAN.find(w=>w.week===i); 
+      if(wd && document.getElementById('header-phase')) document.getElementById('header-phase').textContent=wd.phase; 
+    };
     c.appendChild(b);
   }
 }
 
 function renderPhase(){
   const wd=PLAN.find(w=>w.week===currentWeek); if(!wd)return;
-  document.getElementById('phase-title').textContent=wd.phase;
-  document.getElementById('phase-focus').textContent=wd.focus;
+  if(document.getElementById('phase-title')) document.getElementById('phase-title').textContent=wd.phase;
+  if(document.getElementById('phase-focus')) document.getElementById('phase-focus').textContent=wd.focus;
 }
 
 function renderWeekSummary(){
   const wd=PLAN.find(w=>w.week===currentWeek); if(!wd)return;
-  document.getElementById('summary-week-title').textContent=`Semaine ${currentWeek} · ${wd.phase.split('·')[0].trim()}`;
+  if(document.getElementById('summary-week-title')) document.getElementById('summary-week-title').textContent=`Semaine ${currentWeek} · ${wd.phase.split('·')[0].trim()}`;
   const done=wd.sessions.filter(s=>logs[s.id]).length;
   const dists=wd.sessions.filter(s=>logs[s.id]).reduce((a,s)=>a+(+logs[s.id].distance||0),0);
   const rpes=wd.sessions.filter(s=>logs[s.id]).map(s=>+logs[s.id].rpe||0);
   const avgRpe=rpes.length?Math.round(rpes.reduce((a,b)=>a+b,0)/rpes.length):0;
-  document.getElementById('summary-sessions').textContent=`${done}/${wd.sessions.length} séances`;
-  document.getElementById('summary-dist').textContent=dists>0?`${dists.toFixed(1)} km`:'0 km';
-  document.getElementById('summary-rpe').textContent=avgRpe>0?`RPE moy ${avgRpe}/10`:'RPE –';
+  if(document.getElementById('summary-sessions')) document.getElementById('summary-sessions').textContent=`${done}/${wd.sessions.length} séances`;
+  if(document.getElementById('summary-dist')) document.getElementById('summary-dist').textContent=dists>0?`${dists.toFixed(1)} km`:'0 km';
+  if(document.getElementById('summary-rpe')) document.getElementById('summary-rpe').textContent=avgRpe>0?`RPE moy ${avgRpe}/10`:'RPE –';
 }
 
 const BADGE_MAP={
@@ -1043,7 +931,7 @@ function renderSessions(){
       const rp = d.intervalPace ? d.intervalPace : (parseFloat(d.distance)>0 ? p2s(d.duration)/parseFloat(d.distance) : 0);
       if(rp > 0){
         const diff=tSec>0?Math.round(rp-tSec):null;
-        const dc=diff===null?'var(--text3)':diff>8?'#fca5a5':diff<-8?'#86efac':'#fbbf24';
+        const dc=diff===null?'var(--text3)':diff>8?'#ef4444':diff<-8?'#22c55e':'#eab308';
         const ds=diff===null?'':diff>0?`+${diff}s/km (lent)`:diff<0?`${diff}s/km (rapide)`:'✅ Cible exacte';
         
         const typeLabel = d.intervalPace ? "Allure blocs rapides" : "Allure réelle moyenne";
@@ -1092,11 +980,13 @@ function renderSessions(){
 
 function renderLoad(){
   const l=weeklyLoad(), max=250;
-  document.getElementById('load-val').textContent=l+' UA';
+  if(document.getElementById('load-val')) document.getElementById('load-val').textContent=l+' UA';
   const bar=document.getElementById('load-bar');
-  bar.style.width=Math.min(100,(l/max)*100)+'%';
-  bar.style.background=l>200?'#ef4444':l>120?'#f59e0b':'var(--brand)';
-  document.getElementById('load-msg').textContent=l>200?'⚠️ Charge critique — envisager une décharge':l>120?'✅ Zone productive':'💤 Charge légère';
+  if (bar) {
+    bar.style.width=Math.min(100,(l/max)*100)+'%';
+    bar.style.background=l>200?'#ef4444':l>120?'#f59e0b':'var(--brand)';
+  }
+  if(document.getElementById('load-msg')) document.getElementById('load-msg').textContent=l>200?'⚠️ Charge critique — décharge urgente':l>120?'✅ Zone productive':'💤 Charge légère';
 }
 
 function renderHistory(){
@@ -1114,10 +1004,10 @@ function renderHistory(){
       <div style="text-align:right"><span style="font-family:monospace;font-weight:900;color:var(--brand)">${d.distance||'0'} km</span><span style="font-size:10px;color:var(--text3);display:block">${d.duration||'–'}</span></div>
     </div>`;
   });
-  document.getElementById('stat-dist').textContent=totalDist.toFixed(1)+' km';
+  if(document.getElementById('stat-dist')) document.getElementById('stat-dist').textContent=totalDist.toFixed(1)+' km';
 }
 
-// CHARTS
+// CHARTS RECONSTRUIRES SANS DOUBLE EFFET
 function renderCharts(){
   const rByW={},pByW={};
   Object.keys(logs).forEach(key=>{
@@ -1128,7 +1018,6 @@ function renderCharts(){
     if(!rByW[wn])rByW[wn]={sum:0,n:0};
     rByW[wn].sum+=+d.rpe||5; rByW[wn].n++;
     
-    // On exclut le fractionné pur du graphique d'allure moyenne globale pour garder des stats stables
     if(t!=='VMA' && t!=='Seuil' && d.distance && d.duration && tgt && tgt.includes(':')){
       const dist=+d.distance;const[pm,ps]=d.duration.split(':');const tot=(+pm)*60+(+ps||0);
       if(dist>0&&tot>0){if(!pByW[wn])pByW[wn]={r:[],t:[]};pByW[wn].r.push(tot/dist);pByW[wn].t.push(p2s(tgt));}
@@ -1154,8 +1043,9 @@ function renderCharts(){
 // CALENDAR
 function renderCalendar(){
   const months=['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
-  document.getElementById('cal-month-label').textContent=`${months[calMonth.getMonth()]} ${calMonth.getFullYear()}`;
-  const grid=document.getElementById('cal-grid'); grid.innerHTML='';
+  if(document.getElementById('cal-month-label')) document.getElementById('cal-month-label').textContent=`${months[calMonth.getMonth()]} ${calMonth.getFullYear()}`;
+  const grid=document.getElementById('cal-grid'); if(!grid) return;
+  grid.innerHTML='';
   const first=new Date(calMonth.getFullYear(),calMonth.getMonth(),1);
   const lastDay=new Date(calMonth.getFullYear(),calMonth.getMonth()+1,0).getDate();
   const startDow=(first.getDay()+6)%7;
@@ -1188,6 +1078,7 @@ function renderCalendar(){
     if(hasSess){
       el.onclick=()=>{
         const preview=document.getElementById('cal-session-preview');
+        if(!preview) return;
         preview.classList.remove('hidden');
         preview.innerHTML=sessionMap[key].map(({s,w})=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)">
           <div><span class="${BADGE_MAP[s.type]||'badge'} mr-2">${s.type}</span><span style="font-size:13px;font-weight:700;color:var(--text)">${s.title}</span><p style="font-size:11px;color:var(--text3);margin-top:2px">Sem. ${w} · Cible : ${s.target}</p></div>
@@ -1260,11 +1151,11 @@ function selectMood(m){
   ['tired','normal','great'].forEach(x=>document.getElementById('mood-'+x).classList.toggle('selected',x===m));
   const adv=document.getElementById('mood-advice');
   const msgs={tired:'😴 Tu es fatigué — réduis l\'intensité de 15% et écoute ton corps.',normal:'😊 Tu te sens bien — exécute la séance comme prévu.',great:'⚡ Tu es en forme — tu peux viser la borne haute des allures cibles !'};
-  adv.textContent=msgs[m]; adv.classList.remove('hidden');
+  if(adv) { adv.textContent=msgs[m]; adv.classList.remove('hidden'); }
   vibrate(15);
 }
 
-// TIMER
+// TIMER ENGINE
 function timerStart(){
   if(timerRunning)return;
   timerRunning=true;
@@ -1280,7 +1171,7 @@ function timerPause(){
   timerRunning=false;clearInterval(timerInt);
   document.getElementById('btn-timer-start').classList.remove('hidden');
   document.getElementById('btn-timer-pause').classList.add('hidden');
-  document.getElementById('timer-label').textContent='Pause';
+  if(document.getElementById('timer-label')) document.getElementById('timer-label').textContent='Pause';
 }
 function timerReset(){
   timerPause();timerSeconds=0;timerTotal=0;timerCountdown=false;
@@ -1295,16 +1186,16 @@ function intervalDone(){
 }
 function updateTimer(){
   const m=Math.floor(timerSeconds/60),s=timerSeconds%60;
-  document.getElementById('timer-display').textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  if(document.getElementById('timer-display')) document.getElementById('timer-display').textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
   if(timerCountdown&&timerTotal>0){
     const prog=(timerTotal-timerSeconds)/timerTotal;
     document.getElementById('timer-ring').style.strokeDashoffset=283-(283*prog);
-  } else if(!timerCountdown){
+  } else if(!timerCountdown && document.getElementById('timer-ring')){
     document.getElementById('timer-ring').style.strokeDashoffset=283-((timerSeconds%60)/60)*283;
   }
 }
 
-// LOG MODAL
+// FORMULAIRE INTELLIGENT DE LOG DE SÉANCE
 function openLog(id){
   document.getElementById('log-session-id').value=id;
   document.getElementById('log-date').value=new Date().toISOString().split('T')[0];
@@ -1315,7 +1206,6 @@ function openLog(id){
   let sRef=null; PLAN.forEach(w=>{const s=w.sessions.find(ses=>ses.id===id);if(s)sRef=s;});
   document.getElementById('log-title').textContent=sRef ? sRef.title : 'Activité';
   
-  // Bascule d'affichage dynamique selon le type de séance
   const isInterval = sRef && (sRef.type === 'VMA' || sRef.type === 'Seuil');
   if(isInterval) {
     document.getElementById('log-standard-fields').classList.add('hidden');
@@ -1343,9 +1233,9 @@ function logStep(n){
 function closeLog(){ hideModal('log-modal'); }
 
 function computePace(){
-  const dist=+document.getElementById('log-dist').value||0;
-  const min=+document.getElementById('log-min').value||0;
-  const sec=+document.getElementById('log-sec').value||0;
+  const dist=parseFloat(document.getElementById('log-dist').value)||0;
+  const min=parseInt(document.getElementById('log-min').value)||0;
+  const sec=parseInt(document.getElementById('log-sec').value)||0;
   const tot=min*60+sec;
   const box=document.getElementById('pace-box');
   if(dist>0&&tot>0){
@@ -1361,11 +1251,10 @@ function computePace(){
   } else box.classList.add('hidden');
 }
 
-// Fonction de traitement et validation de la structure du fractionné
 function computeIntervalStats() {
-  const min = +document.getElementById('log-int-min').value || 0;
-  const sec = +document.getElementById('log-int-sec').value || 0;
-  const reps = +document.getElementById('log-int-reps').value || 0;
+  const min = parseInt(document.getElementById('log-int-min').value)||0;
+  const sec = parseInt(document.getElementById('log-int-sec').value)||0;
+  const reps = parseInt(document.getElementById('log-int-reps').value)||0;
   const id = document.getElementById('log-session-id').value;
   
   let sRef = null; PLAN.forEach(w => { const s = w.sessions.find(ses => ses.id === id); if (s) sRef = s; });
@@ -1390,11 +1279,6 @@ function computeIntervalStats() {
   }
 }
 
-const RPE_DESCS={
-  resp:{1:'Aucune gêne',2:'Aucune gêne',3:'Aucune gêne',4:'Phrases rythmées',5:'Phrases rythmées',6:'Phrases rythmées',7:'Souffle court',8:'Souffle court',9:'Haletant',10:'Impossible de parler'},
-  musc:{1:'Jambes légères',2:'Jambes légères',3:'Jambes légères',4:'Légère chaleur',5:'Légère chaleur',6:'Légère chaleur',7:'Cuisses lourdes',8:'Cuisses lourdes',9:'Il faut forcer',10:'Jambes de bois'},
-  ment:{1:'Esprit libre',2:'Esprit libre',3:'Esprit libre',4:'Concentré',5:'Concentré',6:'Concentré',7:'Combat mental',8:'Combat mental',9:'Souffrance',10:"Envie d'abandonner"}
-};
 function updateRPE(){
   const r=+document.getElementById('rpe-resp').value||5;
   const mu=+document.getElementById('rpe-musc').value||5;
@@ -1425,17 +1309,15 @@ function saveLog(){
   let intervalPaceSecs = null;
   
   if (isInterval) {
-    const intMin = +document.getElementById('log-int-min').value || 0;
-    const intSec = +document.getElementById('log-int-sec').value || 0;
-    const reps = +document.getElementById('log-int-reps').value || 0;
+    const intMin = parseInt(document.getElementById('log-int-min').value)||0;
+    const intSec = parseInt(document.getElementById('log-int-sec').value)||0;
+    const reps = parseInt(document.getElementById('log-int-reps').value)||0;
     
     intervalPaceSecs = intMin * 60 + intSec;
-    // Interpolation linéaire du volume total basé sur le bloc rapide + échauffement générique (3km)
     finalDist = parseFloat((reps * (sRef.unitVol || 0)) + 3.0);
     
-    // Durée globale extrapolée pour l'algorithme d'historique
     const runningSecs = (reps * (sRef.unitVol || 0)) * intervalPaceSecs;
-    const totalSecsCalculated = runningSecs + (3.0 * 330); // Échauffement/Récup au trot à 5:30/km
+    const totalSecsCalculated = runningSecs + (3.0 * 330); 
     
     const fMin = Math.floor(totalSecsCalculated / 60);
     const fSec = Math.floor(totalSecsCalculated % 60);
@@ -1453,7 +1335,7 @@ function saveLog(){
     rpe,
     distance: finalDist.toFixed(2),
     duration: finalDurationStr,
-    intervalPace: intervalPaceSecs, // Stocké spécifiquement pour l'analyse IA
+    intervalPace: intervalPaceSecs,
     hr,
     notes
   };
@@ -1463,12 +1345,12 @@ function saveLog(){
   if(tok)uploadStrava(id,logs[id]);
   closeLog();
   init();
-  renderCharts();
+  if(document.getElementById('tab-stats').classList.contains('active')) renderCharts();
   toast(`✅ Enregistré — RPE ${rpe}/10`,'#84cc16');
   vibrate([40,20,40]);
 }
 
-function toggleSession(id){
+function toggleSession(id) {
   if(logs[id]){delete logs[id];save();init();toast('Séance annulée.');}
   else openLog(id);
 }
@@ -1476,20 +1358,18 @@ function toggleSession(id){
 // NAVIGATION
 function switchTab(tab){
   ['programme','stats','calendar','connect'].forEach(t=>{
-    document.getElementById('tab-'+t).classList.remove('active');
+    if(document.getElementById('tab-'+t)) document.getElementById('tab-'+t).classList.remove('active');
     const n=document.getElementById('nav-'+t);
-    n.style.color='var(--text3)';
+    if(n) n.style.color='var(--text3)';
   });
-  document.getElementById('tab-'+tab).classList.add('active');
-  document.getElementById('nav-'+tab).style.color='var(--brand)';
+  if(document.getElementById('tab-'+tab)) document.getElementById('tab-'+tab).classList.add('active');
+  if(document.getElementById('nav-'+tab)) document.getElementById('nav-'+tab).style.color='var(--brand)';
   if(tab==='stats'){renderCharts();}
   if(tab==='calendar'){renderCalendar();}
   IL();
 }
 
 // MODALS HELPERS
-function showModal(id){const m=document.getElementById(id);m.style.display='flex';m.classList.remove('hidden');}
-function hideModal(id){const m=document.getElementById(id);m.style.display='none';m.classList.add('hidden');}
 function openSettings(){
   document.getElementById('set-name').value=profile.name||'';
   document.getElementById('set-vdot').value=profile.vdot||51;
@@ -1511,7 +1391,7 @@ function resetAll(){
   }
 }
 
-// THEME
+// GESTION DU THEME GLOBAL
 function toggleTheme(){
   const isLight=document.documentElement.classList.contains('light');
   if(isLight){document.documentElement.classList.replace('light','dark');localStorage.setItem('vdot_theme','dark');document.getElementById('theme-btn').textContent='☀️';}
@@ -1519,7 +1399,7 @@ function toggleTheme(){
 }
 if(localStorage.getItem('vdot_theme')==='light')document.getElementById('theme-btn').textContent='🌙';
 
-// ONBOARDING
+// WELCOME SYSTEM (ONBOARDING)
 let _selectedRace='10K';
 function selectRace(r){
   _selectedRace=r;
@@ -1546,7 +1426,7 @@ function obFinish(){
   toast(`Bienvenue ${profile.name||''} ! Programme prêt 🚀`,'#84cc16');
 }
 
-// NOTIFICATIONS
+// SYNC NOTIFICATIONS INTERNES
 function requestNotifications(){
   if(!('Notification'in window)){document.getElementById('notif-status').textContent='Non supporté sur ce navigateur.';return;}
   Notification.requestPermission().then(p=>{
@@ -1572,7 +1452,7 @@ function scheduleNotifs(){
 }
 if(Notification.permission==='granted'){setTimeout(()=>{const b=document.getElementById('notif-btn');if(b){b.textContent='✅ Notifications activées';b.style.color='var(--brand)';}},200);}
 
-// STRAVA
+// PARTAGE API STRAVA
 function saveToken(){
   const t=document.getElementById('strava-token').value.trim();
   if(t){localStorage.setItem('vdot_strava',t);updateStravaUI();toast('Jeton Strava enregistré.');}
@@ -1593,7 +1473,7 @@ async function uploadStrava(id,d){
   }catch(e){toast('Enregistré localement.');}
 }
 
-// SWIPE (mobile week change)
+// CONTROLE DES SWIPES MOBILE DROITE / GAUCHE
 let swipeX=null;
 document.getElementById('sessions-container').addEventListener('touchstart',e=>{swipeX=e.touches[0].clientX;},{passive:true});
 document.getElementById('sessions-container').addEventListener('touchend',e=>{
@@ -1608,8 +1488,8 @@ document.getElementById('sessions-container').addEventListener('touchend',e=>{
   swipeX=null;
 },{passive:true});
 
-// BOOT
-document.addEventListener('DOMContentLoaded',() => {
+// BOOTSTRAP DE L'APPLICATION
+document.addEventListener('DOMContentLoaded',()=>{
   const wait=setInterval(()=>{
     if(typeof lucide!=='undefined'&&typeof Chart!=='undefined'){
       clearInterval(wait);
